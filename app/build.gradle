@@ -4,11 +4,11 @@ plugins {
 }
 
 android {
-    namespace 'com.example.carboncheck'
+    namespace 'kr.co.carboncheck.android.carboncheckapp'
     compileSdk 33
 
     defaultConfig {
-        applicationId "com.example.carboncheck"
+        applicationId "kr.co.carboncheck.android.carboncheckapp"
         minSdk 24
         targetSdk 33
         versionCode 1

@@ -1,4 +1,4 @@
-package com.example.carboncheck
+package kr.co.carboncheck
 
 import org.junit.Test
 

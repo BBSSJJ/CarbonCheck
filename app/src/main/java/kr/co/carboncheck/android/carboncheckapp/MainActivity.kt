@@ -1,7 +1,8 @@
-package com.example.carboncheck
+package kr.co.carboncheck.android.carboncheckapp
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
