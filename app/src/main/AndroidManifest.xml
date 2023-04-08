@@ -25,8 +25,7 @@
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
         <activity
-
-            android:name="kr.co.carboncheck.android.carboncheckapp.MainActivity"
+            android:name="kr.co.carboncheck.android.carboncheckapp.view.MainActivity"
 
             android:exported="true">
             <intent-filter>

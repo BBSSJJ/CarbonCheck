@@ -1,4 +1,4 @@
-package com.example.carboncheck.models
+package kr.co.carboncheck.android.carboncheckapp.model
 
 class MyResponse {
     var userId: String? = null

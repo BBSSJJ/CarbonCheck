@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="kr.co.carboncheck.android.carboncheckapp.MainActivity">
+    tools:context="kr.co.carboncheck.android.carboncheckapp.view.MainActivity">
 
     <Button
         android:id="@+id/send_button"

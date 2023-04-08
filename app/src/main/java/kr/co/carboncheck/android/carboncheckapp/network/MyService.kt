@@ -1,10 +1,9 @@
-package com.example.carboncheck.network
+package kr.co.carboncheck.android.carboncheckapp.network
 
-import com.example.carboncheck.models.MyRequest
-import com.example.carboncheck.models.MyResponse
+import kr.co.carboncheck.android.carboncheckapp.model.MyRequest
+import kr.co.carboncheck.android.carboncheckapp.model.MyResponse
 import retrofit2.Call
 import retrofit2.http.*
-
 
 interface MyService {
     //HTTP POST메소드로 /data에 요청 보낸다
