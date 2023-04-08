@@ -1,13 +1,14 @@
-package com.example.carboncheck.views
+package kr.co.carboncheck.android.carboncheckapp.view
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
-import com.example.carboncheck.databinding.ActivityMainBinding
-import com.example.carboncheck.models.MyRequest
-import com.example.carboncheck.models.MyResponse
-import com.example.carboncheck.network.RetrofitClient
+import kr.co.carboncheck.android.carboncheckapp.databinding.ActivityMainBinding
+import kr.co.carboncheck.android.carboncheckapp.model.MyRequest
+import kr.co.carboncheck.android.carboncheckapp.model.MyResponse
+import kr.co.carboncheck.android.carboncheckapp.network.RetrofitClient
+
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -22,7 +23,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
         val button = binding.sendButton
         Log.d("testlog", "어플 실행")
-        button.setOnClickListener{
+        button.setOnClickListener {
             Log.d("testlog", "온클릭 리스너 적용")
             Toast.makeText(applicationContext, "clicked!", Toast.LENGTH_SHORT).show()
             getUserData()
@@ -49,7 +50,8 @@ class MainActivity : AppCompatActivity() {
                     val userId = response.body()?.userId
                     val usage = response.body()?.usage
                     val time = response.body()?.time
-                    Toast.makeText(applicationContext, userId + usage + time, Toast.LENGTH_SHORT).show()
+                    Toast.makeText(applicationContext, userId + usage + time, Toast.LENGTH_SHORT)
+                        .show()
                 } else {
                     Log.d("testlog", "전송 실패")
                     Toast.makeText(applicationContext, "Request failed", Toast.LENGTH_SHORT).show()
