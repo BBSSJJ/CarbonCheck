@@ -78,14 +78,14 @@ class MainActivity : AppCompatActivity() {
                     Toast.makeText(applicationContext, userId + usage + time, Toast.LENGTH_SHORT)
                         .show()
                 } else {
-                    Log.d("testlog", "전송 실패")
+                    Log.d("testlog", "전송 실패2")
                     Toast.makeText(applicationContext, "Request failed", Toast.LENGTH_SHORT).show()
                 }
             }
 
             //전송 실패
             override fun onFailure(call: Call<MyResponse>, t: Throwable) {
-                Log.e("testlog", "전송 실패: " + t.message)
+                Log.e("testlog", "전송 실패1: " + t.message)
                 Toast.makeText(applicationContext, "Request failed", Toast.LENGTH_SHORT).show()
             }
         })
