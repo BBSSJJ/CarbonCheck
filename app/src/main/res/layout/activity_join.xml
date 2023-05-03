@@ -7,11 +7,11 @@
     tools:context=".view.JoinActivity">
 
     <EditText
-        android:id="@+id/joinIdText"
+        android:id="@+id/joinEmailText"
         android:layout_width="wrap_content"
         android:layout_height="48dp"
         android:ems="10"
-        android:hint="ID"
+        android:hint="E-mail"
         android:inputType="textPersonName"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -62,11 +62,11 @@
         app:layout_constraintVertical_bias="0.204" />
 
     <EditText
-        android:id="@+id/joinNicknameText"
+        android:id="@+id/joinNameText"
         android:layout_width="wrap_content"
         android:layout_height="48dp"
         android:ems="10"
-        android:hint="Nickname"
+        android:hint="Name"
         android:inputType="textPersonName"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
