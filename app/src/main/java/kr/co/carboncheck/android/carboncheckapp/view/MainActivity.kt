@@ -4,15 +4,17 @@ import android.app.AppOpsManager
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageInfo
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Process
 import android.provider.Settings
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kr.co.carboncheck.android.carboncheckapp.databinding.ActivityMainBinding
+import kr.co.carboncheck.android.carboncheckapp.util.UserPreference
+
 
 class MainActivity : AppCompatActivity() {
 
@@ -24,6 +26,11 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        val logoutButton = binding.logoutButton
+        logoutButton.setOnClickListener {
+            deletePreferences(this)
+        }
 
         if (checkForPermission()) {
             // 권한이 있으면 메인 액티 비티를 시각화 합니다.
@@ -37,6 +44,15 @@ class MainActivity : AppCompatActivity() {
             ).show()
             startActivity(Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS))
         }
+    }
+
+    fun deletePreferences(context: Context?) {
+        val userPreference = UserPreference().getPreferences(context!!)
+        val editor = userPreference!!.edit()
+        editor.clear()
+        editor.apply()
+        val intent = Intent(this, LoginActivity::class.java)
+        startActivity(intent)
     }
 
     private fun checkForPermission(): Boolean {
