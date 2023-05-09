@@ -108,13 +108,13 @@ class LoginActivity : AppCompatActivity() {
                 if (response.isSuccessful) {    //response가 성공적으로 왔을 때
 
                     Log.d("testlog", "로그인 요청 응답 도착")
-                    Toast.makeText(applicationContext, response.message(), Toast.LENGTH_SHORT)
+                    Toast.makeText(applicationContext, response.body()!!.message, Toast.LENGTH_SHORT)
                         .show()
                     if (response.body()!!.success) {
-                        Log.d("testlog", "로그인 성공" + response.message())
+                        Log.d("testlog", "로그인 성공" + response.body()!!.message)
                         callback(true);
                     } else {
-                        Log.d("testlog", "로그인 실패" + response.message())
+                        Log.d("testlog", "로그인 실패" + response.body()!!.message)
                         callback(false);
                     }
 
