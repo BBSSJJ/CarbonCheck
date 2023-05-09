@@ -22,23 +22,36 @@ class JoinActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         var joinConfirmButton = binding.joinConfirmButton
+
+
         joinConfirmButton.setOnClickListener {
-            sendJoinRequest(
-                binding.joinEmailText.text.toString(),
-                binding.joinPasswordText.text.toString(),
-                binding.joinNameText.text.toString(),
-                "local"
-            ){
-                result->
-                if(result){
-                    //회원가입 성공
-                    val intent = Intent(this, LoginActivity::class.java)
-                    startActivity(intent)
+            var joinEmailText = binding.joinEmailText.text.toString()
+            var joinPasswordText = binding.joinPasswordText.text.toString()
+            var joinPasswordCheckText = binding.joinPasswordCheckText.text.toString()
+            var joinNameText = binding.joinNameText.text.toString()
+            if (joinEmailText == "")
+                Toast.makeText(applicationContext, "이메일을 입력해주세요", Toast.LENGTH_SHORT).show()
+            else if (joinPasswordText == "")
+                Toast.makeText(applicationContext, "비밀번호를 입력해주세요", Toast.LENGTH_SHORT).show()
+            else if (joinPasswordText != joinPasswordCheckText)
+                Toast.makeText(applicationContext, "비밀번호가 일치하지 않습니다", Toast.LENGTH_SHORT).show()
+            else if (joinNameText == "")
+                Toast.makeText(applicationContext, "이름을 입력해주세요", Toast.LENGTH_SHORT).show()
+            else
+                sendJoinRequest(
+                    joinEmailText,
+                    joinPasswordText,
+                    joinNameText,
+                    "local"
+                ) { result ->
+                    if (result) {
+                        //회원가입 성공
+                        val intent = Intent(this, LoginActivity::class.java)
+                        startActivity(intent)
+                    } else {
+                        //회원가입 실패
+                    }
                 }
-                else{
-                    //회원가입 실패
-                }
-            }
         }
 
     }
@@ -63,7 +76,11 @@ class JoinActivity : AppCompatActivity() {
             ) {
                 if (response.isSuccessful) {
                     Log.d("testlog", "회원가입 요청 응답 도착")
-                    Toast.makeText(applicationContext, response.message(), Toast.LENGTH_SHORT)
+                    Toast.makeText(
+                        applicationContext,
+                        response.body()!!.message,
+                        Toast.LENGTH_SHORT
+                    )
                         .show()
                     if (response.body()!!.success) {
                         Log.d("testlog", "회원가입 성공")
@@ -74,12 +91,15 @@ class JoinActivity : AppCompatActivity() {
                     }
                 } else {
                     Log.d("testlog", "회원가입 요청 응답 도착 안함")
-                    Toast.makeText(applicationContext, response.message(), Toast.LENGTH_SHORT)
+                    Toast.makeText(
+                        applicationContext,
+                        response.body()!!.message,
+                        Toast.LENGTH_SHORT
+                    )
                         .show()
                     callback(false)
                 }
             }
-
             override fun onFailure(call: Call<JoinResponseDTO>, t: Throwable) {
                 Log.e("testlog", "회원가입 요청 전송 실패" + t.message)
                 Toast.makeText(applicationContext, "Request failed", Toast.LENGTH_SHORT).show()
