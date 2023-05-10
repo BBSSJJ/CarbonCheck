@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/total_usage_menu"
+        android:title=""
+        android:icon="@drawable/total_usage_icon2"/>
+    <item
+        android:id="@+id/detailed_usage_menu"
+        android:title=""
+        android:icon="@drawable/detailed_usage_icon"/>
+    <item
+        android:id="@+id/solution_menu"
+        android:title=""
+        android:icon="@drawable/solution_icon"/>
+    <item
+        android:id="@+id/mini_game_menu"
+        android:title=""
+        android:icon="@drawable/mini_game_icon"/>
+    <item
+        android:id="@+id/user_info_menu"
+        android:title=""
+        android:icon="@drawable/user_info_icon"/>
+</menu>

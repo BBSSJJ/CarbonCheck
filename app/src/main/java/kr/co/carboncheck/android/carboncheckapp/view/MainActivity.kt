@@ -9,9 +9,12 @@ import android.os.Process
 import android.provider.Settings
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.Fragment
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kr.co.carboncheck.android.carboncheckapp.R
 import kr.co.carboncheck.android.carboncheckapp.databinding.ActivityMainBinding
 import kr.co.carboncheck.android.carboncheckapp.util.UserPreference
 
@@ -20,6 +23,7 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
     private val listPackageInfo: MutableList<PackageInfo> = mutableListOf()
+    private lateinit var bottomNavigationView: BottomNavigationView
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -27,10 +31,27 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        val logoutButton = binding.logoutButton
-        logoutButton.setOnClickListener {
-            deletePreferences(this)
+        //첫 화면 fragment 지정
+        val startFragment = TotalUsageFragment()
+        supportFragmentManager.beginTransaction().replace(R.id.fragmentContainer,startFragment).commit()
+
+        bottomNavigationView = binding.bottomNavigationView
+
+        //하단 네비게이션 바 클릭 시 해당 fragment로 전환
+        bottomNavigationView.setOnNavigationItemSelectedListener { item ->
+            var fragment: Fragment? = null
+            when (item.itemId) {
+                R.id.total_usage_menu -> fragment = TotalUsageFragment()
+                R.id.detailed_usage_menu -> fragment = DetailedUsageFragment()
+                R.id.solution_menu -> fragment = SolutionFragment()
+                R.id.mini_game_menu -> fragment = MiniGameFragment()
+                R.id.user_info_menu -> fragment = UserInfoFragment()
+
+            }
+            loadFragment(fragment)
         }
+
+
 
         if (checkForPermission()) {
             // 권한이 있으면 메인 액티 비티를 시각화 합니다.
@@ -44,6 +65,17 @@ class MainActivity : AppCompatActivity() {
             ).show()
             startActivity(Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS))
         }
+    }
+
+    //frame layout 부분을 fragment로 채워넣는 함수
+    fun loadFragment(fragment: Fragment?): Boolean{
+        fragment?.let {
+            supportFragmentManager.beginTransaction()
+                .replace(R.id.fragmentContainer, it)
+                .commit()
+            return true
+        }
+        return false
     }
 
     fun deletePreferences(context: Context?) {
