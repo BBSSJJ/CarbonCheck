@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
-
+    <!-- QR코드 스캔을 위한 카메라 권한 -->
+    <uses-permission android:name="android.permission.CAMERA" />
     <!-- 서버 통신을 위해 인터넷 권한 얻음 -->
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission
@@ -12,6 +13,7 @@
         tools:ignore="QueryAllPackagesPermission" />
 
     <application
+        android:hardwareAccelerated="true"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
@@ -22,6 +24,17 @@
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
 
+        <!-- QR scan할 때 이거 넣는 이유 잘 모르겠다 -->
+        <activity
+            android:name="com.journeyapps.barcodescanner.CaptureActivity"
+            android:screenOrientation="fullSensor"
+            tools:replace="screenOrientation" />
+        <activity
+            android:name=".view.QrcodeScanActivity"
+            android:screenOrientation="portrait"
+            android:stateNotNeeded="true"
+            android:windowSoftInputMode="stateAlwaysHidden"
+            android:exported="false" />
         <activity
             android:name=".view.JoinActivity"
             android:exported="false" />
@@ -36,9 +49,7 @@
         </activity>
         <activity
             android:name=".view.MainActivity"
-            android:exported="true">
-        </activity>
-
+            android:exported="true" />
     </application>
 
 </manifest>
