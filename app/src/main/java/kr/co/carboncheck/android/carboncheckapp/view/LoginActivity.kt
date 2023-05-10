@@ -40,7 +40,10 @@ class LoginActivity : AppCompatActivity() {
                 if (result) {
                     //로그인 성공
                     val intent = Intent(this, MainActivity::class.java)
+                    //이 코드가 있어야 MainActivity가 스택 최상단에 위치하여 MainActivity에서 finish() 해도 Login으로 돌아오지 않음
+                    intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK
                     startActivity(intent)
+                    finish()
                 } else {
                     //로그인 실패
                 }
@@ -58,7 +61,10 @@ class LoginActivity : AppCompatActivity() {
                     if (autoLoginCheckBox.isChecked)
                         setLoginInfo(this, email, password)
                     val intent = Intent(this, MainActivity::class.java)
+                    //이 코드가 있어야 MainActivity가 스택 최상단에 위치하여 MainActivity에서 finish() 해도 Login으로 돌아오지 않음
+                    intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK
                     startActivity(intent)
+                    finish()
                 } else {
                     //로그인 실패
                 }
