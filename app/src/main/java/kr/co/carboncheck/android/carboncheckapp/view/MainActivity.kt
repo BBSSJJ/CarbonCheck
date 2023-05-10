@@ -33,7 +33,8 @@ class MainActivity : AppCompatActivity() {
 
         //첫 화면 fragment 지정
         val startFragment = TotalUsageFragment()
-        supportFragmentManager.beginTransaction().replace(R.id.fragmentContainer,startFragment).commit()
+        supportFragmentManager.beginTransaction().replace(R.id.fragmentContainer, startFragment)
+            .commit()
 
         bottomNavigationView = binding.bottomNavigationView
 
@@ -68,7 +69,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     //frame layout 부분을 fragment로 채워넣는 함수
-    fun loadFragment(fragment: Fragment?): Boolean{
+    fun loadFragment(fragment: Fragment?): Boolean {
         fragment?.let {
             supportFragmentManager.beginTransaction()
                 .replace(R.id.fragmentContainer, it)
@@ -111,4 +112,22 @@ class MainActivity : AppCompatActivity() {
             }
         }
     }
+
+    // 뒤로가기 두번 눌러 종료하도록 하는 코드
+    private var backPressedTime: Long = 0 // 뒤로가기 버튼이 눌린 시간을 저장하는 변수
+    private val backPressedInterval = 2000 // 두 번 눌렀을 때의 시간 간격 (밀리초)
+
+    override fun onBackPressed() {
+        if (backPressedTime + backPressedInterval > System.currentTimeMillis()) {
+            finish()
+        } else {
+            Toast.makeText(
+                applicationContext,
+                "한번 더 누르면 종료됩니다.",
+                Toast.LENGTH_SHORT
+            ).show()
+        }
+        backPressedTime = System.currentTimeMillis()
+    }
+
 }
