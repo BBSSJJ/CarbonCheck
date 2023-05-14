@@ -19,5 +19,6 @@ object RetrofitClient {
             .build()
 
     // MyService 인터페이스를 가져와서 retrofit 객체를 생성한다
-    val service = retrofit.create(MyService::class.java)
+    val userService = retrofit.create(UserService::class.java)
+    val deviceService = retrofit.create(DeviceService::class.java)
 }

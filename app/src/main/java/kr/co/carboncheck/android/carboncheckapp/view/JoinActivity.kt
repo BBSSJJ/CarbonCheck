@@ -67,7 +67,7 @@ class JoinActivity : AppCompatActivity() {
         Log.d("testlog", "회원가입 요청 보냄")
 
         val request = JoinRequestDTO(email, password, name, authType)
-        val call = RetrofitClient.service.postJoinRequest(request)
+        val call = RetrofitClient.userService.postJoinRequest(request)
 
         call.enqueue(object : Callback<JoinResponseDTO> {
             override fun onResponse(
@@ -100,6 +100,7 @@ class JoinActivity : AppCompatActivity() {
                     callback(false)
                 }
             }
+
             override fun onFailure(call: Call<JoinResponseDTO>, t: Throwable) {
                 Log.e("testlog", "회원가입 요청 전송 실패" + t.message)
                 Toast.makeText(applicationContext, "Request failed", Toast.LENGTH_SHORT).show()
