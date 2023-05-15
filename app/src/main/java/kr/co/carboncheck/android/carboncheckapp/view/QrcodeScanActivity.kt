@@ -12,8 +12,10 @@ import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import com.google.zxing.integration.android.IntentIntegrator
 import kr.co.carboncheck.android.carboncheckapp.databinding.ActivityQrcodeScanBinding
-import kr.co.carboncheck.android.carboncheckapp.model.RegisterHomeServerRequest
-import kr.co.carboncheck.android.carboncheckapp.model.RegisterHomeServerResponse
+import kr.co.carboncheck.android.carboncheckapp.dto.JoinHomeServerRequest
+import kr.co.carboncheck.android.carboncheckapp.dto.JoinHomeServerResponse
+import kr.co.carboncheck.android.carboncheckapp.dto.RegisterHomeServerRequest
+import kr.co.carboncheck.android.carboncheckapp.dto.RegisterHomeServerResponse
 import kr.co.carboncheck.android.carboncheckapp.network.RetrofitClient
 import kr.co.carboncheck.android.carboncheckapp.util.UserPreference
 import retrofit2.Call
@@ -74,13 +76,25 @@ class QrcodeScanActivity : AppCompatActivity() {
                 val email = getEmail(this)
                 Log.d("homeserverid : ", homeServerId)
                 Log.d("email : ", email)
-                sendRegisterHomeServerRequest(homeServerId, email) { result ->
-                    if (result) {
-                        // 등록 성공
-                    } else {
-                        // 등록 실패
+                val action = intent.getStringExtra("ACTION")
+                if (action == "REGISTER_HOMESERVER") {
+                    sendRegisterHomeServerRequest(homeServerId, email) { result ->
+                        if (result) {
+                            // 등록 성공
+                        } else {
+                            // 등록 실패
+                        }
+                    }
+                } else if (action == "JOIN_HOMESERVER") {
+                    sendJoinHomeServerRequest(homeServerId, email) { result ->
+                        if (result) {
+                            // 가입 성공
+                        } else {
+                            // 가입 실패
+                        }
                     }
                 }
+
 
             } else {
                 Toast.makeText(this, "취소됨", Toast.LENGTH_LONG).show()
@@ -148,6 +162,52 @@ class QrcodeScanActivity : AppCompatActivity() {
             //전송 실패했을 때
             override fun onFailure(call: Call<RegisterHomeServerResponse>, t: Throwable) {
                 Log.e("testlog", "홈서버 등록 요청 전송 실패" + t.message)
+                Toast.makeText(applicationContext, "Request failed", Toast.LENGTH_SHORT).show()
+                callback(false);
+            }
+        })
+    }
+
+    private fun sendJoinHomeServerRequest(
+        homeServerCode: String,
+        email: String,
+        callback: (Boolean) -> Unit
+    ) {
+        val request = JoinHomeServerRequest(homeServerCode, email)
+        val call = RetrofitClient.deviceService.postJoinHomeServerRequest(request);
+        call.enqueue(object : Callback<JoinHomeServerResponse> {
+            //전송 성공 시
+            override fun onResponse(
+                call: Call<JoinHomeServerResponse>,
+                response: Response<JoinHomeServerResponse>
+            ) {
+                if (response.isSuccessful) {    //response가 성공적으로 왔을 때
+
+                    Log.d("testlog", "홈서버 가입 응답 도착")
+                    Toast.makeText(
+                        applicationContext,
+                        response.body()!!.message,
+                        Toast.LENGTH_SHORT
+                    )
+                        .show()
+                    if (response.body()!!.success) {
+                        Log.d("testlog", "홈서버 가입 성공 " + response.body()!!.message)
+                        callback(true);
+                    } else {
+                        Log.d("testlog", "홈서버 가입 실패 " + response.body()!!.message)
+                        callback(false);
+                    }
+
+                } else {    //response가 도착하지 않았을 때
+                    Log.d("testlog", "홈서버 가입 요청 응답 도착 안함")
+                    Toast.makeText(applicationContext, "Request failed", Toast.LENGTH_SHORT).show()
+                    callback(false);
+                }
+            }
+
+            //전송 실패했을 때
+            override fun onFailure(call: Call<JoinHomeServerResponse>, t: Throwable) {
+                Log.e("testlog", "홈서버 가입 요청 전송 실패" + t.message)
                 Toast.makeText(applicationContext, "Request failed", Toast.LENGTH_SHORT).show()
                 callback(false);
             }

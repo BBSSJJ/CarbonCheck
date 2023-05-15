@@ -6,8 +6,8 @@ import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
 import kr.co.carboncheck.android.carboncheckapp.databinding.ActivityJoinBinding
-import kr.co.carboncheck.android.carboncheckapp.model.JoinRequestDTO
-import kr.co.carboncheck.android.carboncheckapp.model.JoinResponseDTO
+import kr.co.carboncheck.android.carboncheckapp.dto.JoinRequest
+import kr.co.carboncheck.android.carboncheckapp.dto.JoinResponse
 import kr.co.carboncheck.android.carboncheckapp.network.RetrofitClient
 import retrofit2.Call
 import retrofit2.Callback
@@ -66,13 +66,13 @@ class JoinActivity : AppCompatActivity() {
 
         Log.d("testlog", "회원가입 요청 보냄")
 
-        val request = JoinRequestDTO(email, password, name, authType)
+        val request = JoinRequest(email, password, name, authType)
         val call = RetrofitClient.userService.postJoinRequest(request)
 
-        call.enqueue(object : Callback<JoinResponseDTO> {
+        call.enqueue(object : Callback<JoinResponse> {
             override fun onResponse(
-                call: Call<JoinResponseDTO>,
-                response: Response<JoinResponseDTO>
+                call: Call<JoinResponse>,
+                response: Response<JoinResponse>
             ) {
                 if (response.isSuccessful) {
                     Log.d("testlog", "회원가입 요청 응답 도착")
@@ -101,7 +101,7 @@ class JoinActivity : AppCompatActivity() {
                 }
             }
 
-            override fun onFailure(call: Call<JoinResponseDTO>, t: Throwable) {
+            override fun onFailure(call: Call<JoinResponse>, t: Throwable) {
                 Log.e("testlog", "회원가입 요청 전송 실패" + t.message)
                 Toast.makeText(applicationContext, "Request failed", Toast.LENGTH_SHORT).show()
                 callback(false)

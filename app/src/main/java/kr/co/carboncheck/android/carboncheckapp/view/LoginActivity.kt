@@ -7,8 +7,8 @@ import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import kr.co.carboncheck.android.carboncheckapp.databinding.ActivityLoginBinding
-import kr.co.carboncheck.android.carboncheckapp.model.LoginRequestDTO
-import kr.co.carboncheck.android.carboncheckapp.model.LoginResponseDTO
+import kr.co.carboncheck.android.carboncheckapp.dto.LoginRequest
+import kr.co.carboncheck.android.carboncheckapp.dto.LoginResponse
 import kr.co.carboncheck.android.carboncheckapp.network.RetrofitClient
 import kr.co.carboncheck.android.carboncheckapp.util.UserPreference
 import retrofit2.Call
@@ -122,13 +122,13 @@ class LoginActivity : AppCompatActivity() {
         password: String,
         callback: (Boolean) -> Unit
     ) {
-        val request = LoginRequestDTO(email, password)
+        val request = LoginRequest(email, password)
         val call = RetrofitClient.userService.postLoginRequest(request);
-        call.enqueue(object : Callback<LoginResponseDTO> {
+        call.enqueue(object : Callback<LoginResponse> {
             //전송 성공 시
             override fun onResponse(
-                call: Call<LoginResponseDTO>,
-                response: Response<LoginResponseDTO>
+                call: Call<LoginResponse>,
+                response: Response<LoginResponse>
             ) {
                 if (response.isSuccessful) {    //response가 성공적으로 왔을 때
 
@@ -155,7 +155,7 @@ class LoginActivity : AppCompatActivity() {
             }
 
             //전송 실패했을 때
-            override fun onFailure(call: Call<LoginResponseDTO>, t: Throwable) {
+            override fun onFailure(call: Call<LoginResponse>, t: Throwable) {
                 Log.e("testlog", "로그인 요청 전송 실패" + t.message)
                 Toast.makeText(applicationContext, "Request failed", Toast.LENGTH_SHORT).show()
                 callback(false);
