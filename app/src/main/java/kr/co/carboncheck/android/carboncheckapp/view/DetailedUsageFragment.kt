@@ -6,9 +6,6 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.google.zxing.integration.android.IntentIntegrator
-import kr.co.carboncheck.android.carboncheckapp.R
-import kr.co.carboncheck.android.carboncheckapp.databinding.ActivityMainBinding
 import kr.co.carboncheck.android.carboncheckapp.databinding.FragmentDetailedUsageBinding
 
 class DetailedUsageFragment : Fragment() {
@@ -27,11 +24,18 @@ class DetailedUsageFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         _binding = FragmentDetailedUsageBinding.inflate(inflater, container, false)
-        val moduleRegisterButton = binding.moduleRegisterButton
-        val plugRegisterButton = binding.plugRegisterButton
+        val registerHomeServerButton = binding.registerHomeServerButton
+        val joinHomeServerButton = binding.joinHomeServerButton
 
-        moduleRegisterButton.setOnClickListener {
+        registerHomeServerButton.setOnClickListener {
             val intent = Intent(activity, QrcodeScanActivity::class.java)
+            intent.putExtra("ACTION", "REGISTER_HOMESERVER")
+            startActivity(intent)
+        }
+
+        joinHomeServerButton.setOnClickListener {
+            val intent = Intent(activity, QrcodeScanActivity::class.java)
+            intent.putExtra("ACTION", "JOIN_HOMESERVER")
             startActivity(intent)
         }
 

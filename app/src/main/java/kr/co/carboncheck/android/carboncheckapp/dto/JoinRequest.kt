@@ -1,6 +1,6 @@
-package kr.co.carboncheck.android.carboncheckapp.model
+package kr.co.carboncheck.android.carboncheckapp.dto
 
-data class JoinRequestDTO(
+data class JoinRequest(
     val email: String,
     val password: String,
     val name: String,

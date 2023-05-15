@@ -1,4 +1,4 @@
-package kr.co.carboncheck.android.carboncheckapp.model
+package kr.co.carboncheck.android.carboncheckapp.dto
 
 data class RegisterHomeServerResponse(
     val success: Boolean,
