@@ -1,5 +1,6 @@
 package kr.co.carboncheck.android.carboncheckapp.view
 
+import kr.co.carboncheck.android.carboncheckapp.network.SseConnection
 import android.app.AppOpsManager
 import android.content.Context
 import android.content.Intent
@@ -7,6 +8,7 @@ import android.content.pm.PackageInfo
 import android.os.Bundle
 import android.os.Process
 import android.provider.Settings
+import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
@@ -16,7 +18,14 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kr.co.carboncheck.android.carboncheckapp.R
 import kr.co.carboncheck.android.carboncheckapp.databinding.ActivityMainBinding
+import kr.co.carboncheck.android.carboncheckapp.dto.GetUserDataResponse
+import kr.co.carboncheck.android.carboncheckapp.network.RetrofitClient
+import kr.co.carboncheck.android.carboncheckapp.network.SseListener
 import kr.co.carboncheck.android.carboncheckapp.util.UserPreference
+import okhttp3.sse.EventSource
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 
 class MainActivity : AppCompatActivity() {
@@ -66,6 +75,26 @@ class MainActivity : AppCompatActivity() {
             ).show()
             startActivity(Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS))
         }
+
+        //group에 속해있으면 Group id받아두는게 좋을듯 하다
+        Log.d("testlog", "get email preference " + getEmailPreference(this))
+        getUserData(getEmailPreference(this)) { userData ->
+            if (userData != null) {
+                setUserDataPreference(this, userData.userId, userData.homeServerId, userData.name)
+
+                //SSE 연결
+                val sseConnection = SseConnection()
+                val sseListener = SseListener()
+                sseConnection.connect(userData.homeServerId, userData.userId, sseListener)
+            }
+            //Test code
+            getUserDataPreference(this)["userId"]?.let { Log.d("testlog", it) }
+            getUserDataPreference(this)["homeServerId"]?.let { Log.d("testlog", it) }
+            getUserDataPreference(this)["name"]?.let { Log.d("testlog", it) }
+        }
+
+
+
     }
 
     //frame layout 부분을 fragment로 채워넣는 함수
@@ -79,14 +108,6 @@ class MainActivity : AppCompatActivity() {
         return false
     }
 
-    fun deletePreferences(context: Context?) {
-        val userPreference = UserPreference().getPreferences(context!!)
-        val editor = userPreference!!.edit()
-        editor.clear()
-        editor.apply()
-        val intent = Intent(this, LoginActivity::class.java)
-        startActivity(intent)
-    }
 
     private fun checkForPermission(): Boolean {
         // Application 의 패키지 명을 가져 오기 위한 권한이 있는지 확인 하는 함수 입니다.
@@ -128,6 +149,86 @@ class MainActivity : AppCompatActivity() {
             ).show()
         }
         backPressedTime = System.currentTimeMillis()
+    }
+
+
+//    private fun getUserData(email: String): GetUserDataResponse? {
+//        Log.d("testlog", "in getUserData method")
+//        val call = RetrofitClient.userService.getUserDataRequest(email)
+//        return try {
+//            Log.d("testlog", "in try")
+//
+//            val response = call.execute()
+//            if (response.isSuccessful) {
+//                val userData = response.body()
+//                // TODO: userData를 활용한 처리 로직을 작성합니다.
+//                Log.d("testlog", "유저 데이터 도착")
+//                userData
+//            } else {
+//                Log.d("testlog", "유저 데이터 도착 안함")
+//                null
+//            }
+//        } catch (e: IOException) {
+//            Log.e("testlog", "유저 데이터 요청 전송 실패: " + e.message)
+//            null
+//        }
+//    }
+
+    private fun getUserData(email: String, callback: (GetUserDataResponse?) -> Unit) {
+        Log.d("testlog", "in getUserData method")
+        val call = RetrofitClient.userService.getUserDataRequest(email)
+        call.enqueue(object : Callback<GetUserDataResponse> {
+            override fun onResponse(
+                call: Call<GetUserDataResponse>,
+                response: Response<GetUserDataResponse>
+            ) {
+                if (response.isSuccessful) {
+                    val userData = response.body()
+                    Log.d("testlog", "유저 데이터 도착")
+                    callback(userData)
+                } else {
+                    Log.d("testlog", "유저 데이터 도착 안함")
+                    callback(null)
+                }
+            }
+
+            override fun onFailure(call: Call<GetUserDataResponse>, t: Throwable) {
+                Log.e("testlog", "유저 데이터 요청 전송 실패: " + t.message)
+                callback(null)
+            }
+        })
+    }
+
+    private fun setUserDataPreference(
+        context: Context?,
+        userId: String?,
+        homeServerId: String?,
+        name: String?
+    ) {
+        val userPreference = UserPreference().getPreferences(context!!)
+        val editor = userPreference!!.edit()
+        editor.putString("userId", userId)
+        editor.putString("homeServerId", homeServerId)
+        editor.putString("name", name)
+        editor.apply()
+    }
+
+    private fun getUserDataPreference(context: Context): Map<String, String?> {
+        val userPreference = UserPreference().getPreferences(context!!)
+        val LoginInfo: MutableMap<String, String?> = HashMap()
+        val userId = userPreference!!.getString("userId", "")
+        val homeServerId = userPreference!!.getString("homeServerId", "")
+        val name = userPreference!!.getString("name", "")
+        LoginInfo["userId"] = userId
+        LoginInfo["homeServerId"] = homeServerId
+        LoginInfo["name"] = name
+        return LoginInfo
+    }
+
+    private fun getEmailPreference(context: Context): String {
+        val userPreference = UserPreference().getPreferences(context!!)
+        val email = userPreference!!.getString("email", "")!!
+        return email
     }
 
 }

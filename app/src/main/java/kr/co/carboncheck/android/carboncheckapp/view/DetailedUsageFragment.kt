@@ -26,6 +26,7 @@ class DetailedUsageFragment : Fragment() {
         _binding = FragmentDetailedUsageBinding.inflate(inflater, container, false)
         val registerHomeServerButton = binding.registerHomeServerButton
         val joinHomeServerButton = binding.joinHomeServerButton
+        val registerFaceButton = binding.registerFaceButton
 
         registerHomeServerButton.setOnClickListener {
             val intent = Intent(activity, QrcodeScanActivity::class.java)
@@ -37,6 +38,10 @@ class DetailedUsageFragment : Fragment() {
             val intent = Intent(activity, QrcodeScanActivity::class.java)
             intent.putExtra("ACTION", "JOIN_HOMESERVER")
             startActivity(intent)
+        }
+
+        registerFaceButton.setOnClickListener {
+
         }
 
         return binding.root

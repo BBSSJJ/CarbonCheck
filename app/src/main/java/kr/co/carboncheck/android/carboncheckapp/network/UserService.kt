@@ -13,4 +13,7 @@ interface UserService {
 
     @POST("/login")
     fun postLoginRequest(@Body loginRequest: LoginRequest): Call<LoginResponse>
+
+    @GET("/get/user_data")
+    fun getUserDataRequest(@Query("email") email: String) : Call<GetUserDataResponse>
 }
