@@ -28,6 +28,7 @@ class DetailedUsageFragment : Fragment() {
         val joinHomeServerButton = binding.joinHomeServerButton
         val registerFaceButton = binding.registerFaceButton
 
+        // TODO: 이미 가입된 홈서버가 있으면 가입안되도록 수정하자.
         registerHomeServerButton.setOnClickListener {
             val intent = Intent(activity, QrcodeScanActivity::class.java)
             intent.putExtra("ACTION", "REGISTER_HOMESERVER")

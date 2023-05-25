@@ -26,11 +26,10 @@ class SseConnection {
 
         val URL = "$BASE_URL/subscribe/$homeServerId/$userId"
 
-        val client = OkHttpClient.Builder()
-            .readTimeout(30, TimeUnit.MILLISECONDS)
-            .writeTimeout(30, TimeUnit.MILLISECONDS)
-            .callTimeout(30, TimeUnit.MILLISECONDS)
-            .build()
+        val client = OkHttpClient.Builder().build()
+//            .readTimeout(0, TimeUnit.MILLISECONDS)
+//            .writeTimeout(0, TimeUnit.MILLISECONDS)
+//            .callTimeout(0, TimeUnit.MILLISECONDS)
 
         val request = Request.Builder().url(URL).build()
 

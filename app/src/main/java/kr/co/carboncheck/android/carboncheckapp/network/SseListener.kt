@@ -13,10 +13,17 @@ class SseListener : EventSourceListener() {
 
     override fun onClosed(eventSource: EventSource) {
         super.onClosed(eventSource)
+        Log.d("testlog", "SSE연결이 닫혔습니다")
+
+    }
+
+    override fun onEvent(eventSource: EventSource, id: String?, type: String?, data: String) {
+        super.onEvent(eventSource, id, type, data)
+        Log.d("testlog", data)
     }
 
     override fun onFailure(eventSource: EventSource, t: Throwable?, response: Response?) {
-        println("SSE 연결이 실패했습니다.")
+        println("SSE연결이 실패했습니다.")
         t?.printStackTrace()
     }
 }

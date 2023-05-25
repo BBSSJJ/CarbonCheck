@@ -34,11 +34,16 @@ class MainActivity : AppCompatActivity() {
     private val listPackageInfo: MutableList<PackageInfo> = mutableListOf()
     private lateinit var bottomNavigationView: BottomNavigationView
 
+    // sseConnection 객체 생성
+    private val sseConnection = SseConnection()
+    private val sseListener = SseListener()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+
 
         //첫 화면 fragment 지정
         val startFragment = TotalUsageFragment()
@@ -81,16 +86,16 @@ class MainActivity : AppCompatActivity() {
         getUserData(getEmailPreference(this)) { userData ->
             if (userData != null) {
                 setUserDataPreference(this, userData.userId, userData.homeServerId, userData.name)
-
+                getUserDataPreference(this)["userId"]?.let { Log.d("testlog", it) }
+                getUserDataPreference(this)["homeServerId"]?.let { Log.d("testlog", it) }
+                getUserDataPreference(this)["name"]?.let { Log.d("testlog", it) }
                 //SSE 연결
-                val sseConnection = SseConnection()
-                val sseListener = SseListener()
-                sseConnection.connect(userData.homeServerId, userData.userId, sseListener)
+                if(userData.homeServerId != "") {
+                    sseConnection.connect(userData.homeServerId, userData.userId, sseListener)
+                }
             }
             //Test code
-            getUserDataPreference(this)["userId"]?.let { Log.d("testlog", it) }
-            getUserDataPreference(this)["homeServerId"]?.let { Log.d("testlog", it) }
-            getUserDataPreference(this)["name"]?.let { Log.d("testlog", it) }
+
         }
 
 
@@ -231,4 +236,9 @@ class MainActivity : AppCompatActivity() {
         return email
     }
 
+    //어플 종료 시 SSE연결 종료
+    override fun onDestroy() {
+        super.onDestroy()
+        sseConnection.disconnect()
+    }
 }

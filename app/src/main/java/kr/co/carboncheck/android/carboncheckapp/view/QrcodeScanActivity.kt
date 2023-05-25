@@ -81,6 +81,10 @@ class QrcodeScanActivity : AppCompatActivity() {
                     sendRegisterHomeServerRequest(homeServerId, email) { result ->
                         if (result) {
                             // 등록 성공
+                            val intent = Intent(this, MainActivity::class.java)
+                            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
+                            startActivity(intent)
+                            finish()
                         } else {
                             // 등록 실패
                         }
@@ -89,6 +93,10 @@ class QrcodeScanActivity : AppCompatActivity() {
                     sendJoinHomeServerRequest(homeServerId, email) { result ->
                         if (result) {
                             // 가입 성공
+                            val intent = Intent(this, MainActivity::class.java)
+                            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
+                            startActivity(intent)
+                            finish()
                         } else {
                             // 가입 실패
                         }

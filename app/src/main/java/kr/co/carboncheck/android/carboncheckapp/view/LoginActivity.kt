@@ -162,4 +162,7 @@ class LoginActivity : AppCompatActivity() {
             }
         })
     }
+    override fun onBackPressed() {
+        moveTaskToBack(true) // 앱을 종료하도록 함
+    }
 }
