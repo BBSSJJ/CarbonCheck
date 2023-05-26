@@ -7,6 +7,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.app.ActivityCompat.finishAffinity
 import kr.co.carboncheck.android.carboncheckapp.R
 import kr.co.carboncheck.android.carboncheckapp.databinding.FragmentDetailedUsageBinding
 import kr.co.carboncheck.android.carboncheckapp.databinding.FragmentUserInfoBinding
@@ -32,6 +33,7 @@ class UserInfoFragment : Fragment() {
 
         logoutButton.setOnClickListener {
             deletePreferences(requireActivity())
+
         }
 
         return binding.root
@@ -50,6 +52,8 @@ class UserInfoFragment : Fragment() {
         editor.clear()
         editor.apply()
         val intent = Intent(requireActivity(), LoginActivity::class.java)
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
         startActivity(intent)
+        requireActivity().finish()
     }
 }

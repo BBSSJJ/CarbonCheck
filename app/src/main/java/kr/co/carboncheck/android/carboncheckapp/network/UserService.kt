@@ -15,5 +15,8 @@ interface UserService {
     fun postLoginRequest(@Body loginRequest: LoginRequest): Call<LoginResponse>
 
     @GET("/get/user_data")
-    fun getUserDataRequest(@Query("email") email: String) : Call<GetUserDataResponse>
+    fun getUserDataRequest(@Query("email") email: String): Call<GetUserDataResponse>
+
+    @POST("/face/register")
+    fun postRegisterFaceRequest(@Body registerFaceRequest: RegisterFaceRequest): Call<RegisterFaceResponse>
 }
