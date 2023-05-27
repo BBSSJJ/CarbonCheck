@@ -12,10 +12,7 @@ import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import com.google.zxing.integration.android.IntentIntegrator
 import kr.co.carboncheck.android.carboncheckapp.databinding.ActivityQrcodeScanBinding
-import kr.co.carboncheck.android.carboncheckapp.dto.JoinHomeServerRequest
-import kr.co.carboncheck.android.carboncheckapp.dto.JoinHomeServerResponse
-import kr.co.carboncheck.android.carboncheckapp.dto.RegisterHomeServerRequest
-import kr.co.carboncheck.android.carboncheckapp.dto.RegisterHomeServerResponse
+import kr.co.carboncheck.android.carboncheckapp.dto.*
 import kr.co.carboncheck.android.carboncheckapp.network.RetrofitClient
 import kr.co.carboncheck.android.carboncheckapp.util.UserPreference
 import retrofit2.Call
@@ -72,13 +69,15 @@ class QrcodeScanActivity : AppCompatActivity() {
             if (result != null && result.contents != null) {
                 Log.d("QRScanActivity", "스캔 결과 : ${result.contents}")
                 // 스캔 결과를 처리
-                val homeServerId = result.contents
+                val deviceId = result.contents
                 val email = getEmail(this)
-                Log.d("homeserverid : ", homeServerId)
+                val userId = getUserId(this)
+
+                Log.d("deviceId : ", deviceId)
                 Log.d("email : ", email)
                 val action = intent.getStringExtra("ACTION")
                 if (action == "REGISTER_HOMESERVER") {
-                    sendRegisterHomeServerRequest(homeServerId, email) { result ->
+                    sendRegisterHomeServerRequest(deviceId, email) { result ->
                         if (result) {
                             // 등록 성공
                             val intent = Intent(this, MainActivity::class.java)
@@ -90,7 +89,7 @@ class QrcodeScanActivity : AppCompatActivity() {
                         }
                     }
                 } else if (action == "JOIN_HOMESERVER") {
-                    sendJoinHomeServerRequest(homeServerId, email) { result ->
+                    sendJoinHomeServerRequest(deviceId, email) { result ->
                         if (result) {
                             // 가입 성공
                             val intent = Intent(this, MainActivity::class.java)
@@ -101,9 +100,19 @@ class QrcodeScanActivity : AppCompatActivity() {
                             // 가입 실패
                         }
                     }
+                } else if (action == "REGISTER_PLUG") {
+                    sendRegisterPlugRequest(deviceId, userId) { result ->
+                        if (result) {
+                            // 등록 성공
+                            val intent = Intent(this, MainActivity::class.java)
+                            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
+                            startActivity(intent)
+                            finish()
+                        } else {
+                            // 등록 실패
+                        }
+                    }
                 }
-
-
             } else {
                 Toast.makeText(this, "취소됨", Toast.LENGTH_LONG).show()
             }
@@ -130,12 +139,18 @@ class QrcodeScanActivity : AppCompatActivity() {
         return email
     }
 
+    fun getUserId(context: Context): String {
+        val userPreference = UserPreference().getPreferences(context!!)
+        val userId = userPreference!!.getString("userId", "")!!
+        return userId;
+    }
+
     private fun sendRegisterHomeServerRequest(
-        homeServerCode: String,
+        homeServerId: String,
         email: String,
         callback: (Boolean) -> Unit
     ) {
-        val request = RegisterHomeServerRequest(homeServerCode, email)
+        val request = RegisterHomeServerRequest(homeServerId, email)
         val call = RetrofitClient.deviceService.postRegisterHomeServerRequest(request);
         call.enqueue(object : Callback<RegisterHomeServerResponse> {
             //전송 성공 시
@@ -177,11 +192,11 @@ class QrcodeScanActivity : AppCompatActivity() {
     }
 
     private fun sendJoinHomeServerRequest(
-        homeServerCode: String,
+        homeServerId: String,
         email: String,
         callback: (Boolean) -> Unit
     ) {
-        val request = JoinHomeServerRequest(homeServerCode, email)
+        val request = JoinHomeServerRequest(homeServerId, email)
         val call = RetrofitClient.deviceService.postJoinHomeServerRequest(request);
         call.enqueue(object : Callback<JoinHomeServerResponse> {
             //전송 성공 시
@@ -216,6 +231,52 @@ class QrcodeScanActivity : AppCompatActivity() {
             //전송 실패했을 때
             override fun onFailure(call: Call<JoinHomeServerResponse>, t: Throwable) {
                 Log.e("testlog", "홈서버 가입 요청 전송 실패" + t.message)
+                Toast.makeText(applicationContext, "Request failed", Toast.LENGTH_SHORT).show()
+                callback(false);
+            }
+        })
+    }
+
+    private fun sendRegisterPlugRequest(
+        plugId: String,
+        userId: String,
+        callback: (Boolean) -> Unit
+    ) {
+        val request = RegisterPlugRequest(plugId, userId)
+        val call = RetrofitClient.deviceService.postRegisterPlugRequest(request);
+        call.enqueue(object : Callback<RegisterPlugResponse> {
+            //전송 성공 시
+            override fun onResponse(
+                call: Call<RegisterPlugResponse>,
+                response: Response<RegisterPlugResponse>
+            ) {
+                if (response.isSuccessful) {    //response가 성공적으로 왔을 때
+
+                    Log.d("testlog", "플러그 등록 응답 도착")
+                    Toast.makeText(
+                        applicationContext,
+                        response.body()!!.message,
+                        Toast.LENGTH_SHORT
+                    )
+                        .show()
+                    if (response.body()!!.success) {
+                        Log.d("testlog", "플러그 등록 성공 " + response.body()!!.message)
+                        callback(true);
+                    } else {
+                        Log.d("testlog", "플러그 등록 실패 " + response.body()!!.message)
+                        callback(false);
+                    }
+
+                } else {    //response가 도착하지 않았을 때
+                    Log.d("testlog", "플러그 등록 요청 응답 도착 안함")
+                    Toast.makeText(applicationContext, "Request failed", Toast.LENGTH_SHORT).show()
+                    callback(false);
+                }
+            }
+
+            //전송 실패했을 때
+            override fun onFailure(call: Call<RegisterPlugResponse>, t: Throwable) {
+                Log.e("testlog", "플러그 등록 요청 전송 실패" + t.message)
                 Toast.makeText(applicationContext, "Request failed", Toast.LENGTH_SHORT).show()
                 callback(false);
             }
