@@ -73,6 +73,8 @@ class QrcodeScanActivity : AppCompatActivity() {
                 val email = getEmail(this)
                 val userId = getUserId(this)
 
+                //TODO: 홈서버 스캔 들어가서 플러그 qr스캔하거나 그 반대일 때에 등록되는 현상 수정해야 함
+
                 Log.d("deviceId : ", deviceId)
                 Log.d("email : ", email)
                 val action = intent.getStringExtra("ACTION")
