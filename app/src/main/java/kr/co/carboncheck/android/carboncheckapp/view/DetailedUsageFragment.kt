@@ -10,7 +10,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import kr.co.carboncheck.android.carboncheckapp.databinding.FragmentDetailedUsageBinding
-import kr.co.carboncheck.android.carboncheckapp.dto.JoinResponse
 import kr.co.carboncheck.android.carboncheckapp.dto.RegisterFaceRequest
 import kr.co.carboncheck.android.carboncheckapp.dto.RegisterFaceResponse
 import kr.co.carboncheck.android.carboncheckapp.network.RetrofitClient

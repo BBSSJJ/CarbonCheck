@@ -4,21 +4,27 @@
     <item
         android:id="@+id/total_usage_menu"
         android:title=""
-        android:icon="@drawable/total_usage_icon2"/>
+        android:icon="@drawable/bar_chart_48px"
+        android:tint="@color/third"/>
     <item
         android:id="@+id/detailed_usage_menu"
         android:title=""
-        android:icon="@drawable/detailed_usage_icon"/>
+        android:icon="@drawable/power_48px"
+        android:tint="@color/third"/>
     <item
         android:id="@+id/solution_menu"
         android:title=""
-        android:icon="@drawable/solution_icon"/>
+        android:icon="@drawable/query_stats_48px"
+        android:tint="@color/third"
+        />
     <item
         android:id="@+id/mini_game_menu"
         android:title=""
-        android:icon="@drawable/mini_game_icon"/>
+        android:icon="@drawable/military_tech_48px"
+        android:tint="@color/third"/>
     <item
         android:id="@+id/user_info_menu"
         android:title=""
-        android:icon="@drawable/user_info_icon"/>
+        android:icon="@drawable/settings_48px"
+        android:tint="@color/third"/>
 </menu>

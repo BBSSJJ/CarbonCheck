@@ -1,13 +1,13 @@
 package kr.co.carboncheck.android.carboncheckapp.view
 
+
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import kr.co.carboncheck.android.carboncheckapp.R
-import kr.co.carboncheck.android.carboncheckapp.databinding.FragmentDetailedUsageBinding
+import androidx.fragment.app.Fragment
 import kr.co.carboncheck.android.carboncheckapp.databinding.FragmentTotalUsageBinding
+
 
 class TotalUsageFragment : Fragment() {
     private var _binding: FragmentTotalUsageBinding? = null

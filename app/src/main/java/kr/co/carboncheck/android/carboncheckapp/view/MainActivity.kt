@@ -22,7 +22,6 @@ import kr.co.carboncheck.android.carboncheckapp.dto.GetUserDataResponse
 import kr.co.carboncheck.android.carboncheckapp.network.RetrofitClient
 import kr.co.carboncheck.android.carboncheckapp.network.SseListener
 import kr.co.carboncheck.android.carboncheckapp.util.UserPreference
-import okhttp3.sse.EventSource
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
