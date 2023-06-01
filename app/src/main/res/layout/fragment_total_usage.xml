@@ -13,7 +13,7 @@
 
         <androidx.appcompat.widget.LinearLayoutCompat
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:orientation="vertical">
 
             <androidx.constraintlayout.widget.ConstraintLayout
@@ -33,13 +33,13 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:fontFamily="@font/pretendard_extrabold"
-                        android:textColor="@color/secondary"
                         android:text="@string/total_usage"
+                        android:textColor="@color/secondary"
                         android:textSize="24dp"
-                        app:layout_constraintTop_toTopOf="parent"
                         app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent"/>
+                        app:layout_constraintTop_toTopOf="parent" />
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -58,7 +58,7 @@
 
                     <androidx.constraintlayout.widget.ConstraintLayout
                         android:layout_width="match_parent"
-                        android:layout_height="match_parent"
+                        android:layout_height="wrap_content"
                         android:padding="16dp">
 
                         <ImageView
@@ -75,7 +75,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginLeft="12dp"
+                            android:layout_marginStart="12dp"
                             android:fontFamily="@font/pretendard_medium"
                             android:text="@string/my_usage"
                             android:textColor="@color/third"
@@ -88,15 +88,46 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="12dp"
+                            android:layout_marginBottom="32dp"
                             app:donut_bgLineColor="@color/cloud"
                             app:donut_gapAngle="270"
                             app:donut_gapWidth="20"
                             app:donut_strokeWidth="16dp"
-                            app:layout_constraintTop_toBottomOf="@id/person_icon"
                             app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintStart_toStartOf="parent"
-                            app:layout_constraintEnd_toEndOf="parent" />
+                            app:layout_constraintTop_toBottomOf="@id/person_icon" />
 
+                        <TextView
+                            android:id="@+id/electric_section_text"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:drawableStart="@drawable/ic_dot_electric"
+                            android:drawablePadding="8dp"
+                            android:fontFamily="@font/pretendard_semibold"
+                            android:includeFontPadding="false"
+                            android:text="전력 사용량 1.23 Kwh"
+                            android:textColor="@color/electric"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintEnd_toStartOf="@id/water_section_text"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toBottomOf="@id/donut_view" />
+
+                        <TextView
+                            android:id="@+id/water_section_text"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="12dp"
+                            android:drawableStart="@drawable/ic_dot_water"
+                            android:drawablePadding="8dp"
+                            android:fontFamily="@font/pretendard_semibold"
+                            android:includeFontPadding="false"
+                            android:text="수도 사용량 30.23 L"
+                            android:textColor="@color/water"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toEndOf="@id/electric_section_text"
+                            app:layout_constraintTop_toBottomOf="@id/donut_view" />
 
                     </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -113,36 +144,101 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/my_usage_card">
+
                     <androidx.constraintlayout.widget.ConstraintLayout
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:padding="16dp">
 
-                    <ImageView
-                        android:id="@+id/icon_group"
-                        android:layout_width="20dp"
-                        android:layout_height="20dp"
-                        android:width="20dp"
-                        android:height="20dp"
-                        android:src="@drawable/group_48px"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent"
-                        app:tint="@color/third" />
+                        <ImageView
+                            android:id="@+id/icon_group"
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
+                            android:width="20dp"
+                            android:height="20dp"
+                            android:src="@drawable/group_48px"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:tint="@color/third" />
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginLeft="12dp"
-                        android:fontFamily="@font/pretendard_medium"
-                        android:text="@string/home_usage"
-                        android:textColor="@color/third"
-                        app:layout_constraintBottom_toBottomOf="@id/icon_group"
-                        app:layout_constraintStart_toEndOf="@id/icon_group"
-                        app:layout_constraintTop_toTopOf="@id/icon_group" />
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="12dp"
+                            android:fontFamily="@font/pretendard_medium"
+                            android:text="@string/home_usage"
+                            android:textColor="@color/third"
+                            app:layout_constraintBottom_toBottomOf="@id/icon_group"
+                            app:layout_constraintStart_toEndOf="@id/icon_group"
+                            app:layout_constraintTop_toTopOf="@id/icon_group" />
+                        <!--                        https://velog.io/@hyehyes/%EC%95%88%EB%93%9C%EB%A1%9C%EC%9D%B4%EB%93%9C-MPAndroidChart%EB%A5%BC-%ED%99%9C%EC%9A%A9%ED%95%9C-HorizontalBarChart-%EC%82%AC%EC%9A%A9-->
+                        <androidx.recyclerview.widget.RecyclerView
+                            android:id="@+id/home_usage_recycler_view"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toBottomOf="@id/icon_group"
+                            tools:itemCount="3"
+                            tools:listitem="@layout/home_user_usage_list" />
 
                     </androidx.constraintlayout.widget.ConstraintLayout>
+
                 </com.google.android.material.card.MaterialCardView>
 
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/recent_usage_card"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="16dp"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginRight="16dp"
+                    android:background="@color/secondary"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/home_usage_card">
+
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:padding="16dp">
+
+                        <ImageView
+                            android:id="@+id/icon_recent_usage"
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
+                            android:width="20dp"
+                            android:height="20dp"
+                            android:src="@drawable/leaderboard_48px"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:tint="@color/third" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="12dp"
+                            android:fontFamily="@font/pretendard_medium"
+                            android:text="@string/recent_usage"
+                            android:textColor="@color/third"
+                            app:layout_constraintBottom_toBottomOf="@id/icon_recent_usage"
+                            app:layout_constraintStart_toEndOf="@id/icon_recent_usage"
+                            app:layout_constraintTop_toTopOf="@id/icon_recent_usage" />
+                        <com.github.mikephil.charting.charts.BarChart
+                            android:id="@+id/recent_usage_chart"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            app:layout_constraintTop_toBottomOf="@id/icon_recent_usage"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"/>
+
+
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+
+                </com.google.android.material.card.MaterialCardView>
             </androidx.constraintlayout.widget.ConstraintLayout>
 
 
