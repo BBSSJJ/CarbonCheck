@@ -94,9 +94,9 @@ class TotalUsageFragment : Fragment() {
     private fun initializeMemberList(){
         with(memberUsageDatas){
             // TODO: 여기에 실제 데이터 삽입 하시오 ( 가족 이름, 목표치, 사용량)
-            add(MemberUsageData("Lee", 4700f,3500f))
-            add(MemberUsageData("Sung", 6420f,3500f))
+            add(MemberUsageData("Lee", 4700f,4600f))
             add(MemberUsageData("GOP", 9750f,2100f))
+            add(MemberUsageData("Sung", 6420f,3500f))
         }
     }
 
