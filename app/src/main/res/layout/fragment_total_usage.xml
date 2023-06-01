@@ -98,6 +98,44 @@
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toBottomOf="@id/person_icon" />
 
+                        <androidx.constraintlayout.widget.ConstraintLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            app:layout_constraintBottom_toBottomOf="@id/donut_view"
+                            app:layout_constraintEnd_toEndOf="@id/donut_view"
+                            app:layout_constraintStart_toStartOf="@id/donut_view"
+                            app:layout_constraintTop_toTopOf="@id/donut_view">
+
+                            <TextView
+                                android:id="@+id/total_amount_text"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:fontFamily="@font/pretendard_bold"
+                                android:includeFontPadding="false"
+                                android:text="@string/total_emissions"
+                                android:textColor="@color/third"
+                                android:textSize="24dp"
+                                app:layout_constraintEnd_toEndOf="parent"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintTop_toTopOf="parent"
+                                app:layout_constraintBottom_toTopOf="@id/total_amount_count_text"/>
+
+                            <TextView
+                                android:id="@+id/total_amount_count_text"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:fontFamily="@font/pretendard_bold"
+                                android:includeFontPadding="false"
+                                android:textColor="@color/third"
+                                android:textSize="60dp"
+                                app:layout_constraintEnd_toEndOf="parent"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintTop_toBottomOf="@id/total_amount_text"
+                                android:text="975g" />
+
+                        </androidx.constraintlayout.widget.ConstraintLayout>
+
+
                         <TextView
                             android:id="@+id/electric_section_text"
                             android:layout_width="wrap_content"
@@ -226,14 +264,15 @@
                             app:layout_constraintBottom_toBottomOf="@id/icon_recent_usage"
                             app:layout_constraintStart_toEndOf="@id/icon_recent_usage"
                             app:layout_constraintTop_toTopOf="@id/icon_recent_usage" />
+
                         <com.github.mikephil.charting.charts.BarChart
                             android:id="@+id/recent_usage_chart"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            app:layout_constraintTop_toBottomOf="@id/icon_recent_usage"
                             app:layout_constraintBottom_toBottomOf="parent"
                             app:layout_constraintEnd_toEndOf="parent"
-                            app:layout_constraintStart_toStartOf="parent"/>
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toBottomOf="@id/icon_recent_usage" />
 
 
                     </androidx.constraintlayout.widget.ConstraintLayout>

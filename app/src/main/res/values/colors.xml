@@ -14,9 +14,7 @@
     <color name="cloud">#E4EAF0</color>
     <color name="electric">#F4D246</color>
     <color name="water">#64C1DE</color>
-
-
-
-
-
+    <color name="normal">#90CA47</color>
+    <color name="alert">#F4D246</color>
+    <color name="danger">#F24768</color>
 </resources>

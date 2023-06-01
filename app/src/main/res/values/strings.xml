@@ -7,5 +7,6 @@
     <string name="my_usage">내 사용량</string>
     <string name="home_usage">우리집 사용량</string>
     <string name="recent_usage">최근 사용량</string>
+    <string name="total_emissions">총 배출량</string>
 
 </resources>
