@@ -7,28 +7,30 @@ import android.os.Handler
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
 import androidx.fragment.app.Fragment
 import app.futured.donut.DonutDirection
 import kr.co.carboncheck.android.carboncheckapp.databinding.FragmentTotalUsageBinding
 import app.futured.donut.DonutSection
-import kr.co.carboncheck.android.carboncheckapp.data.model.DonutDataCategory
 import kr.co.carboncheck.android.carboncheckapp.data.model.ElectricCategory
 import kr.co.carboncheck.android.carboncheckapp.data.model.WaterCategory
 import androidx.interpolator.view.animation.FastOutSlowInInterpolator
 import androidx.core.content.ContextCompat
+import androidx.recyclerview.widget.LinearLayoutManager
 import app.futured.donut.DonutProgressView
 import kr.co.carboncheck.android.carboncheckapp.R
+import kr.co.carboncheck.android.carboncheckapp.adapter.TotalUsageRecyclerViewAdapter
+import kr.co.carboncheck.android.carboncheckapp.dataobject.MemberUsageData
 
 class TotalUsageFragment : Fragment() {
     private var _binding: FragmentTotalUsageBinding? = null
     private val binding get() = _binding!!
     // private val donutProgressView = binding.donutView
-    private var electric_amount =120.4f     // 전기 탄소 배출량
-    private var water_amount =56.0f        // 수도 탄소 배출량
+    private var electricAmount = 120.4f     // 전기 탄소 배출량
+    private var waterAmount = 56.0f        // 수도 탄소 배출량
+    private val memberUsageDatas = mutableListOf<MemberUsageData>()
 
     /*
-    private var WeekDataList = ArrayList<DataUsage>()
+    private var RecentUsageList = ArrayList<DataUsage>()
     var weeklyData: MutableList<WeeklyInfo> = mutableListOf(
         WeeklyInfo(0, 0L),
         WeeklyInfo(1, 0L),
@@ -68,16 +70,37 @@ class TotalUsageFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        // Donut Chart Setting
         val donutProgressView = binding.donutView
         // updateIndicators()
         setupDonut(donutProgressView)
         // initControls()
         Handler().postDelayed({
-            fillInitialData(donutProgressView)
-            runInitialAnimation()
+            fillDonutInitialData(donutProgressView)
+            runInitialDonutAnimation()
         }, 1)
+
+        // MemberUsage Setting
+        initializeMemberList()      // TODO: 실제 가족 데이터 불러올 것
+        initTotalUsageRecyclerView()
     }
-    private fun runInitialAnimation() {
+    private fun initTotalUsageRecyclerView(){
+        val adapter=TotalUsageRecyclerViewAdapter()     // 어댑터 객체
+        adapter.datalist=memberUsageDatas             // TODO: 실제 가족 데이터 불러올 것 (optional: 코루틴 사용할 것)
+        binding.homeUsageRecyclerView.adapter=adapter   // 뷰에 어댑터 결합
+        binding.homeUsageRecyclerView.layoutManager=LinearLayoutManager(activity)   // 레이아웃 매니저 결합
+    }
+
+    private fun initializeMemberList(){
+        with(memberUsageDatas){
+            // TODO: 여기에 실제 데이터 삽입 하시오 ( 가족 이름, 목표치, 사용량)
+            add(MemberUsageData("Lee", 4700f,3500f))
+            add(MemberUsageData("Sung", 6420f,3500f))
+            add(MemberUsageData("GOP", 9750f,2100f))
+        }
+    }
+
+    private fun runInitialDonutAnimation() {
         ValueAnimator.ofFloat(0f, 1f).apply {
             duration = 10
             interpolator = FastOutSlowInInterpolator()
@@ -98,7 +121,26 @@ class TotalUsageFragment : Fragment() {
         donutProgressView.direction = DonutDirection.CLOCKWISE
 //        donutProgressView.
     }
-/*
+
+    private fun fillDonutInitialData(donutProgressView: DonutProgressView) {
+        val sections = listOf(
+            DonutSection(
+                ElectricCategory.name,
+                ContextCompat.getColor(requireContext(), R.color.electric),
+                electricAmount
+            ),
+            DonutSection(
+                WaterCategory.name,
+                ContextCompat.getColor(requireContext(), R.color.water),
+                waterAmount
+            )
+        )
+
+        donutProgressView.submitData(sections)
+        //updateIndicators()
+    }
+
+    /*
     private fun updateIndicators() {
         amountCapText.text = getString(R.string.amount_cap, donutProgressView.cap)
         amountTotalText.text = getString(
@@ -126,24 +168,6 @@ class TotalUsageFragment : Fragment() {
 
     }
 */
-    private fun fillInitialData(donutProgressView: DonutProgressView) {
-        val sections = listOf(
-            DonutSection(
-                ElectricCategory.name,
-                ContextCompat.getColor(requireContext(), R.color.electric),
-                electric_amount
-            ),
-            DonutSection(
-                WaterCategory.name,
-                ContextCompat.getColor(requireContext(), R.color.water),
-                water_amount
-            )
-        )
-
-        donutProgressView.submitData(sections)
-        //updateIndicators()
-    }
-
 
 
 }
