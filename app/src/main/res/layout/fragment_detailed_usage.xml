@@ -12,42 +12,6 @@
         android:layout_height="match_parent">
 
         <Button
-            android:id="@+id/registerHomeServerButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="모듈 등록"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.058" />
-
-        <Button
-            android:id="@+id/joinHomeServerButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="그룹 참여"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.197" />
-
-        <Button
-            android:id="@+id/registerFaceButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="얼굴 등록"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.498"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.349" />
-
-        <Button
             android:id="@+id/registerPlugButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
