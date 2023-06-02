@@ -10,6 +10,7 @@ import android.os.Process
 import android.provider.Settings
 import android.util.Log
 import android.widget.Toast
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
@@ -24,6 +25,7 @@ import kr.co.carboncheck.android.carboncheckapp.dto.GetUserDataResponse
 import kr.co.carboncheck.android.carboncheckapp.network.RetrofitClient
 import kr.co.carboncheck.android.carboncheckapp.network.SseListener
 import kr.co.carboncheck.android.carboncheckapp.util.UserPreference
+import kr.co.carboncheck.android.carboncheckapp.viewmodel.SharedViewModel
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -38,6 +40,8 @@ class MainActivity : AppCompatActivity() {
     // sseConnection 객체 생성
     private val sseConnection = SseConnection()
     private val sseListener = SseListener()
+
+    private val sharedViewModel: SharedViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -96,26 +100,44 @@ class MainActivity : AppCompatActivity() {
                     sseConnection.connect(userData.homeServerId, userData.userId, sseListener)
 
                     //그룹 물 사용량 가져오기
-                    getGroupWaterUsage(homeServerId){groupWaterUsageList ->
-                        if(groupWaterUsageList != null){
-                            for(groupWaterUsage in groupWaterUsageList){
+                    getGroupWaterUsage(homeServerId) { groupWaterUsageList ->
+                        if (groupWaterUsageList != null) {
+                            val map = groupWaterUsageList.map { groupWaterUsage ->
+                                groupWaterUsage.str to groupWaterUsage.amount
+                            }.toMap()
+                            sharedViewModel.setGroupWaterUsage(map);
+                            for (groupWaterUsage in groupWaterUsageList) {
                                 Log.d("testlog", groupWaterUsage.str + " " + groupWaterUsage.amount)
                             }
                         }
                     }
                     //그룹 전기 사용량 가져오기
-                    getGroupElectricityUsage(homeServerId){groupElectricityUsageList ->
-                        if(groupElectricityUsageList != null){
-                            for(groupElectricityUsage in groupElectricityUsageList){
-                                Log.d("testlog", groupElectricityUsage.str + " " + groupElectricityUsage.amount)
+                    getGroupElectricityUsage(homeServerId) { groupElectricityUsageList ->
+                        if (groupElectricityUsageList != null) {
+                            val map = groupElectricityUsageList.map{groupElectricityUsage->
+                                groupElectricityUsage.str to groupElectricityUsage.amount
+                            }.toMap()
+                            sharedViewModel.setGroupElectricityUsage(map);
+                            for (groupElectricityUsage in groupElectricityUsageList) {
+                                Log.d("testlog", groupElectricityUsage.str + " " + groupElectricityUsage.amount
+                                )
                             }
                         }
                     }
                     //그룹원 목표치 가져오기
-                    getGroupTargetAmount(homeServerId){groupTargetAmountList ->
-                        if(groupTargetAmountList != null){
-                            for(targetAmount in groupTargetAmountList){
-                                Log.d("testlog", targetAmount.name + " " + targetAmount.targetAmount)
+                    getGroupTargetAmount(homeServerId) { groupTargetAmountList ->
+                        if (groupTargetAmountList != null) {
+                            val map = groupTargetAmountList.map{targetAmount->
+                                targetAmount.name to targetAmount.targetAmount.toFloat()
+                            }.toMap()
+                            sharedViewModel.setGroupTargetValue(map);
+                            val list= groupTargetAmountList.map{targetAmount->
+                                targetAmount.name
+                            }
+                            sharedViewModel.setGroupMember(list)
+                            for (targetAmount in groupTargetAmountList) {
+                                Log.d("testlog", targetAmount.name + " " + targetAmount.targetAmount
+                                )
                             }
                         }
                     }
@@ -123,24 +145,30 @@ class MainActivity : AppCompatActivity() {
 
                 //프래그먼트 구성에 필요한 데이터 미리 가져온다.
                 //유저 물 사용량 가져오기
-                getUserWaterUsage(userId){userWaterUsageList ->
-                    if(userWaterUsageList != null){
-                        for(userWaterUsage in userWaterUsageList){
+                getUserWaterUsage(userId) { userWaterUsageList ->
+                    if (userWaterUsageList != null) {
+                        val map = userWaterUsageList.map { userWaterUsage ->
+                            userWaterUsage.str to userWaterUsage.amount
+                        }.toMap()
+                        sharedViewModel.setUserWaterUsage(map);
+                        for (userWaterUsage in userWaterUsageList) {
                             Log.d("testlog", userWaterUsage.str + " " + userWaterUsage.amount)
                         }
                     }
                 }
                 //유저 전기 사용량 가져오기
-                getUserElectricityUsage(userId){userElectricityUsageList ->
-                    if(userElectricityUsageList != null){
-                        for(userElectricityUsage in userElectricityUsageList){
-                            Log.d("testlog", userElectricityUsage.str + " " + userElectricityUsage.amount)
+                getUserElectricityUsage(userId) { userElectricityUsageList ->
+                    if (userElectricityUsageList != null) {
+                        val map = userElectricityUsageList.map { userElectricityUsage ->
+                            userElectricityUsage.str to userElectricityUsage.amount
+                        }.toMap()
+                        sharedViewModel.setUserElectricityUsage(map);
+                        for (userElectricityUsage in userElectricityUsageList) {
+                            Log.d("testlog", userElectricityUsage.str + " " + userElectricityUsage.amount
+                            )
                         }
                     }
                 }
-
-
-
 
 
             }
@@ -303,13 +331,16 @@ class MainActivity : AppCompatActivity() {
             }
 
             override fun onFailure(call: Call<List<GetUsageResponse>>, t: Throwable) {
-                Log.d("testlog", "유저 물 사용량 요청 전송 실패")
+                Log.d("testlog", "유저 물 사용량 요청 전송 실패" + t.message)
                 callback(null)
             }
         })
     }
 
-    private fun getUserElectricityUsage(userId: String, callback: (List<GetUsageResponse>?) -> Unit) {
+    private fun getUserElectricityUsage(
+        userId: String,
+        callback: (List<GetUsageResponse>?) -> Unit
+    ) {
         Log.d("testlog", "in getUserElectricityUsage")
         val call = RetrofitClient.usageService.getUserElectricityUsageRequest(userId)
         call.enqueue(object : Callback<List<GetUsageResponse>> {
@@ -328,13 +359,16 @@ class MainActivity : AppCompatActivity() {
             }
 
             override fun onFailure(call: Call<List<GetUsageResponse>>, t: Throwable) {
-                Log.d("testlog", "유저 전기 사용량 요청 전송 실패")
+                Log.d("testlog", "유저 전기 사용량 요청 전송 실패" + t.message)
                 callback(null)
             }
         })
     }
 
-    private fun getGroupWaterUsage(homeServerId: String, callback: (List<GetUsageResponse>?) -> Unit) {
+    private fun getGroupWaterUsage(
+        homeServerId: String,
+        callback: (List<GetUsageResponse>?) -> Unit
+    ) {
         Log.d("testlog", "in getGroupWaterUsage")
         val call = RetrofitClient.usageService.getGroupWaterUsageRequest(homeServerId)
         call.enqueue(object : Callback<List<GetUsageResponse>> {
@@ -353,13 +387,16 @@ class MainActivity : AppCompatActivity() {
             }
 
             override fun onFailure(call: Call<List<GetUsageResponse>>, t: Throwable) {
-                Log.d("testlog", "그룹 물 사용량 요청 전송 실패")
+                Log.d("testlog", "그룹 물 사용량 요청 전송 실패" + t.message)
                 callback(null)
             }
         })
     }
 
-    private fun getGroupElectricityUsage(homeServerId: String, callback: (List<GetUsageResponse>?) -> Unit) {
+    private fun getGroupElectricityUsage(
+        homeServerId: String,
+        callback: (List<GetUsageResponse>?) -> Unit
+    ) {
         Log.d("testlog", "in getGroupElectricityUsage")
         val call = RetrofitClient.usageService.getGroupElectricityUsageRequest(homeServerId)
         call.enqueue(object : Callback<List<GetUsageResponse>> {
@@ -378,16 +415,19 @@ class MainActivity : AppCompatActivity() {
             }
 
             override fun onFailure(call: Call<List<GetUsageResponse>>, t: Throwable) {
-                Log.d("testlog", "그룹 전기 사용량 요청 전송 실패")
+                Log.d("testlog", "그룹 전기 사용량 요청 전송 실패" + t.message)
                 callback(null)
             }
         })
     }
 
-    private fun getGroupTargetAmount(homeServerId: String, callback: (List<GetGroupTargetAmountResponse>?) -> Unit){
+    private fun getGroupTargetAmount(
+        homeServerId: String,
+        callback: (List<GetGroupTargetAmountResponse>?) -> Unit
+    ) {
         Log.d("testlog", "in getGroupTargetAmount")
         val call = RetrofitClient.userService.getGroupTargetAmountRequest(homeServerId)
-        call.enqueue(object: Callback<List<GetGroupTargetAmountResponse>> {
+        call.enqueue(object : Callback<List<GetGroupTargetAmountResponse>> {
             override fun onResponse(
                 call: Call<List<GetGroupTargetAmountResponse>>,
                 response: Response<List<GetGroupTargetAmountResponse>>
