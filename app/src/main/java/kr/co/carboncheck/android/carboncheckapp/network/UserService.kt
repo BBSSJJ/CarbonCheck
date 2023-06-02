@@ -19,4 +19,7 @@ interface UserService {
 
     @POST("/face/register")
     fun postRegisterFaceRequest(@Body registerFaceRequest: RegisterFaceRequest): Call<RegisterFaceResponse>
+
+    @GET("/target_amount/group")
+    fun getGroupTargetAmountRequest(@Query("homeServerId") homeServerId: String): Call<List<GetGroupTargetAmountResponse>>
 }
