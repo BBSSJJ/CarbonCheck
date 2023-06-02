@@ -65,4 +65,6 @@ dependencies {
     implementation("app.futured.donut:donut:2.2.3")
     // MPAndroidChart
     implementation 'com.github.PhilJay:MPAndroidChart:v3.1.0'
+    // Circle ImageView
+    implementation 'de.hdodenhof:circleimageview:3.1.0'
 }

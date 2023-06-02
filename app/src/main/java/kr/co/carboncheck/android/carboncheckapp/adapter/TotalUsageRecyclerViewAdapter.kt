@@ -91,7 +91,6 @@ class TotalUsageRecyclerViewAdapter :
     private fun getBarData(data: MemberUsageData): BarData {
         // 막대의 길이를 계산하는 공식 사용
         val barLength = (data.currentAmount / data.targetAmount) * 100f
-        Log.d("BAR 길이: ", barLength.toString());
         // BarEntry 객체에 막대의 길이와 인덱스 추가
         val entries = ArrayList<BarEntry>()
         entries.add(BarEntry(barLength, barLength))
@@ -102,9 +101,9 @@ class TotalUsageRecyclerViewAdapter :
         // 막대의 색상을 조건에 따라 설정 (예시로 초록색과 빨간색 사용)
         if (barLength <= 30f) {
             dataSet.color = Color.parseColor("#90CA47")
-        } else if (barLength <= 70f){
+        } else if (barLength <= 70f) {
             dataSet.color = Color.parseColor("#F4D246")
-        }else{
+        } else {
             dataSet.color = Color.parseColor("#F24768")
         }
 

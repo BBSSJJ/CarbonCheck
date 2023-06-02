@@ -52,6 +52,7 @@
                     android:layout_marginTop="16dp"
                     android:layout_marginRight="16dp"
                     android:background="@color/secondary"
+                    app:cardCornerRadius="12dp"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/total_usage_title_bar">
@@ -115,10 +116,10 @@
                                 android:text="@string/total_emissions"
                                 android:textColor="@color/third"
                                 android:textSize="24dp"
+                                app:layout_constraintBottom_toTopOf="@id/total_amount_count_text"
                                 app:layout_constraintEnd_toEndOf="parent"
                                 app:layout_constraintStart_toStartOf="parent"
-                                app:layout_constraintTop_toTopOf="parent"
-                                app:layout_constraintBottom_toTopOf="@id/total_amount_count_text"/>
+                                app:layout_constraintTop_toTopOf="parent" />
 
                             <TextView
                                 android:id="@+id/total_amount_count_text"
@@ -126,12 +127,12 @@
                                 android:layout_height="wrap_content"
                                 android:fontFamily="@font/pretendard_bold"
                                 android:includeFontPadding="false"
+                                android:text="975g"
                                 android:textColor="@color/third"
                                 android:textSize="60dp"
                                 app:layout_constraintEnd_toEndOf="parent"
                                 app:layout_constraintStart_toStartOf="parent"
-                                app:layout_constraintTop_toBottomOf="@id/total_amount_text"
-                                android:text="975g" />
+                                app:layout_constraintTop_toBottomOf="@id/total_amount_text" />
 
                         </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -179,6 +180,7 @@
                     android:layout_marginTop="16dp"
                     android:layout_marginRight="16dp"
                     android:background="@color/secondary"
+                    app:cardCornerRadius="12dp"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/my_usage_card">
@@ -234,6 +236,7 @@
                     android:layout_marginTop="16dp"
                     android:layout_marginRight="16dp"
                     android:background="@color/secondary"
+                    app:cardCornerRadius="12dp"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/home_usage_card">
@@ -275,15 +278,9 @@
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toBottomOf="@id/icon_recent_usage" />
 
-
                     </androidx.constraintlayout.widget.ConstraintLayout>
-
                 </com.google.android.material.card.MaterialCardView>
             </androidx.constraintlayout.widget.ConstraintLayout>
-
-
         </androidx.appcompat.widget.LinearLayoutCompat>
-
-
     </ScrollView>
 </FrameLayout>
