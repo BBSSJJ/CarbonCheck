@@ -18,6 +18,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kr.co.carboncheck.android.carboncheckapp.R
 import kr.co.carboncheck.android.carboncheckapp.databinding.ActivityMainBinding
+import kr.co.carboncheck.android.carboncheckapp.dto.GetGroupTargetAmountResponse
+import kr.co.carboncheck.android.carboncheckapp.dto.GetUsageResponse
 import kr.co.carboncheck.android.carboncheckapp.dto.GetUserDataResponse
 import kr.co.carboncheck.android.carboncheckapp.network.RetrofitClient
 import kr.co.carboncheck.android.carboncheckapp.network.SseListener
@@ -41,7 +43,6 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
 
 
         //첫 화면 fragment 지정
@@ -80,7 +81,7 @@ class MainActivity : AppCompatActivity() {
             startActivity(Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS))
         }
 
-        //group에 속해있으면 Group id받아두는게 좋을듯 하다
+        //이메일로 유저 데이터들 가져와 preference에 넣는다.
         Log.d("testlog", "get email preference " + getEmailPreference(this))
         getUserData(getEmailPreference(this)) { userData ->
             if (userData != null) {
@@ -89,14 +90,62 @@ class MainActivity : AppCompatActivity() {
                 getUserDataPreference(this)["homeServerId"]?.let { Log.d("testlog", it) }
                 getUserDataPreference(this)["name"]?.let { Log.d("testlog", it) }
                 //SSE 연결
-                if(userData.homeServerId != "") {
+                var userId = userData.userId
+                var homeServerId = userData.homeServerId
+                if (homeServerId != "") {
                     sseConnection.connect(userData.homeServerId, userData.userId, sseListener)
+
+                    //그룹 물 사용량 가져오기
+                    getGroupWaterUsage(homeServerId){groupWaterUsageList ->
+                        if(groupWaterUsageList != null){
+                            for(groupWaterUsage in groupWaterUsageList){
+                                Log.d("testlog", groupWaterUsage.str + " " + groupWaterUsage.amount)
+                            }
+                        }
+                    }
+                    //그룹 전기 사용량 가져오기
+                    getGroupElectricityUsage(homeServerId){groupElectricityUsageList ->
+                        if(groupElectricityUsageList != null){
+                            for(groupElectricityUsage in groupElectricityUsageList){
+                                Log.d("testlog", groupElectricityUsage.str + " " + groupElectricityUsage.amount)
+                            }
+                        }
+                    }
+                    //그룹원 목표치 가져오기
+                    getGroupTargetAmount(homeServerId){groupTargetAmountList ->
+                        if(groupTargetAmountList != null){
+                            for(targetAmount in groupTargetAmountList){
+                                Log.d("testlog", targetAmount.name + " " + targetAmount.targetAmount)
+                            }
+                        }
+                    }
                 }
+
+                //프래그먼트 구성에 필요한 데이터 미리 가져온다.
+                //유저 물 사용량 가져오기
+                getUserWaterUsage(userId){userWaterUsageList ->
+                    if(userWaterUsageList != null){
+                        for(userWaterUsage in userWaterUsageList){
+                            Log.d("testlog", userWaterUsage.str + " " + userWaterUsage.amount)
+                        }
+                    }
+                }
+                //유저 전기 사용량 가져오기
+                getUserElectricityUsage(userId){userElectricityUsageList ->
+                    if(userElectricityUsageList != null){
+                        for(userElectricityUsage in userElectricityUsageList){
+                            Log.d("testlog", userElectricityUsage.str + " " + userElectricityUsage.amount)
+                        }
+                    }
+                }
+
+
+
+
+
             }
             //Test code
-
         }
-
 
 
     }
@@ -234,6 +283,132 @@ class MainActivity : AppCompatActivity() {
         val email = userPreference!!.getString("email", "")!!
         return email
     }
+
+    private fun getUserWaterUsage(userId: String, callback: (List<GetUsageResponse>?) -> Unit) {
+        Log.d("testlog", "in getUserWaterUsage")
+        val call = RetrofitClient.usageService.getUserWaterUsageRequest(userId)
+        call.enqueue(object : Callback<List<GetUsageResponse>> {
+            override fun onResponse(
+                call: Call<List<GetUsageResponse>>,
+                response: Response<List<GetUsageResponse>>
+            ) {
+                if (response.isSuccessful) {
+                    val userWaterUsageList = response.body()
+                    Log.d("testlog", "유저 물 사용량 도착")
+                    callback(userWaterUsageList)
+                } else {
+                    Log.d("testlog", "유저 물 사용량 도착 안함")
+                    callback(null)
+                }
+            }
+
+            override fun onFailure(call: Call<List<GetUsageResponse>>, t: Throwable) {
+                Log.d("testlog", "유저 물 사용량 요청 전송 실패")
+                callback(null)
+            }
+        })
+    }
+
+    private fun getUserElectricityUsage(userId: String, callback: (List<GetUsageResponse>?) -> Unit) {
+        Log.d("testlog", "in getUserElectricityUsage")
+        val call = RetrofitClient.usageService.getUserElectricityUsageRequest(userId)
+        call.enqueue(object : Callback<List<GetUsageResponse>> {
+            override fun onResponse(
+                call: Call<List<GetUsageResponse>>,
+                response: Response<List<GetUsageResponse>>
+            ) {
+                if (response.isSuccessful) {
+                    val userElectricityUsageList = response.body()
+                    Log.d("testlog", "유저 전기 사용량 도착")
+                    callback(userElectricityUsageList)
+                } else {
+                    Log.d("testlog", "유저 전기 사용량 도착 안함")
+                    callback(null)
+                }
+            }
+
+            override fun onFailure(call: Call<List<GetUsageResponse>>, t: Throwable) {
+                Log.d("testlog", "유저 전기 사용량 요청 전송 실패")
+                callback(null)
+            }
+        })
+    }
+
+    private fun getGroupWaterUsage(homeServerId: String, callback: (List<GetUsageResponse>?) -> Unit) {
+        Log.d("testlog", "in getGroupWaterUsage")
+        val call = RetrofitClient.usageService.getGroupWaterUsageRequest(homeServerId)
+        call.enqueue(object : Callback<List<GetUsageResponse>> {
+            override fun onResponse(
+                call: Call<List<GetUsageResponse>>,
+                response: Response<List<GetUsageResponse>>
+            ) {
+                if (response.isSuccessful) {
+                    val groupWaterUsageList = response.body()
+                    Log.d("testlog", "그룹 물 사용량 도착")
+                    callback(groupWaterUsageList)
+                } else {
+                    Log.d("testlog", "그룹 물 사용량 도착 안함")
+                    callback(null)
+                }
+            }
+
+            override fun onFailure(call: Call<List<GetUsageResponse>>, t: Throwable) {
+                Log.d("testlog", "그룹 물 사용량 요청 전송 실패")
+                callback(null)
+            }
+        })
+    }
+
+    private fun getGroupElectricityUsage(homeServerId: String, callback: (List<GetUsageResponse>?) -> Unit) {
+        Log.d("testlog", "in getGroupElectricityUsage")
+        val call = RetrofitClient.usageService.getGroupElectricityUsageRequest(homeServerId)
+        call.enqueue(object : Callback<List<GetUsageResponse>> {
+            override fun onResponse(
+                call: Call<List<GetUsageResponse>>,
+                response: Response<List<GetUsageResponse>>
+            ) {
+                if (response.isSuccessful) {
+                    val groupElectricityUsageList = response.body()
+                    Log.d("testlog", "그룹 전기 사용량 도착")
+                    callback(groupElectricityUsageList)
+                } else {
+                    Log.d("testlog", "그룹 전기 사용량 도착 안함")
+                    callback(null)
+                }
+            }
+
+            override fun onFailure(call: Call<List<GetUsageResponse>>, t: Throwable) {
+                Log.d("testlog", "그룹 전기 사용량 요청 전송 실패")
+                callback(null)
+            }
+        })
+    }
+
+    private fun getGroupTargetAmount(homeServerId: String, callback: (List<GetGroupTargetAmountResponse>?) -> Unit){
+        Log.d("testlog", "in getGroupTargetAmount")
+        val call = RetrofitClient.userService.getGroupTargetAmountRequest(homeServerId)
+        call.enqueue(object: Callback<List<GetGroupTargetAmountResponse>> {
+            override fun onResponse(
+                call: Call<List<GetGroupTargetAmountResponse>>,
+                response: Response<List<GetGroupTargetAmountResponse>>
+            ) {
+                if (response.isSuccessful) {
+                    val groupTargetAmountList = response.body()
+                    Log.d("testlog", "그룹 목표량 도착")
+                    callback(groupTargetAmountList)
+                } else {
+                    Log.d("testlog", "그룹 목표량 도착 안함")
+                    callback(null)
+                }
+            }
+
+            override fun onFailure(call: Call<List<GetGroupTargetAmountResponse>>, t: Throwable) {
+                Log.d("testlog", "그룹 목표량 요청 전송 실패")
+                callback(null)
+            }
+        })
+    }
+
 
     //어플 종료 시 SSE연결 종료
     override fun onDestroy() {

@@ -9,10 +9,10 @@ object RetrofitClient {
     // 10.0.2.2 는 host PC를 가리킨다고 합니다. 에휴
 
     //goorm server와 통신
-    private const val BASE_URL = "https://carboncheckserver-glzul.run.goorm.site/"
+//    private const val BASE_URL = "https://carboncheckserver-glzul.run.goorm.site/"
 
     //local에서 통신
-//    private const val BASE_URL = "http://10.0.2.2:8080"
+    private const val BASE_URL = "http://10.0.2.2:8080"
 
     private val retrofit =
         Retrofit.Builder().baseUrl(BASE_URL).addConverterFactory(GsonConverterFactory.create())
@@ -21,4 +21,5 @@ object RetrofitClient {
     // MyService 인터페이스를 가져와서 retrofit 객체를 생성한다
     val userService = retrofit.create(UserService::class.java)
     val deviceService = retrofit.create(DeviceService::class.java)
+    val usageService = retrofit.create(UsageService::class.java)
 }
