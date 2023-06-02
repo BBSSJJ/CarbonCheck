@@ -6,53 +6,183 @@
     android:layout_height="match_parent"
     tools:context=".view.UserInfoFragment">
 
-
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
-        <Button
-            android:id="@+id/registerHomeServerButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="모듈 등록"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.058" />
+        android:layout_height="match_parent"
+        android:fillViewport="true">
 
-        <Button
-            android:id="@+id/joinHomeServerButton"
-            android:layout_width="wrap_content"
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="그룹 참여"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.197" />
+            android:orientation="vertical">
 
-        <Button
-            android:id="@+id/registerFaceButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="얼굴 등록"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.498"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.349" />
-        <Button
-            android:id="@+id/logoutButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="로그아웃"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-    </androidx.constraintlayout.widget.ConstraintLayout>
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@color/main">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/user_info_title_bar"
+                    android:layout_width="match_parent"
+                    android:layout_height="66dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/pretendard_extrabold"
+                        android:text="@string/user_info"
+                        android:textColor="@color/secondary"
+                        android:textSize="24dp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/my_info_card"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="16dp"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginRight="16dp"
+                    android:layout_marginBottom="16dp"
+                    android:background="@color/secondary"
+                    app:cardCornerRadius="12dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/user_info_title_bar">
+
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:padding="16dp">
+
+                        <de.hdodenhof.circleimageview.CircleImageView
+                            android:id="@+id/user_profile_pic"
+                            android:layout_marginTop="16dp"
+                            android:layout_width="180dp"
+                            android:layout_height="180dp"
+                            android:layout_gravity="center"
+
+                            android:src="@drawable/profile0"
+                            app:civ_border_color="@color/accent"
+                            app:civ_border_overlay="true"
+                            app:civ_border_width="0dp"
+
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent" />
+
+                        <TextView
+                            android:id="@+id/user_info_user_name"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="12dp"
+                            android:fontFamily="@font/pretendard_semibold"
+                            android:text="Lee"
+                            android:textColor="@color/third"
+                            android:textSize="24dp"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toBottomOf="@id/user_profile_pic" />
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/register_home_server_button"
+                            android:layout_width="match_parent"
+                            android:layout_height="60dp"
+                            android:layout_marginTop="36dp"
+                            android:backgroundTint="@color/accent"
+                            android:fontFamily="@font/pretendard_medium"
+                            android:gravity="start|center"
+                            android:text="홈 서버 기기 등록"
+                            android:textColor="@color/secondary"
+                            android:textSize="18sp"
+                            app:cornerRadius="12dp"
+                            app:icon="@drawable/qr_code_48px"
+                            app:iconGravity="end"
+                            app:iconSize="32dp"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toBottomOf="@id/user_info_user_name" />
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/join_home_server_button"
+                            android:layout_width="match_parent"
+                            android:layout_height="60dp"
+                            android:backgroundTint="@color/accent"
+                            android:fontFamily="@font/pretendard_medium"
+                            android:gravity="start|center"
+                            android:text="그룹 참여"
+                            android:textColor="@color/secondary"
+                            android:textSize="18sp"
+                            app:cornerRadius="12dp"
+                            app:icon="@drawable/group_add_48px"
+                            app:iconGravity="end"
+                            app:iconSize="32dp"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toBottomOf="@id/register_home_server_button" />
+
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/register_face_button"
+                            android:layout_width="match_parent"
+                            android:layout_height="60dp"
+                            android:backgroundTint="@color/accent"
+                            android:fontFamily="@font/pretendard_medium"
+                            android:gravity="start|center"
+                            android:text="얼굴 등록"
+                            android:textColor="@color/secondary"
+                            android:textSize="18sp"
+                            app:cornerRadius="12dp"
+                            app:icon="@drawable/camera_video_48px"
+                            app:iconGravity="end"
+                            app:iconSize="32dp"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toBottomOf="@id/join_home_server_button" />
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/logout_button"
+                            android:layout_width="match_parent"
+                            android:layout_height="60dp"
+                            android:backgroundTint="@color/accent"
+                            android:fontFamily="@font/pretendard_medium"
+                            android:gravity="start|center"
+                            android:text="로그아웃"
+                            android:textColor="@color/secondary"
+                            android:textSize="18sp"
+                            app:cornerRadius="12dp"
+                            app:icon="@drawable/logout_48px"
+                            app:iconGravity="end"
+                            app:iconSize="32dp"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toBottomOf="@id/register_face_button" />
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+                </com.google.android.material.card.MaterialCardView>
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/member_info_recycler_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="16dp"
+                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/my_info_card"
+                    tools:itemCount="3"
+                    tools:listitem="@layout/user_info_member_list" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+        </androidx.appcompat.widget.LinearLayoutCompat>
+
+    </ScrollView>
+
 </FrameLayout>

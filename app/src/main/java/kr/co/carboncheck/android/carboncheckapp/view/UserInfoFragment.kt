@@ -10,9 +10,13 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.core.app.ActivityCompat.finishAffinity
+import androidx.recyclerview.widget.LinearLayoutManager
 import kr.co.carboncheck.android.carboncheckapp.R
+import kr.co.carboncheck.android.carboncheckapp.adapter.UserInfoMemberRecyclerViewAdapter
 import kr.co.carboncheck.android.carboncheckapp.databinding.FragmentDetailedUsageBinding
 import kr.co.carboncheck.android.carboncheckapp.databinding.FragmentUserInfoBinding
+import kr.co.carboncheck.android.carboncheckapp.dataobject.MemberData
+import kr.co.carboncheck.android.carboncheckapp.dataobject.MemberUsageData
 import kr.co.carboncheck.android.carboncheckapp.dto.RegisterFaceRequest
 import kr.co.carboncheck.android.carboncheckapp.dto.RegisterFaceResponse
 import kr.co.carboncheck.android.carboncheckapp.network.RetrofitClient
@@ -24,7 +28,7 @@ import retrofit2.Response
 class UserInfoFragment : Fragment() {
     private var _binding: FragmentUserInfoBinding? = null
     private val binding get() = _binding!!
-
+    private val memberDatas = mutableListOf<MemberData>()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
@@ -79,6 +83,11 @@ class UserInfoFragment : Fragment() {
         _binding = null
     }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        initializeMemberList()      // TODO: 자신을 제외한 멤버 데이터 (번호, 이름) 불러올 것
+        initMemberListRecyclerView()
+    }
 
     fun deletePreferences(context: Context?) {
         val userPreference = UserPreference().getPreferences(context!!)
@@ -152,5 +161,20 @@ class UserInfoFragment : Fragment() {
                 callback(false)
             }
         })
+    }
+
+    private fun initMemberListRecyclerView() {
+        val adapter = UserInfoMemberRecyclerViewAdapter()
+        adapter.datalist = memberDatas
+        binding.memberInfoRecyclerView.adapter = adapter
+        binding.memberInfoRecyclerView.layoutManager = LinearLayoutManager(activity)
+    }
+
+    private fun initializeMemberList() {
+        with(memberDatas) {
+            // TODO: 여기에 실제 데이터 삽입 하시오 ( 가족 이름, 유저 번호)
+            add(MemberData(1, "GOP"))
+            add(MemberData(2, "Sung"))
+        }
     }
 }
