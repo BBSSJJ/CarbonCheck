@@ -20,6 +20,7 @@ import app.futured.donut.DonutProgressView
 import kr.co.carboncheck.android.carboncheckapp.R
 import kr.co.carboncheck.android.carboncheckapp.adapter.TotalUsageRecyclerViewAdapter
 import kr.co.carboncheck.android.carboncheckapp.dataobject.MemberUsageData
+import kr.co.carboncheck.android.carboncheckapp.dataobject.RecentUsageData
 
 class TotalUsageFragment : Fragment() {
     private var _binding: FragmentTotalUsageBinding? = null
@@ -138,6 +139,9 @@ class TotalUsageFragment : Fragment() {
 
         donutProgressView.submitData(sections)
         //updateIndicators()
+    }
+    private fun getRecentUsageBarChart(data: RecentUsageData){
+
     }
 
     /*

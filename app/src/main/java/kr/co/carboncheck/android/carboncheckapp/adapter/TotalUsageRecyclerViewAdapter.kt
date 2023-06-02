@@ -10,7 +10,6 @@ import com.github.mikephil.charting.components.YAxis
 import com.github.mikephil.charting.data.BarData
 import com.github.mikephil.charting.data.BarDataSet
 import com.github.mikephil.charting.data.BarEntry
-import com.github.mikephil.charting.formatter.PercentFormatter
 import kr.co.carboncheck.android.carboncheckapp.databinding.HomeUserUsageListBinding
 import kr.co.carboncheck.android.carboncheckapp.dataobject.MemberUsageData
 
@@ -25,9 +24,9 @@ class TotalUsageRecyclerViewAdapter :
         val chart = binding.userChart
         fun bind(memberUsageData: MemberUsageData) {
             //binding.dogPhotoImg.=dogData.dog_img
-            binding.userName.text = memberUsageData.user_name
-            binding.targetUsage.text = "/" + memberUsageData.target_usage.toString() + " g"
-            binding.currentUsage.text = memberUsageData.current_usage.toString()
+            binding.userName.text = memberUsageData.userName
+            binding.targetUsage.text = "/" + memberUsageData.targetAmount.toString() + " g"
+            binding.currentUsage.text = memberUsageData.currentAmount.toString()
 
         }
     }
@@ -44,14 +43,11 @@ class TotalUsageRecyclerViewAdapter :
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
         val data = datalist[position]
         holder.chart.data = getBarData(data)
-
         // HorizontalBarChart에 옵션 설정
-
         holder.chart.setTouchEnabled(false)                         // 터치 유무
         holder.chart.description.isEnabled = false                  // 설명 비활성화
         holder.chart.legend.isEnabled = false                       // Legend는 차트의 범례
         holder.chart.xAxis.position = XAxis.XAxisPosition.BOTTOM    // X축 위치는 아래쪽으로 설정
-
 //        holder.chart.xAxis.setDrawGridLines(false) // X축 그리드 라인 비활성화
         // XAxis (수평 막대 기준 왼쪽) - 선 유무, 사이즈, 색상, 축 위치 설정
         val xAxis: XAxis = holder.chart.xAxis
@@ -94,7 +90,7 @@ class TotalUsageRecyclerViewAdapter :
     // BarData 객체를 반환하는 함수 정의
     private fun getBarData(data: MemberUsageData): BarData {
         // 막대의 길이를 계산하는 공식 사용
-        val barLength = (data.current_usage / data.target_usage) * 100f
+        val barLength = (data.currentAmount / data.targetAmount) * 100f
         Log.d("BAR 길이: ", barLength.toString());
         // BarEntry 객체에 막대의 길이와 인덱스 추가
         val entries = ArrayList<BarEntry>()
