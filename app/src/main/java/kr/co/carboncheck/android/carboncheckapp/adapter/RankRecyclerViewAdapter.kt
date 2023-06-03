@@ -1,7 +1,6 @@
 package kr.co.carboncheck.android.carboncheckapp.adapter
 
 import android.graphics.Color
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
@@ -10,45 +9,42 @@ import com.github.mikephil.charting.components.YAxis
 import com.github.mikephil.charting.data.BarData
 import com.github.mikephil.charting.data.BarDataSet
 import com.github.mikephil.charting.data.BarEntry
-import kr.co.carboncheck.android.carboncheckapp.databinding.HomeUserUsageListBinding
+import kr.co.carboncheck.android.carboncheckapp.R
+import kr.co.carboncheck.android.carboncheckapp.databinding.RankListBinding
 import kr.co.carboncheck.android.carboncheckapp.dataobject.MemberUsageData
+import kr.co.carboncheck.android.carboncheckapp.dataobject.RankData
 
+class RankRecyclerViewAdapter : RecyclerView.Adapter<RankRecyclerViewAdapter.MyViewHolder>() {
 
-class TotalUsageRecyclerViewAdapter :
-    RecyclerView.Adapter<TotalUsageRecyclerViewAdapter.MyViewHolder>() {
+    var datalist = mutableListOf<RankData>()
 
-    var datalist = mutableListOf<MemberUsageData>()
-
-    inner class MyViewHolder(private val binding: HomeUserUsageListBinding) :
+    inner class MyViewHolder(private val binding: RankListBinding) :
         RecyclerView.ViewHolder(binding.root) {
-        val chart = binding.userChart
-        fun bind(memberUsageData: MemberUsageData) {
-            binding.userName.text = memberUsageData.userName
-            binding.targetUsage.text = "/" + memberUsageData.targetAmount.toString() + " g"
-            binding.currentUsage.text = memberUsageData.currentAmount.toString()
-
+        val chart = binding.rankUserChart
+        var user_xp = 0f
+        fun bind(rankData: RankData) {
+            binding.rankUserName.text = rankData.rankUserName
+            user_xp = rankData.rankXP
+            val pictureId = when (rankData.rankProfilePic % 3) {
+                0 -> R.drawable.profile0
+                1 -> R.drawable.profile1
+                2 -> R.drawable.profile2
+                else -> R.drawable.profile0
+            }
+            binding.rankProfilePic.setImageResource(pictureId)
         }
-    }
-
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
-        val binding =
-            HomeUserUsageListBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-        return MyViewHolder(binding)
     }
 
     override fun getItemCount(): Int = datalist.size
 
-
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
         val data = datalist[position]
         holder.chart.data = getBarData(data)
-        // HorizontalBarChart에 옵션 설정
         holder.chart.setTouchEnabled(false)                         // 터치 유무
         holder.chart.description.isEnabled = false                  // 설명 비활성화
         holder.chart.legend.isEnabled = false                       // Legend는 차트의 범례
         holder.chart.xAxis.position = XAxis.XAxisPosition.BOTTOM    // X축 위치는 아래쪽으로 설정
-//        holder.chart.xAxis.setDrawGridLines(false) // X축 그리드 라인 비활성화
-        // XAxis (수평 막대 기준 왼쪽) - 선 유무, 사이즈, 색상, 축 위치 설정
+
         val xAxis: XAxis = holder.chart.xAxis
         xAxis.setDrawAxisLine(false) // X축 라인 비활성화
         xAxis.setDrawLabels(false) // X축 라인 비활성화
@@ -63,13 +59,7 @@ class TotalUsageRecyclerViewAdapter :
         holder.chart.axisLeft.setDrawAxisLine(false)    // Y축 라인 비활성화
         holder.chart.axisLeft.setDrawLabels(false)      // label 삭제
 
-//        holder.chart.axisRight.isEnabled = false      // 오른쪽 Y축 비활성화
-//
-//        // holder.chart.animateXY(2000, 2000) // 애니메이션 효과 적용
-
-
         holder.chart.setExtraOffsets(0f, 0f, 0f, 0f)
-
 
         // YAxis(Left) (수평 막대 기준 아래쪽) - 선 유무, 데이터 최솟값/최댓값, label 유무
         val axisLeft: YAxis = holder.chart.axisLeft
@@ -77,36 +67,28 @@ class TotalUsageRecyclerViewAdapter :
 
         // YAxis(Right) (수평 막대 기준 위쪽) - 사이즈, 선 유무
         val axisRight: YAxis = holder.chart.axisRight
-        axisRight.textSize = 15f
+//        axisRight.textSize = 15f
         axisRight.setDrawLabels(false) // label 삭제
         axisRight.setDrawGridLines(false)
         axisRight.setDrawAxisLine(false)
 
-        holder.bind(datalist[position])
-        holder.chart.invalidate() // 차트 갱신
+        holder.bind(data)
+        holder.chart.invalidate()
     }
 
-    // BarData 객체를 반환하는 함수 정의
-    private fun getBarData(data: MemberUsageData): BarData {
+    private fun getBarData(data: RankData): BarData {
         // 막대의 길이를 계산하는 공식 사용
-        val barLength = (data.currentAmount / data.targetAmount) * 100f
+        val barLength = (data.rankXP / 1000f) * 100f    // MAX XP 1000f 임시로
         // BarEntry 객체에 막대의 길이와 인덱스 추가
         val entries = ArrayList<BarEntry>()
         entries.add(BarEntry(barLength, barLength))
 
         // BarDataSet 객체에 BarEntry 리스트와 레이블 추가
         val dataSet = BarDataSet(entries, "Usage Data")
+        dataSet.color = Color.parseColor("#788B55")
 
-        // 막대의 색상을 조건에 따라 설정 (예시로 초록색과 빨간색 사용)
-        if (barLength <= 30f) {
-            dataSet.color = Color.parseColor("#90CA47")
-        } else if (barLength <= 70f) {
-            dataSet.color = Color.parseColor("#F4D246")
-        } else {
-            dataSet.color = Color.parseColor("#F24768")
-        }
 
-        // % 숫자를 보여 주고 싶다면 아래 두 줄을 주석 해제 
+        // % 숫자를 보여 주고 싶다면 아래 두 줄을 주석 해제
 //        dataSet.valueTextColor = Color.BLACK // 값의 색상 설정
 //        dataSet.valueFormatter = PercentFormatter() // 값의 형식을 퍼센트로 설정
         dataSet.setDrawValues(false)
@@ -119,4 +101,10 @@ class TotalUsageRecyclerViewAdapter :
     }
 
 
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
+        val binding = RankListBinding.inflate(
+            LayoutInflater.from(parent.context), parent, false
+        )
+        return MyViewHolder(binding) // MyViewHolder 생성 및 반환
+    }
 }
