@@ -4,29 +4,27 @@ import android.app.AlertDialog
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.EditText
-import android.widget.GridLayout
-import android.widget.ImageView
-import android.widget.TextView
-import android.widget.Toast
+import android.widget.*
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
 import kr.co.carboncheck.android.carboncheckapp.R
 import kr.co.carboncheck.android.carboncheckapp.database.CarbonCheckLocalDatabase
 import kr.co.carboncheck.android.carboncheckapp.databinding.FragmentDetailedUsageBinding
 import kr.co.carboncheck.android.carboncheckapp.entity.Plug
 import kr.co.carboncheck.android.carboncheckapp.network.RetrofitClient
+import kr.co.carboncheck.android.carboncheckapp.util.NumberFormat
 import kr.co.carboncheck.android.carboncheckapp.viewmodel.SharedViewModel
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import kr.co.carboncheck.android.carboncheckapp.util.NumberFormat
 
 class DetailedUsageFragment : Fragment() {
     private var _binding: FragmentDetailedUsageBinding? = null
@@ -150,12 +148,18 @@ class DetailedUsageFragment : Fragment() {
 
                     val plug: Plug?
                     runBlocking {
-                        plug = plugDao.findById(key)
+                        val plug = withContext(Dispatchers.Default) {//find작업을 백그라운드 스레드에서 하도록 지정
+                            plugDao.findById(key)
+                        }
                         if (plug == null) {
-                            //db에 등록되지 않았음
-                            placeText.text = "등록되지 않은 플러그"
+                            // db에 등록되지 않았음
+                            withContext(Dispatchers.Main) {//작업이 완료되고 메인스레드에서 설정
+                                placeText.text = "등록되지 않은 플러그"
+                            }
                         } else {
-                            placeText.text = plug.plugName
+                            withContext(Dispatchers.Main) {//작업이 완료되고 메인스레드에서 설정
+                                placeText.text = plug.plugName
+                            }
                         }
                     }
                     placeImage.setImageResource(R.drawable.power)
@@ -250,21 +254,20 @@ class DetailedUsageFragment : Fragment() {
                     //삭제
                     //서버에 삭제 요청
                     sendDeletePlugRequest(plugId) { result ->
-                        if (result == true) Toast.makeText(context, "삭제 성공", Toast.LENGTH_LONG)
-                            .show()
+                        if (result == true) {
+                            Toast.makeText(context, "삭제 성공", Toast.LENGTH_LONG)
+                                .show()
+                            //로컬 db에서 삭제
+                            lifecycleScope.launch {
+                                val plugDao = localDatabase.plugDao()
+                                val plug = plugDao.findById(plugId)
+                                if (plug != null) {
+                                    plugDao.deletePlug(plug)
+                                }
+                            }
+                        }
                         if (result == false) Toast.makeText(context, "삭제 실패", Toast.LENGTH_LONG)
                             .show()
-                    }
-
-                    //로컬 db에서 삭제
-                    lifecycleScope.launch {
-                        val plugDao = localDatabase.plugDao()
-                        val plug = plugDao.findById(plugId) // plugId로 저장된 플러그 찾아와서
-                        if (plug == null) {
-
-                        } else {
-                            plugDao.deletePlug(plug!!)
-                        }
                     }
 
                     val parentView = view.parent as? ViewGroup //클릭한 뷰에서 부모 뷰 가져오기
