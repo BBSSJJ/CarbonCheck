@@ -14,7 +14,8 @@ class SolutionFragment : Fragment() {
     private var _binding: FragmentSolutionBinding? = null
     private val binding get() = _binding!!
     private val solutionData = mutableListOf<SolutionData>()
-
+    private var achievedSolution = mutableListOf<Float>()
+//    private var achievedSolutionData = ArrayList<Float>(0f,0f,0f,0f)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
@@ -38,6 +39,10 @@ class SolutionFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         initializeSolutionList()
         initSolutionListRecyclerView()
+        binding.achievedWaterAmount.text = achievedSolution[0].toString()
+        binding.achievedElectricityAmount.text = achievedSolution[1].toString()
+        binding.achievedExpenseAmount.text = achievedSolution[2].toString()
+        binding.achievedCarbonAmount.text = "%.2f".format((achievedSolution[3] / 1000f))
     }
 
     private fun initSolutionListRecyclerView() {
@@ -45,6 +50,7 @@ class SolutionFragment : Fragment() {
         adapter.datalist = solutionData
         binding.solutionRecyclerView.adapter = adapter
         binding.solutionRecyclerView.layoutManager = LinearLayoutManager(activity)
+        achievedSolution = adapter.getAchievedXP()
     }
 
     private fun initializeSolutionList() {

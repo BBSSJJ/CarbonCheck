@@ -2,7 +2,6 @@ package kr.co.carboncheck.android.carboncheckapp.adapter
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.core.content.res.TypedArrayUtils.getString
 import androidx.recyclerview.widget.RecyclerView
 import kr.co.carboncheck.android.carboncheckapp.R
 import kr.co.carboncheck.android.carboncheckapp.databinding.SolutionListBinding
@@ -35,6 +34,22 @@ class SolutionRecyclerViewAdapter :
 
     override fun getItemCount(): Int = datalist.size
 
+   fun getAchievedXP():ArrayList<Float>{
+        var achievedWater = 0f
+        var achievedElectricity = 0f
+        var achievedExpense = 0f
+        var achievedCarbonAmount = 0f
+        for(data in datalist){
+            if(data.result){
+                achievedWater += data.ExpectedWaterAmount
+                achievedElectricity += data.ExpectedElectricityAmount
+                achievedExpense += data.ExpectedExpenseAmount
+                achievedCarbonAmount += data.ExpectedCarbonAmount
+            }
+        }
+        return arrayListOf(achievedWater,achievedElectricity,achievedExpense,achievedCarbonAmount)
+    }
+
     override fun onBindViewHolder(
         holder: SolutionRecyclerViewAdapter.MyViewHolder,
         position: Int
@@ -54,4 +69,5 @@ class SolutionRecyclerViewAdapter :
         ) // 레이아웃 인플레이션
         return MyViewHolder(binding) // MyViewHolder 생성 및 반환
     }
+
 }
