@@ -35,5 +35,29 @@ class SharedViewModel : ViewModel() {
         groupMember.value = data
     }
 
+    fun getUserWaterUsage(): MutableLiveData<Map<String, Float>> {
+        return this.userWaterUsage
+    }
+
+    fun getUserElectricityUsage(): MutableLiveData<Map<String, Float>> {
+        return this.userElectricityUsage
+    }
+
+    fun getGroupWaterUsage(): MutableLiveData<Map<String, Float>> {
+        return this.groupWaterUsage
+    }
+
+    fun getGroupElectricityUsage(): MutableLiveData<Map<String, Float>> {
+        return this.groupElectricityUsage
+    }
+
+    fun getGroupTargetValue(): MutableLiveData<Map<String, Float>> {
+        return this.groupTargetValue
+    }
+
+    fun groupMember(): MutableLiveData<List<String>> {
+        return this.groupMember
+    }
+
 
 }
