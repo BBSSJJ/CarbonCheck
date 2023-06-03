@@ -13,6 +13,7 @@ import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -42,6 +43,7 @@ class MainActivity : AppCompatActivity() {
     private val sseListener = SseListener()
 
     private val sharedViewModel: SharedViewModel by viewModels()
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -93,89 +95,98 @@ class MainActivity : AppCompatActivity() {
                 getUserDataPreference(this)["userId"]?.let { Log.d("testlog", it) }
                 getUserDataPreference(this)["homeServerId"]?.let { Log.d("testlog", it) }
                 getUserDataPreference(this)["name"]?.let { Log.d("testlog", it) }
-                //SSE 연결
                 var userId = userData.userId
                 var homeServerId = userData.homeServerId
-                if (homeServerId != "") {
-                    sseConnection.connect(userData.homeServerId, userData.userId, sseListener)
 
-                    //그룹 물 사용량 가져오기
-                    getGroupWaterUsage(homeServerId) { groupWaterUsageList ->
-                        if (groupWaterUsageList != null) {
-                            val map = groupWaterUsageList.map { groupWaterUsage ->
-                                groupWaterUsage.str to groupWaterUsage.amount
-                            }.toMap()
-                            sharedViewModel.setGroupWaterUsage(map);
-                            for (groupWaterUsage in groupWaterUsageList) {
-                                Log.d("testlog", groupWaterUsage.str + " " + groupWaterUsage.amount)
+                lifecycleScope.launch {
+                    if (homeServerId != "") {
+                        //SSE 연결
+                        sseConnection.connect(userData.homeServerId, userData.userId, sseListener)
+
+                        //그룹 물 사용량 가져오기
+                        getGroupWaterUsage(homeServerId) { groupWaterUsageList ->
+                            if (groupWaterUsageList != null) {
+                                val map = groupWaterUsageList.map { groupWaterUsage ->
+                                    groupWaterUsage.str to groupWaterUsage.amount
+                                }.toMap()
+                                sharedViewModel.setGroupWaterUsage(map);
+                                for (groupWaterUsage in groupWaterUsageList) {
+                                    Log.d(
+                                        "testlog",
+                                        groupWaterUsage.str + " " + groupWaterUsage.amount
+                                    )
+                                }
+                            }
+                        }
+                        //그룹 전기 사용량 가져오기
+                        getGroupElectricityUsage(homeServerId) { groupElectricityUsageList ->
+                            if (groupElectricityUsageList != null) {
+                                val map = groupElectricityUsageList.map { groupElectricityUsage ->
+                                    groupElectricityUsage.str to groupElectricityUsage.amount
+                                }.toMap()
+                                sharedViewModel.setGroupElectricityUsage(map);
+                                for (groupElectricityUsage in groupElectricityUsageList) {
+                                    Log.d(
+                                        "testlog",
+                                        groupElectricityUsage.str + " " + groupElectricityUsage.amount
+                                    )
+                                }
+                            }
+                        }
+                        //그룹원 목표치 가져오기
+                        getGroupTargetAmount(homeServerId) { groupTargetAmountList ->
+                            if (groupTargetAmountList != null) {
+                                val map = groupTargetAmountList.map { targetAmount ->
+                                    targetAmount.name to targetAmount.targetAmount.toFloat()
+                                }.toMap()
+                                sharedViewModel.setGroupTargetValue(map);
+                                val list = groupTargetAmountList.map { targetAmount ->
+                                    targetAmount.name
+                                }
+                                sharedViewModel.setGroupMember(list)
+                                for (targetAmount in groupTargetAmountList) {
+                                    Log.d(
+                                        "testlog",
+                                        targetAmount.name + " " + targetAmount.targetAmount
+                                    )
+                                }
                             }
                         }
                     }
-                    //그룹 전기 사용량 가져오기
-                    getGroupElectricityUsage(homeServerId) { groupElectricityUsageList ->
-                        if (groupElectricityUsageList != null) {
-                            val map = groupElectricityUsageList.map{groupElectricityUsage->
-                                groupElectricityUsage.str to groupElectricityUsage.amount
+
+                }
+
+                lifecycleScope.launch {
+                    //유저 물 사용량 가져오기
+                    getUserWaterUsage(userId) { userWaterUsageList ->
+                        if (userWaterUsageList != null) {
+                            val map = userWaterUsageList.map { userWaterUsage ->
+                                userWaterUsage.str to userWaterUsage.amount
                             }.toMap()
-                            sharedViewModel.setGroupElectricityUsage(map);
-                            for (groupElectricityUsage in groupElectricityUsageList) {
-                                Log.d("testlog", groupElectricityUsage.str + " " + groupElectricityUsage.amount
+                            sharedViewModel.setUserWaterUsage(map);
+                            for (userWaterUsage in userWaterUsageList) {
+                                Log.d("testlog", userWaterUsage.str + " " + userWaterUsage.amount)
+                            }
+                        }
+                    }
+                    //유저 전기 사용량 가져오기
+                    getUserElectricityUsage(userId) { userElectricityUsageList ->
+                        if (userElectricityUsageList != null) {
+                            val map = userElectricityUsageList.map { userElectricityUsage ->
+                                userElectricityUsage.str to userElectricityUsage.amount
+                            }.toMap()
+                            sharedViewModel.setUserElectricityUsage(map);
+                            for (userElectricityUsage in userElectricityUsageList) {
+                                Log.d(
+                                    "testlog",
+                                    userElectricityUsage.str + " " + userElectricityUsage.amount
                                 )
                             }
                         }
                     }
-                    //그룹원 목표치 가져오기
-                    getGroupTargetAmount(homeServerId) { groupTargetAmountList ->
-                        if (groupTargetAmountList != null) {
-                            val map = groupTargetAmountList.map{targetAmount->
-                                targetAmount.name to targetAmount.targetAmount.toFloat()
-                            }.toMap()
-                            sharedViewModel.setGroupTargetValue(map);
-                            val list= groupTargetAmountList.map{targetAmount->
-                                targetAmount.name
-                            }
-                            sharedViewModel.setGroupMember(list)
-                            for (targetAmount in groupTargetAmountList) {
-                                Log.d("testlog", targetAmount.name + " " + targetAmount.targetAmount
-                                )
-                            }
-                        }
-                    }
                 }
-
-                //프래그먼트 구성에 필요한 데이터 미리 가져온다.
-                //유저 물 사용량 가져오기
-                getUserWaterUsage(userId) { userWaterUsageList ->
-                    if (userWaterUsageList != null) {
-                        val map = userWaterUsageList.map { userWaterUsage ->
-                            userWaterUsage.str to userWaterUsage.amount
-                        }.toMap()
-                        sharedViewModel.setUserWaterUsage(map);
-                        for (userWaterUsage in userWaterUsageList) {
-                            Log.d("testlog", userWaterUsage.str + " " + userWaterUsage.amount)
-                        }
-                    }
-                }
-                //유저 전기 사용량 가져오기
-                getUserElectricityUsage(userId) { userElectricityUsageList ->
-                    if (userElectricityUsageList != null) {
-                        val map = userElectricityUsageList.map { userElectricityUsage ->
-                            userElectricityUsage.str to userElectricityUsage.amount
-                        }.toMap()
-                        sharedViewModel.setUserElectricityUsage(map);
-                        for (userElectricityUsage in userElectricityUsageList) {
-                            Log.d("testlog", userElectricityUsage.str + " " + userElectricityUsage.amount
-                            )
-                        }
-                    }
-                }
-
-
             }
-            //Test code
         }
-
-
     }
 
     //frame layout 부분을 fragment로 채워넣는 함수
@@ -232,28 +243,6 @@ class MainActivity : AppCompatActivity() {
         backPressedTime = System.currentTimeMillis()
     }
 
-
-//    private fun getUserData(email: String): GetUserDataResponse? {
-//        Log.d("testlog", "in getUserData method")
-//        val call = RetrofitClient.userService.getUserDataRequest(email)
-//        return try {
-//            Log.d("testlog", "in try")
-//
-//            val response = call.execute()
-//            if (response.isSuccessful) {
-//                val userData = response.body()
-//                // TODO: userData를 활용한 처리 로직을 작성합니다.
-//                Log.d("testlog", "유저 데이터 도착")
-//                userData
-//            } else {
-//                Log.d("testlog", "유저 데이터 도착 안함")
-//                null
-//            }
-//        } catch (e: IOException) {
-//            Log.e("testlog", "유저 데이터 요청 전송 실패: " + e.message)
-//            null
-//        }
-//    }
 
     private fun getUserData(email: String, callback: (GetUserDataResponse?) -> Unit) {
         Log.d("testlog", "in getUserData method")

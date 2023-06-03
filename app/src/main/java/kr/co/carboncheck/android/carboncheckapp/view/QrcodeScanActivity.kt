@@ -10,9 +10,14 @@ import android.content.pm.PackageManager
 import android.util.Log
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
+import androidx.core.content.ContentProviderCompat.requireContext
+import androidx.lifecycle.lifecycleScope
 import com.google.zxing.integration.android.IntentIntegrator
+import kotlinx.coroutines.launch
+import kr.co.carboncheck.android.carboncheckapp.database.CarbonCheckLocalDatabase
 import kr.co.carboncheck.android.carboncheckapp.databinding.ActivityQrcodeScanBinding
 import kr.co.carboncheck.android.carboncheckapp.dto.*
+import kr.co.carboncheck.android.carboncheckapp.entity.Plug
 import kr.co.carboncheck.android.carboncheckapp.network.RetrofitClient
 import kr.co.carboncheck.android.carboncheckapp.util.UserPreference
 import retrofit2.Call
@@ -22,12 +27,17 @@ import retrofit2.Response
 class QrcodeScanActivity : AppCompatActivity() {
     private lateinit var binding: ActivityQrcodeScanBinding
     private val REQUEST_CAMERA_PERMISSION = 1
+    private lateinit var localDatabase: CarbonCheckLocalDatabase
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityQrcodeScanBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        //데이터베이스 가져옴!!!!!!!!!!!!!!!!!!!
+        localDatabase = CarbonCheckLocalDatabase.getInstance(this)
+
 
         //카메라 권한 없을 경우
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
@@ -104,15 +114,25 @@ class QrcodeScanActivity : AppCompatActivity() {
                     }
                 } else if (action == "REGISTER_PLUG") {
                     sendRegisterPlugRequest(deviceId, userId) { result ->
+                        // 등록 성공
+                        lifecycleScope.launch {
+                            val plugDao = localDatabase.plugDao()
+                            val plug = Plug(deviceId, "플러그")
+                            Log.d("testlog", "로컬 db에 플러그 저장 완료")
+                            Log.d("testlog", deviceId)
+                            plugDao.insertPlug(plug)
+                        }
                         if (result) {
-                            // 등록 성공
+                            // 매인액티비티로 돌아간다
                             val intent = Intent(this, MainActivity::class.java)
                             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
                             startActivity(intent)
                             finish()
                         } else {
                             // 등록 실패
+                            finish()
                         }
+
                     }
                 }
             } else {
