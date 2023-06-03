@@ -76,7 +76,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginStart="12dp"
+                            android:layout_marginStart="6dp"
                             android:fontFamily="@font/pretendard_medium"
                             android:text="@string/my_usage"
                             android:textColor="@color/third"
@@ -261,7 +261,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginLeft="12dp"
+                            android:layout_marginLeft="6dp"
                             android:fontFamily="@font/pretendard_medium"
                             android:text="@string/recent_usage"
                             android:textColor="@color/third"
@@ -277,6 +277,150 @@
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toBottomOf="@id/icon_recent_usage" />
+
+                        <LinearLayout
+                            android:id="@+id/date_layout"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginHorizontal="12dp"
+                            android:layout_marginBottom="12dp"
+                            android:gravity="center_horizontal"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toBottomOf="@id/recent_usage_chart">
+
+                            <TextView
+                                android:id="@+id/date0"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:fontFamily="@font/pretendard_semibold"
+                                android:gravity="center_horizontal"
+                                android:includeFontPadding="false"
+                                android:textColor="@color/accent"
+                                android:textSize="11sp"
+                                tools:text="05/27" />
+
+                            <TextView
+                                android:id="@+id/date1"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:fontFamily="@font/pretendard_semibold"
+                                android:gravity="center_horizontal"
+                                android:includeFontPadding="false"
+                                android:textColor="@color/accent"
+                                android:textSize="11sp"
+                                tools:text="05/28" />
+
+                            <TextView
+                                android:id="@+id/date2"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:fontFamily="@font/pretendard_semibold"
+                                android:gravity="center_horizontal"
+                                android:includeFontPadding="false"
+                                android:textColor="@color/accent"
+                                android:textSize="11sp"
+                                tools:text="05/29" />
+
+                            <TextView
+                                android:id="@+id/date3"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:fontFamily="@font/pretendard_semibold"
+                                android:gravity="center_horizontal"
+                                android:includeFontPadding="false"
+                                android:textColor="@color/accent"
+                                android:textSize="11sp"
+                                tools:text="05/30" />
+
+                            <TextView
+                                android:id="@+id/date4"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:fontFamily="@font/pretendard_semibold"
+                                android:gravity="center_horizontal"
+                                android:includeFontPadding="false"
+                                android:textColor="@color/accent"
+                                android:textSize="11sp"
+                                tools:text="05/31" />
+
+                            <TextView
+                                android:id="@+id/date5"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:fontFamily="@font/pretendard_semibold"
+                                android:gravity="center_horizontal"
+                                android:includeFontPadding="false"
+                                android:textColor="@color/accent"
+                                android:textSize="11sp"
+                                tools:text="06/01" />
+
+                            <TextView
+                                android:id="@+id/date6"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:fontFamily="@font/pretendard_semibold"
+                                android:gravity="center_horizontal"
+                                android:includeFontPadding="false"
+                                android:textColor="@color/accent"
+                                android:textSize="11sp"
+                                tools:text="06/02" />
+                        </LinearLayout>
+
+                        <TextView
+                            android:id="@+id/electric_legend"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="12dp"
+                            android:layout_marginTop="12dp"
+                            android:drawableStart="@drawable/ic_dot_electric"
+                            android:drawablePadding="8dp"
+                            android:fontFamily="@font/pretendard_semibold"
+                            android:includeFontPadding="false"
+                            android:text="전력 사용량"
+                            android:textColor="@color/electric"
+                            app:layout_constraintEnd_toStartOf="@id/water_legend"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toBottomOf="@id/date_layout" />
+
+                        <TextView
+                            android:id="@+id/water_legend"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="12dp"
+                            android:layout_marginTop="12dp"
+                            android:drawableStart="@drawable/ic_dot_water"
+                            android:drawablePadding="8dp"
+                            android:fontFamily="@font/pretendard_semibold"
+                            android:includeFontPadding="false"
+                            android:text="수도 사용량"
+                            android:textColor="@color/water"
+                            app:layout_constraintEnd_toStartOf="@id/carbon_legend"
+                            app:layout_constraintStart_toEndOf="@id/electric_legend"
+                            app:layout_constraintTop_toBottomOf="@id/date_layout" />
+
+                        <TextView
+                            android:id="@+id/carbon_legend"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="12dp"
+                            android:layout_marginTop="12dp"
+                            android:drawableStart="@drawable/ic_dot_carbon"
+                            android:drawablePadding="8dp"
+                            android:fontFamily="@font/pretendard_semibold"
+                            android:includeFontPadding="false"
+                            android:text="탄소 배출량"
+                            android:textColor="@color/accent"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toEndOf="@id/water_legend"
+                            app:layout_constraintTop_toBottomOf="@id/date_layout" />
 
                     </androidx.constraintlayout.widget.ConstraintLayout>
                 </com.google.android.material.card.MaterialCardView>
