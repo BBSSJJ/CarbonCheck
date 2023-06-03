@@ -72,18 +72,18 @@ class MainActivity : AppCompatActivity() {
 
 
 
-        if (checkForPermission()) {
-            // 권한이 있으면 메인 액티 비티를 시각화 합니다.
-            setContentView(binding.root)
-            // 설치된 어플 목록을 가져옵니다.
-            setPackageInfoList()
-        } else {
-            // 권한이 존재 하지 않으면 토스트 메세지 출력후 권한 설정 화면 으로 이동 합니다.
-            Toast.makeText(
-                this, "Check Permission", Toast.LENGTH_LONG
-            ).show()
-            startActivity(Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS))
-        }
+//        if (checkForPermission()) {
+//            // 권한이 있으면 메인 액티 비티를 시각화 합니다.
+//            setContentView(binding.root)
+//            // 설치된 어플 목록을 가져옵니다.
+//            setPackageInfoList()
+//        } else {
+//            // 권한이 존재 하지 않으면 토스트 메세지 출력후 권한 설정 화면 으로 이동 합니다.
+//            Toast.makeText(
+//                this, "Check Permission", Toast.LENGTH_LONG
+//            ).show()
+//            startActivity(Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS))
+//        }
 
         //이메일로 유저 데이터들 가져와 preference에 넣는다.
         Log.d("testlog", "get email preference " + getEmailPreference(this))
@@ -189,7 +189,7 @@ class MainActivity : AppCompatActivity() {
         return false
     }
 
-
+/*
     private fun checkForPermission(): Boolean {
         // Application 의 패키지 명을 가져 오기 위한 권한이 있는지 확인 하는 함수 입니다.
         val appOps = this.getSystemService(Context.APP_OPS_SERVICE) as AppOpsManager
@@ -214,7 +214,7 @@ class MainActivity : AppCompatActivity() {
             }
         }
     }
-
+*/
     // 뒤로가기 두번 눌러 종료하도록 하는 코드
     private var backPressedTime: Long = 0 // 뒤로가기 버튼이 눌린 시간을 저장하는 변수
     private val backPressedInterval = 2000 // 두 번 눌렀을 때의 시간 간격 (밀리초)
