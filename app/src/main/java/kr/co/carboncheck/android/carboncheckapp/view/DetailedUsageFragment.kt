@@ -26,13 +26,14 @@ import kr.co.carboncheck.android.carboncheckapp.viewmodel.SharedViewModel
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import kr.co.carboncheck.android.carboncheckapp.util.NumberFormat
 
 class DetailedUsageFragment : Fragment() {
     private var _binding: FragmentDetailedUsageBinding? = null
     private val binding get() = _binding!!
     private val sharedViewModel: SharedViewModel by activityViewModels()
     private lateinit var localDatabase: CarbonCheckLocalDatabase
-
+    val numberFormat = NumberFormat()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -94,9 +95,9 @@ class DetailedUsageFragment : Fragment() {
                     placeText.text = key
                     placeImage.setImageResource(R.drawable.faucet)
                     waterOrElectricityImage.setImageResource(R.drawable.water_drop)
-                    waterOrElectricityText.text = value.toString() + " L"
-                    carbonUsageText.text = value.toString() + " g"
-                    costText.text = value.toString() + " ₩"
+                    waterOrElectricityText.text = numberFormat.toLiterString(value)
+                    carbonUsageText.text = numberFormat.waterUsageToCarbonUsageString(value)
+                    costText.text = numberFormat.waterUsageToPriceString(value)
 
                     detailedUsageGridLayout.addView(cardView)
                 }
@@ -159,9 +160,9 @@ class DetailedUsageFragment : Fragment() {
                     }
                     placeImage.setImageResource(R.drawable.power)
                     waterOrElectricityImage.setImageResource(R.drawable.bolt)
-                    waterOrElectricityText.text = value.toString() + " Wh"
-                    carbonUsageText.text = value.toString() + " g"
-                    costText.text = value.toString() + " ₩"
+                    waterOrElectricityText.text = numberFormat.toKwhString(value)
+                    carbonUsageText.text = numberFormat.electricityUsageToCarbonUsageString(value)
+                    costText.text = numberFormat.electricityToPriceString(value)
 
                     //플러그 이름 변경, 삭제를 위한 온클릭이벤트
                     cardView.setOnClickListener {
