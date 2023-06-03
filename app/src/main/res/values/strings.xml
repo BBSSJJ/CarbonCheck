@@ -8,6 +8,6 @@
     <string name="home_usage">우리집 사용량</string>
     <string name="recent_usage">최근 사용량</string>
     <string name="total_emissions">총 배출량</string>
-    <string name="mission_true">달성하셨습니다!</string>
+    <string name="ranking">랭킹</string>
 
 </resources>
