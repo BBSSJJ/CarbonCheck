@@ -1,0 +1,205 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="16dp"
+    android:background="@color/secondary"
+    app:cardCornerRadius="12dp">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="16dp">
+
+        <TextView
+            android:id="@+id/solution_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/pretendard_semibold"
+            android:textColor="@color/third"
+            android:textSize="18sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="미션 타이틀" />
+
+        <ImageView
+            android:id="@+id/solution_result"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:src="@drawable/check_box_outline_blank_48px"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:tint="@color/third" />
+
+        <TextView
+            android:id="@+id/solution_mission"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:fontFamily="@font/pretendard_regular"
+            android:textColor="@color/third"
+            android:textSize="16sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/solution_title"
+            tools:text="통신·방송의 시설기준과 신문의 기능을 보장하기 위하여" />
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/expected_result"
+            android:layout_width="match_parent"
+            android:layout_height="24dp"
+            android:layout_marginTop="12dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/solution_mission">
+
+            <LinearLayout
+                android:id="@+id/expected_water_layout"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                app:layout_constraintEnd_toStartOf="@id/expected_electricity_layout"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <ImageView
+                    android:id="@+id/expected_water_icon"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@drawable/humidity_low_48px"
+                    app:tint="@color/third" />
+
+                <TextView
+                    android:id="@+id/expected_water_amount"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="6dp"
+                    android:fontFamily="@font/pretendard_medium"
+                    android:textColor="@color/third"
+                    android:textSize="12sp"
+                    app:layout_constraintStart_toEndOf="@id/expected_water_icon"
+                    app:layout_constraintTop_toTopOf="parent"
+                    tools:text="30.0" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/pretendard_medium"
+                    android:text=" L"
+                    android:textColor="@color/third"
+                    android:textSize="12sp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/expected_electricity_layout"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                app:layout_constraintEnd_toStartOf="@id/expected_expense_layout"
+                app:layout_constraintStart_toEndOf="@id/expected_water_layout"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <ImageView
+                    android:id="@+id/expected_electricity_icon"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@drawable/bolt_48px"
+                    app:tint="@color/third" />
+
+                <TextView
+                    android:id="@+id/expected_electricity_amount"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="6dp"
+                    android:fontFamily="@font/pretendard_medium"
+                    android:textColor="@color/third"
+                    android:textSize="12sp"
+                    tools:text="0.315" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/pretendard_medium"
+                    android:text=" Kwh"
+                    android:textColor="@color/third"
+                    android:textSize="12sp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/expected_expense_layout"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                app:layout_constraintEnd_toStartOf="@id/expected_carbon_layout"
+                app:layout_constraintStart_toEndOf="@id/expected_electricity_layout"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <ImageView
+                    android:id="@+id/expected_expense_icon"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@drawable/payments_48px"
+                    app:tint="@color/third" />
+
+                <TextView
+                    android:id="@+id/expected_expense_amount"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="6dp"
+                    android:fontFamily="@font/pretendard_medium"
+                    android:textColor="@color/third"
+                    android:textSize="12sp"
+                    tools:text="340" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/pretendard_medium"
+                    android:text=" ₩"
+                    android:textColor="@color/third"
+                    android:textSize="12sp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/expected_carbon_layout"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/expected_expense_layout"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <ImageView
+                    android:id="@+id/expected_carbon_icon"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@drawable/baseline_co2_24"
+                    app:tint="@color/third" />
+
+                <TextView
+                    android:id="@+id/expected_carbon_amount"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="6dp"
+                    android:fontFamily="@font/pretendard_medium"
+                    android:textColor="@color/third"
+                    android:textSize="12sp"
+                    tools:text="0.13" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/pretendard_medium"
+                    android:text=" g"
+                    android:textColor="@color/third"
+                    android:textSize="12sp" />
+
+            </LinearLayout>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</com.google.android.material.card.MaterialCardView>
