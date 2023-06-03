@@ -40,7 +40,7 @@
                 android:layout_marginTop="12dp"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/place_text"
-                app:srcCompat="@drawable/humidity_low" />
+                app:srcCompat="@drawable/water_drop" />
 
             <ImageView
                 android:id="@+id/carbon_usage_image"
