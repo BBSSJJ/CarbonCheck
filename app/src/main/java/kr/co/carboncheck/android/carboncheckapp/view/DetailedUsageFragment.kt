@@ -3,6 +3,7 @@ package kr.co.carboncheck.android.carboncheckapp.view
 import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.os.Bundle
+import android.os.Handler
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -34,6 +35,7 @@ class DetailedUsageFragment : Fragment() {
     val numberFormat = NumberFormat()
     private var detailList = mutableListOf<DetailData>()
 
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
@@ -46,14 +48,22 @@ class DetailedUsageFragment : Fragment() {
     ): View? {
         _binding = FragmentDetailedUsageBinding.inflate(inflater, container, false)
         localDatabase = CarbonCheckLocalDatabase.getInstance(requireContext())
-
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initializeDetailList()
-        initDetailListRecyclerView()
+
+        binding.progressBar.visibility = View.VISIBLE
+        Handler().postDelayed({
+
+            initDetailListRecyclerView()
+            binding.progressBar.visibility = View.INVISIBLE
+
+        }, 5000)
+
+
 
 
     }

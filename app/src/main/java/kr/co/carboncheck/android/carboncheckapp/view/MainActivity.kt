@@ -11,6 +11,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kr.co.carboncheck.android.carboncheckapp.R
 import kr.co.carboncheck.android.carboncheckapp.adapter.DetailedRecyclerAdapter
@@ -98,7 +99,7 @@ class MainActivity : AppCompatActivity() {
                 var userId = userData.userId
                 var homeServerId = userData.homeServerId
 
-                lifecycleScope.launch {
+                lifecycleScope.launch{
                     if (homeServerId != "") {
                         //SSE 연결
                         sseConnection.connect(userData.homeServerId, userData.userId, sseListener)
@@ -156,7 +157,7 @@ class MainActivity : AppCompatActivity() {
 
                 }
 
-                lifecycleScope.launch {
+                lifecycleScope.launch{
                     //유저 물 사용량 가져오기
                     getUserWaterUsage(userId) { userWaterUsageList ->
                         if (userWaterUsageList != null) {
@@ -190,8 +191,7 @@ class MainActivity : AppCompatActivity() {
                                         val plug = plugDao.findById(key)
                                         var name : String
                                         if(plug == null){
-//                                            name = "잘못된 플러그"
-                                            continue
+                                            name = "잘못된 플러그"
                                         }else {
                                             name = plug.plugName!!
                                         }

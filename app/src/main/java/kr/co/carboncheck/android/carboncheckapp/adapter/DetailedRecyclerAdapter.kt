@@ -3,6 +3,7 @@ package kr.co.carboncheck.android.carboncheckapp.adapter
 import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
+import android.os.Handler
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -197,6 +198,7 @@ class DetailedRecyclerAdapter(var context: Context, private val sharedViewModel:
                                     plugDao.deletePlug(plug)
                                 }
                             }
+
 
                             //현재 view에서 삭제
                             removeView(position)
