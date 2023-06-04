@@ -47,11 +47,6 @@ class TotalUsageFragment : Fragment() {
     private lateinit var layoutManager: LinearLayoutManager
     private lateinit var adapter: Any
 
-    companion object {
-        private val ALL_CATEGORIES = listOf(
-            ElectricCategory, WaterCategory
-        )
-    }
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -61,8 +56,6 @@ class TotalUsageFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {}
-
-
     }
 
     override fun onCreateView(
@@ -180,7 +173,7 @@ class TotalUsageFragment : Fragment() {
     }
 
     private fun runInitialDonutAnimation(donutProgressView: DonutProgressView) {
-
+        if(!isAdded) return
         ValueAnimator.ofFloat(0f, 1f).apply {
             duration = 10
             interpolator = FastOutSlowInInterpolator()
@@ -268,7 +261,7 @@ class TotalUsageFragment : Fragment() {
     }
 
     private fun setRecentUsageBarChart(barChart: BarChart) {
-
+        if(!isAdded) return
         // 데이터 리스트를 가져옵니다.
         val dataList = getRecentUsage()
 

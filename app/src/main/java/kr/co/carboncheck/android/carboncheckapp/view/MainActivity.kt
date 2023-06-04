@@ -72,7 +72,15 @@ class MainActivity : AppCompatActivity() {
             }
             loadFragment(fragment)
         }
-
+        bottomNavigationView.setOnItemReselectedListener { item ->
+            when(item.itemId){
+                R.id.total_usage_menu -> {}
+                R.id.detailed_usage_menu -> {}
+                R.id.solution_menu -> {}
+                R.id.mini_game_menu -> {}
+                R.id.user_info_menu -> {}
+            }
+        }
 
 
 //        if (checkForPermission()) {
