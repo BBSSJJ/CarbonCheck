@@ -148,14 +148,14 @@ class DetailedRecyclerAdapter(var context: Context, private val sharedViewModel:
 
             // 코루틴 스코프 내에서 작업 수행
             CoroutineScope(Dispatchers.Main).launch {
-                val plug = withContext(Dispatchers.IO) {
+                val plugArray = withContext(Dispatchers.IO) {
                     plugDao.findById(plugId)
                 }
 
-                if (plug != null) {
-                    plug.plugName = newName // 플러그 이름 변경 후
+                if (plugArray.isNotEmpty()) {
+                    plugArray[0].plugName = newName // 플러그 이름 변경 후
                     withContext(Dispatchers.IO) {
-                        plugDao.updatePlug(plug) // 플러그 다시 저장
+                        plugDao.updatePlug(plugArray[0]) // 플러그 다시 저장
                     }
                 }
             }
@@ -193,9 +193,9 @@ class DetailedRecyclerAdapter(var context: Context, private val sharedViewModel:
                             localDatabase = CarbonCheckLocalDatabase.getInstance(context)
                             val plugDao = localDatabase.plugDao()
                             CoroutineScope(Dispatchers.IO).launch{
-                                val plug = plugDao.findById(plugId)
-                                if (plug != null) {
-                                    plugDao.deletePlug(plug)
+                                val plugArray = plugDao.findById(plugId)
+                                if (plugArray.isNotEmpty()) {
+                                    plugDao.deletePlug(plugArray[0])
                                 }
                             }
 

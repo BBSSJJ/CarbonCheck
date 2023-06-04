@@ -7,7 +7,7 @@ import androidx.room.RoomDatabase
 import kr.co.carboncheck.android.carboncheckapp.dao.PlugDao
 import kr.co.carboncheck.android.carboncheckapp.entity.Plug
 
-@Database(entities = [Plug::class], version = 1)
+@Database(entities = [Plug::class], version = 2)
 abstract class CarbonCheckLocalDatabase : RoomDatabase() {
     abstract fun plugDao(): PlugDao
 
