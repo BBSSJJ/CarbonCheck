@@ -1,5 +1,6 @@
 package kr.co.carboncheck.android.carboncheckapp.view
 
+import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.os.Bundle
 import android.util.Log
@@ -9,6 +10,7 @@ import android.view.ViewGroup
 import android.widget.*
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
 import kotlinx.coroutines.launch
@@ -53,11 +55,63 @@ class DetailedUsageFragment : Fragment() {
 //        inflateCardView()
         initializeDetailList()
         initDetailListRecyclerView()
+
+
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     private fun initDetailListRecyclerView() {
-        val adapter = DetailedRecyclerAdapter()
+        val adapter = DetailedRecyclerAdapter(requireContext(), sharedViewModel)
         adapter.datalist = detailList
+//
+//        sharedViewModel.getUserWaterUsage().observe(viewLifecycleOwner) { map ->
+//            if (map.isNotEmpty()) {
+//                for ((key, value) in map) {
+//                    var place = "세면대"
+//                    if (key == "FLOW1") place = "세면대"
+//                    else if (key == "FLOW2") place = "샤워기"
+//                    with(detailList) {
+//                        add(
+//                            DetailData(
+//                                place,
+//                                0,
+//                                0,
+//                                numberFormat.toLiterString(value),
+//                                numberFormat.waterUsageToCarbonUsageString(value),
+//                                numberFormat.waterUsageToPriceString(value),
+//                                false,
+//                                null
+//                            )
+//                        )
+//
+//                    }
+//                }
+//            }
+//            adapter.datalist = detailList
+//        }
+//
+//        sharedViewModel.getUserElectricityUsageName().observe(viewLifecycleOwner) { map ->
+//            for ((key, value) in map) {
+//                val plugId = key
+//                var plugName = value.first
+//                val amount = value.second
+//                with(detailList) {
+//                    add(
+//                        DetailData(
+//                            plugName, 1, 1, numberFormat.toKwhString(amount),
+//                            numberFormat.electricityUsageToCarbonUsageString(amount),
+//                            numberFormat.electricityToPriceString(amount),
+//                            false,
+//                            plugId
+//                        )
+//                    )
+//                }
+//            }
+//            with(detailList) {
+//                add(DetailData("", 0, 0, "", "", "", true, null))
+//            }
+//            adapter.datalist = detailList
+//        }
         binding.detailListRecyclerview.adapter = adapter
         binding.detailListRecyclerview.layoutManager = GridLayoutManager(activity, 2)
     }
@@ -66,6 +120,16 @@ class DetailedUsageFragment : Fragment() {
         val localDatabase = CarbonCheckLocalDatabase.getInstance(requireContext())
         val plugDao = localDatabase.plugDao()
         val waterUsage = sharedViewModel.getUserWaterUsage().value
+        Log.d("testlog", waterUsage.toString())
+
+//        if (waterUsage != null) {
+//            if (waterUsage.isEmpty())
+//                with(detailList) {
+//                    add(DetailData("세면대", 0, 0, "0.0 L", "0.0 g", "0 ₩", false, null))
+//                    add(DetailData("샤워기", 0, 0, "0.0 L", "0.0 g", "0 ₩", false, null))
+//                }
+//        }
+
         if (waterUsage != null) {
             if (waterUsage.isNotEmpty()) {
                 for ((key, value) in waterUsage) {
@@ -81,7 +145,8 @@ class DetailedUsageFragment : Fragment() {
                                 numberFormat.toLiterString(value),
                                 numberFormat.waterUsageToCarbonUsageString(value),
                                 numberFormat.waterUsageToPriceString(value),
-                                false
+                                false,
+                                null
                             )
                         )
 
@@ -89,185 +154,39 @@ class DetailedUsageFragment : Fragment() {
                 }
             } else {
                 with(detailList) {
-                    add(DetailData("세면대", 0, 0, "0.0 L", "0.0 g", "0 ₩", false))
-                    add(DetailData("샤워기", 0, 0, "0.0 L", "0.0 g", "0 ₩", false))
-                    add(DetailData("샤워기", 0, 0, "0.0 L", "0.0 g", "0 ₩", false))
-
+                    add(DetailData("세면대", 0, 0, "0.0 L", "0.0 g", "0 ₩", false, null))
+                    add(DetailData("샤워기", 0, 0, "0.0 L", "0.0 g", "0 ₩", false, null))
                 }
             }
         }
-        val electricityUsage = sharedViewModel.getUserElectricityUsage().value
-        if (electricityUsage != null) {
-            if (electricityUsage.isNotEmpty()) {
-                for ((key, value) in electricityUsage) {
 
-                    //////////////////로컬 db 접근//////////////////////////////
-
-                    lifecycleScope.launch {
-                        val plug = plugDao.findById(key)
-                        var place = plug?.plugName ?: "등록되지 않은 플러그"
-                        with(detailList) {
-                            add(
-                                DetailData(
-                                    place,
-                                    1,
-                                    1,
-                                    numberFormat.toKwhString(value),
-                                    numberFormat.electricityUsageToCarbonUsageString(value),
-                                    numberFormat.electricityToPriceString(value),
-                                    false
-                                )
-                            )
-                        }
-                    }
-                    ///////////////////////////////////////////////////////////
-
+        sharedViewModel.getUserElectricityUsageName().observe(viewLifecycleOwner){map->
+            for((key, value) in map){
+                val plugId = key
+                val plugName = value.first
+                val amount = value.second
+                with(detailList) {
+                    add(
+                        DetailData(
+                            plugName, 1, 1, numberFormat.toKwhString(amount),
+                            numberFormat.electricityUsageToCarbonUsageString(amount),
+                            numberFormat.electricityToPriceString(amount),
+                            false,
+                            plugId
+                        )
+                    )
                 }
             }
+            with(detailList) {
+                add(DetailData("", 0, 0, "", "", "", true, null))
+            }
+
         }
+
+
     }
 
-//    private fun inflateCardView() {
-//        val localDatabase = CarbonCheckLocalDatabase.getInstance(requireContext())
-//        val plugDao = localDatabase.plugDao()
-//        val detailedUsageGridLayout = binding.detailedUsageGridLayout
-//        val inflater = LayoutInflater.from(context)
-//        val displayMetrics = resources.displayMetrics
-//        val screenWidth = displayMetrics.widthPixels
-//        val scale = resources.displayMetrics.density
-//        val marginInDp = (8 * scale + 0.5f).toInt() // 16dp를 픽셀로 변환
-//        val cardViewWidth = screenWidth / 2 - marginInDp
-//
-//        //물 사용량 카드
-//        val waterUsage = sharedViewModel.getUserWaterUsage().value
-//        if (waterUsage != null) {
-//            if (waterUsage!!.isNotEmpty()) {
-//                for ((key, value) in waterUsage) {
-//                    val cardView = inflater.inflate(
-//                        R.layout.detailed_usage_card_view,
-//                        detailedUsageGridLayout,
-//                        false
-//                    )
-//                    val params = GridLayout.LayoutParams().apply {
-//                        width = cardViewWidth
-//                        height = GridLayout.LayoutParams.WRAP_CONTENT
-//                    }
-//                    cardView.layoutParams = params
-//
-//                    val placeText = cardView.findViewById<TextView>(R.id.place_text)
-//                    val placeImage = cardView.findViewById<ImageView>(R.id.place_image)
-//                    val waterOrElectricityImage =
-//                        cardView.findViewById<ImageView>(R.id.water_or_electricity_image)
-//                    val waterOrElectricityText =
-//                        cardView.findViewById<TextView>(R.id.water_or_eletricity_usage_text)
-//                    val carbonUsageText = cardView.findViewById<TextView>(R.id.carbon_usage_text)
-//                    val costText = cardView.findViewById<TextView>(R.id.cost_text)
-//
-//                    placeText.text = key
-//                    placeImage.setImageResource(R.drawable.faucet)
-//                    waterOrElectricityImage.setImageResource(R.drawable.water_drop)
-//                    waterOrElectricityText.text = numberFormat.toLiterString(value)
-//                    carbonUsageText.text = numberFormat.waterUsageToCarbonUsageString(value)
-//                    costText.text = numberFormat.waterUsageToPriceString(value)
-//
-//                    detailedUsageGridLayout.addView(cardView)
-//                }
-//            } else {  //수도 사용량은 없을 때에 가져올 수가 없음(left join을 못해서)
-//                for (i in 1..2) {
-//                    val cardView = inflater.inflate(
-//                        R.layout.detailed_usage_card_view,
-//                        detailedUsageGridLayout,
-//                        false
-//                    )
-//                    val params = GridLayout.LayoutParams().apply {
-//                        width = cardViewWidth
-//                        height = GridLayout.LayoutParams.WRAP_CONTENT
-//                    }
-//                    cardView.layoutParams = params
-//                    val placeText = cardView.findViewById<TextView>(R.id.place_text)
-//                    placeText.text = if (i == 1) "세면대" else "샤워기";
-//
-//                    detailedUsageGridLayout.addView(cardView)
-//                }
-//            }
-//        }
-//
-//        //전기 사용량 카드
-//        val electricityUsage = sharedViewModel.getUserElectricityUsage().value
-//        Log.d("testlog", "in lifecycle")
-//        if (electricityUsage != null) {
-//            if (electricityUsage!!.isNotEmpty()) {
-//                for ((key, value) in electricityUsage) {
-//                    val cardView = inflater.inflate(
-//                        R.layout.detailed_usage_card_view,
-//                        detailedUsageGridLayout,
-//                        false
-//                    )
-//                    val params = GridLayout.LayoutParams().apply {
-//                        width = cardViewWidth
-//                        height = GridLayout.LayoutParams.WRAP_CONTENT
-//                    }
-//                    cardView.layoutParams = params
-//
-//                    val placeText = cardView.findViewById<TextView>(R.id.place_text)
-//                    val placeImage = cardView.findViewById<ImageView>(R.id.place_image)
-//                    val waterOrElectricityImage =
-//                        cardView.findViewById<ImageView>(R.id.water_or_electricity_image)
-//                    val waterOrElectricityText =
-//                        cardView.findViewById<TextView>(R.id.water_or_eletricity_usage_text)
-//                    val carbonUsageText =
-//                        cardView.findViewById<TextView>(R.id.carbon_usage_text)
-//                    val costText = cardView.findViewById<TextView>(R.id.cost_text)
-//
-//                    val plug: Plug?
-//                    lifecycleScope.launch(Dispatchers.Default) {
-//                        val plug = plugDao.findById(key)
-//                        withContext(Dispatchers.Main) {
-//                            if (plug == null) {
-//                                // db에 등록되지 않았음
-//                                placeText.text = "등록되지 않은 플러그"
-//                            } else {
-//                                placeText.text = plug.plugName
-//                            }
-//                        }
-//                    }
-//                    placeImage.setImageResource(R.drawable.power)
-//                    waterOrElectricityImage.setImageResource(R.drawable.bolt)
-//                    waterOrElectricityText.text = numberFormat.toKwhString(value)
-//                    carbonUsageText.text = numberFormat.electricityUsageToCarbonUsageString(value)
-//                    costText.text = numberFormat.electricityToPriceString(value)
-//
-//                    //플러그 이름 변경, 삭제를 위한 온클릭이벤트
-//                    cardView.setOnClickListener {
-//                        cardClickMenu(cardView, key)
-//                    }
-//                    detailedUsageGridLayout.addView(cardView)
-//                }
-//            }
-//        }
-//        //마지막 추가 버튼
-//        val cardView = inflater.inflate(
-//            R.layout.detailed_usage_add_card_view,
-//            detailedUsageGridLayout,
-//            false
-//        )
-//        val params = GridLayout.LayoutParams().apply {
-//            width = cardViewWidth
-//            height = GridLayout.LayoutParams.WRAP_CONTENT
-//        }
-//        cardView.layoutParams = params
-//        val addImage = cardView.findViewById<ImageView>(R.id.add_image)
-//        addImage.setImageResource(R.drawable.add_circle_60px)
-//        cardView.setOnClickListener {
-//            val intent = Intent(activity, QrcodeScanActivity::class.java)
-//            intent.putExtra("ACTION", "REGISTER_PLUG")
-//            startActivity(intent)
-//        }
-//        detailedUsageGridLayout.addView(cardView)
-//
-//
-//    }
-
+/*
     private fun cardClickMenu(view: View, plugId: String) {
         val builder = AlertDialog.Builder(context!!)
         builder.setTitle("설정") // 다이얼로그 제목 설정
@@ -334,6 +253,14 @@ class DetailedUsageFragment : Fragment() {
                                     plugDao.deletePlug(plug)
                                 }
                             }
+
+                            val currentNameMap = sharedViewModel.getUserElectricityUsageName().value?.toMutableMap()
+                            currentNameMap?.remove(plugId)
+                            sharedViewModel.setUserElectricityUsageName(currentNameMap?.toMap() ?: emptyMap())
+
+                            val currentMap = sharedViewModel.getUserElectricityUsage().value?.toMutableMap()
+                            currentMap?.remove(plugId)
+                            sharedViewModel.setUserElectricityUsage(currentMap?.toMap() ?: emptyMap())
                         }
                         if (result == false) Toast.makeText(context, "삭제 실패", Toast.LENGTH_LONG)
                             .show()
@@ -374,6 +301,7 @@ class DetailedUsageFragment : Fragment() {
             }
         })
     }
+    */
 
     override fun onDestroyView() {
         super.onDestroyView()

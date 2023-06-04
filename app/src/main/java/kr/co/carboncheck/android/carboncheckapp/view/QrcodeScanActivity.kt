@@ -117,10 +117,14 @@ class QrcodeScanActivity : AppCompatActivity() {
                         // 등록 성공
                         lifecycleScope.launch {
                             val plugDao = localDatabase.plugDao()
-                            val plug = Plug(deviceId, "플러그")
-                            Log.d("testlog", "로컬 db에 플러그 저장 완료")
-                            Log.d("testlog", deviceId)
-                            plugDao.insertPlug(plug)
+                            if (plugDao.findById(deviceId) == null) {
+                                var plug = Plug(deviceId, "플러그")
+                                plugDao.insertPlug(plug)
+                                Log.d("testlog", "로컬 db에 플러그 저장 완료")
+                                Log.d("testlog", deviceId)
+                            } else {
+                                Log.d("testlog", "이미 등록된 플러그")
+                            }
                         }
                         if (result) {
                             // 매인액티비티로 돌아간다
