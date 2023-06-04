@@ -2,6 +2,7 @@ package kr.co.carboncheck.android.carboncheckapp.view
 
 
 import android.animation.ValueAnimator
+import android.content.Context
 import android.graphics.Color
 import android.os.Bundle
 import android.os.Handler
@@ -37,13 +38,18 @@ class TotalUsageFragment : Fragment() {
     private var electricAmount = 120.4f     // 전기 탄소 배출량
     private var waterAmount = 56.0f        // 수도 탄소 배출량
     private val memberUsageData = mutableListOf<MemberUsageData>()
-
+    private lateinit var myContext :Context
 
     companion object {
         private val ALL_CATEGORIES = listOf(
             ElectricCategory,
             WaterCategory
         )
+    }
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        myContext = context
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -128,22 +134,27 @@ class TotalUsageFragment : Fragment() {
     }
 
     private fun fillDonutInitialData(donutProgressView: DonutProgressView) {
-        val sections = listOf(
-            DonutSection(
-                ElectricCategory.name,
-                ContextCompat.getColor(requireContext(), R.color.electric),
-                electricAmount
-            ),
-            DonutSection(
-                WaterCategory.name,
-                ContextCompat.getColor(requireContext(), R.color.water),
-                waterAmount
+        val context = myContext
+        if (context != null) {
+            val sections = listOf(
+                DonutSection(
+                    ElectricCategory.name,
+                    ContextCompat.getColor(context, R.color.electric),
+                    electricAmount
+                ),
+                DonutSection(
+                    WaterCategory.name,
+                    ContextCompat.getColor(context, R.color.water),
+                    waterAmount
+                )
             )
-        )
 
-        donutProgressView.submitData(sections)
-        //updateIndicators()
+            donutProgressView.submitData(sections)
+        }
     }
+
+
+
 
     private fun setRecentUsageBarChart(barChart: BarChart) {
 
