@@ -1,11 +1,12 @@
 package kr.co.carboncheck.android.carboncheckapp.dataobject
 
 data class DetailData(
-    val place: String,
+    var place: String,
     val placeImage: Int,
     val typeImage: Int,
     val typeUsage: String,
     val carbonUsage: String,
-    val Cost: String,
-    val Plus: Boolean
+    val cost: String,
+    val plus: Boolean,
+    val plugId: String?
 )

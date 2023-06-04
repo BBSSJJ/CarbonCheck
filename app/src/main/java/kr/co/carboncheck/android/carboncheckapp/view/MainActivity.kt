@@ -1,13 +1,9 @@
 package kr.co.carboncheck.android.carboncheckapp.view
 
 import kr.co.carboncheck.android.carboncheckapp.network.SseConnection
-import android.app.AppOpsManager
 import android.content.Context
-import android.content.Intent
 import android.content.pm.PackageInfo
 import android.os.Bundle
-import android.os.Process
-import android.provider.Settings
 import android.util.Log
 import android.widget.Toast
 import androidx.activity.viewModels
@@ -15,10 +11,10 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import com.google.android.material.bottomnavigation.BottomNavigationView
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kr.co.carboncheck.android.carboncheckapp.R
+import kr.co.carboncheck.android.carboncheckapp.adapter.DetailedRecyclerAdapter
+import kr.co.carboncheck.android.carboncheckapp.database.CarbonCheckLocalDatabase
 import kr.co.carboncheck.android.carboncheckapp.databinding.ActivityMainBinding
 import kr.co.carboncheck.android.carboncheckapp.dto.GetGroupTargetAmountResponse
 import kr.co.carboncheck.android.carboncheckapp.dto.GetUsageResponse
@@ -33,7 +29,6 @@ import retrofit2.Response
 
 
 class MainActivity : AppCompatActivity() {
-
     private lateinit var binding: ActivityMainBinding
     private val listPackageInfo: MutableList<PackageInfo> = mutableListOf()
     private lateinit var bottomNavigationView: BottomNavigationView
@@ -43,12 +38,17 @@ class MainActivity : AppCompatActivity() {
     private val sseListener = SseListener()
 
     private val sharedViewModel: SharedViewModel by viewModels()
+    private lateinit var localDatabase: CarbonCheckLocalDatabase
+
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        localDatabase = CarbonCheckLocalDatabase.getInstance(this)
+        val plugDao = localDatabase.plugDao()
 
 
         //첫 화면 fragment 지정
@@ -176,6 +176,36 @@ class MainActivity : AppCompatActivity() {
                                 userElectricityUsage.str to userElectricityUsage.amount
                             }.toMap()
                             sharedViewModel.setUserElectricityUsage(map);
+
+
+                            ////////////////////////////////////////////////////////////////////////////////////
+                            lifecycleScope.launch{
+
+                                val electricityUsage = sharedViewModel.getUserElectricityUsage().value
+
+                                if (electricityUsage != null) {
+                                    var map = mutableMapOf<String, Pair<String, Float>>()
+
+                                    for ((key, value) in electricityUsage) {
+                                        val plug = plugDao.findById(key)
+                                        var name : String
+                                        if(plug == null){
+//                                            name = "잘못된 플러그"
+                                            continue
+                                        }else {
+                                            name = plug.plugName!!
+                                        }
+                                        map[key] = Pair(name, value)
+
+                                    }
+                                    sharedViewModel.setUserElectricityUsageName(map)
+                                }
+                            }
+
+                            ////////////////////////////////////////////////////////////////////////////////////
+
+
+
                             for (userElectricityUsage in userElectricityUsageList) {
                                 Log.d(
                                     "testlog",
@@ -184,6 +214,7 @@ class MainActivity : AppCompatActivity() {
                             }
                         }
                     }
+
                 }
             }
         }

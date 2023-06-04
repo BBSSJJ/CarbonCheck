@@ -1,26 +1,37 @@
 <?xml version="1.0" encoding="utf-8"?>
 <com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/detailed_card"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginTop="16dp"
+    android:layout_margin="8dp"
     android:background="@color/secondary"
     app:cardCornerRadius="12dp">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:paddingBottom="12dp">
+        android:paddingBottom="12dp"
+        android:paddingTop="12dp">
+
+        <ImageView
+            android:id="@+id/plus_image"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            tools:srcCompat="null"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"/>
 
         <TextView
             android:id="@+id/place_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="12dp"
-            android:layout_marginTop="12dp"
             android:fontFamily="@font/pretendard_extrabold"
-            android:text="TextView"
+            android:text=""
             android:textColor="@color/third"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -33,7 +44,7 @@
             android:layout_marginTop="12dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/place_text"
-            app:srcCompat="@drawable/water_drop" />
+            app:srcCompat="@null" />
 
         <ImageView
             android:id="@+id/carbon_usage_image"
@@ -43,7 +54,7 @@
             android:layout_marginTop="12dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/water_or_electricity_image"
-            app:srcCompat="@drawable/co2" />
+            app:srcCompat="@null" />
 
         <ImageView
             android:id="@+id/cost_image"
@@ -53,7 +64,7 @@
             android:layout_marginTop="12dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/carbon_usage_image"
-            app:srcCompat="@drawable/payments" />
+            app:srcCompat="@null" />
 
         <TextView
             android:id="@+id/water_or_eletricity_usage_text"
@@ -62,7 +73,7 @@
             android:layout_marginLeft="12dp"
             android:layout_marginTop="12dp"
             android:fontFamily="@font/pretendard_medium"
-            android:text="0.0 L"
+            android:text=""
             android:textColor="@color/third"
 
             app:layout_constraintStart_toEndOf="@id/water_or_electricity_image"
@@ -75,7 +86,7 @@
             android:layout_marginLeft="12dp"
             android:layout_marginTop="12dp"
             android:fontFamily="@font/pretendard_medium"
-            android:text="0.0 g"
+            android:text=""
             android:textColor="@color/third"
             app:layout_constraintStart_toEndOf="@id/carbon_usage_image"
             app:layout_constraintTop_toBottomOf="@id/water_or_eletricity_usage_text" />
@@ -87,7 +98,7 @@
             android:layout_marginLeft="12dp"
             android:layout_marginTop="12dp"
             android:fontFamily="@font/pretendard_medium"
-            android:text="0 ₩"
+            android:text=""
             android:textColor="@color/third"
             app:layout_constraintStart_toEndOf="@id/cost_image"
             app:layout_constraintTop_toBottomOf="@id/carbon_usage_text" />
@@ -96,10 +107,9 @@
             android:id="@+id/place_image"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
             android:layout_marginRight="12dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/faucet" />
+            app:srcCompat="@null" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </com.google.android.material.card.MaterialCardView>

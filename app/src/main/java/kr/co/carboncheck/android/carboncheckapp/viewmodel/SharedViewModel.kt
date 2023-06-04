@@ -4,12 +4,13 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 
 class SharedViewModel : ViewModel() {
-    private val userWaterUsage: MutableLiveData<Map<String, Float>> = MutableLiveData()
-    private val userElectricityUsage: MutableLiveData<Map<String, Float>> = MutableLiveData()
-    private val groupWaterUsage: MutableLiveData<Map<String, Float>> = MutableLiveData()
-    private val groupElectricityUsage: MutableLiveData<Map<String, Float>> = MutableLiveData()
-    private val groupTargetValue: MutableLiveData<Map<String, Float>> = MutableLiveData()
-    private val groupMember: MutableLiveData<List<String>> = MutableLiveData()
+    private var userWaterUsage: MutableLiveData<Map<String, Float>> = MutableLiveData()
+    private var userElectricityUsage: MutableLiveData<Map<String, Float>> = MutableLiveData()
+    private var groupWaterUsage: MutableLiveData<Map<String, Float>> = MutableLiveData()
+    private var groupElectricityUsage: MutableLiveData<Map<String, Float>> = MutableLiveData()
+    private var groupTargetValue: MutableLiveData<Map<String, Float>> = MutableLiveData()
+    private var groupMember: MutableLiveData<List<String>> = MutableLiveData()
+    private var userElectricityUsageName: MutableLiveData<Map<String, Pair<String, Float>>> = MutableLiveData()
 
     fun setUserWaterUsage(data: Map<String, Float>) {
         userWaterUsage.value = data
@@ -35,6 +36,10 @@ class SharedViewModel : ViewModel() {
         groupMember.value = data
     }
 
+    fun setUserElectricityUsageName(data: Map<String, Pair<String, Float>>){
+        userElectricityUsageName.value = data
+    }
+
     fun getUserWaterUsage(): MutableLiveData<Map<String, Float>> {
         return this.userWaterUsage
     }
@@ -58,6 +63,11 @@ class SharedViewModel : ViewModel() {
     fun groupMember(): MutableLiveData<List<String>> {
         return this.groupMember
     }
+
+    fun getUserElectricityUsageName(): MutableLiveData<Map<String, Pair<String, Float>>> {
+        return this.userElectricityUsageName
+    }
+
 
 
 }

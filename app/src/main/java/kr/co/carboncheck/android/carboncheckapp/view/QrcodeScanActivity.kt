@@ -8,9 +8,10 @@ import android.os.Bundle
 import androidx.core.content.ContextCompat
 import android.content.pm.PackageManager
 import android.util.Log
+import android.view.View
+import android.widget.ProgressBar
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
-import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.lifecycle.lifecycleScope
 import com.google.zxing.integration.android.IntentIntegrator
 import kotlinx.coroutines.launch
@@ -28,12 +29,16 @@ class QrcodeScanActivity : AppCompatActivity() {
     private lateinit var binding: ActivityQrcodeScanBinding
     private val REQUEST_CAMERA_PERMISSION = 1
     private lateinit var localDatabase: CarbonCheckLocalDatabase
+    private lateinit var progressBar: ProgressBar
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityQrcodeScanBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        progressBar = binding.progressBar
+
 
         //데이터베이스 가져옴!!!!!!!!!!!!!!!!!!!
         localDatabase = CarbonCheckLocalDatabase.getInstance(this)
@@ -74,6 +79,7 @@ class QrcodeScanActivity : AppCompatActivity() {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
+
         if (requestCode == IntentIntegrator.REQUEST_CODE && resultCode == RESULT_OK) {
             val result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data)
             if (result != null && result.contents != null) {
@@ -115,15 +121,31 @@ class QrcodeScanActivity : AppCompatActivity() {
                 } else if (action == "REGISTER_PLUG") {
                     sendRegisterPlugRequest(deviceId, userId) { result ->
                         // 등록 성공
-                        lifecycleScope.launch {
-                            val plugDao = localDatabase.plugDao()
-                            val plug = Plug(deviceId, "플러그")
-                            Log.d("testlog", "로컬 db에 플러그 저장 완료")
-                            Log.d("testlog", deviceId)
-                            plugDao.insertPlug(plug)
-                        }
+
+
+
+
                         if (result) {
-                            // 매인액티비티로 돌아간다
+                            lifecycleScope.launch{
+                                progressBar.visibility = View.VISIBLE
+                                val plugDao = localDatabase.plugDao()
+
+                                if (plugDao.findById(deviceId) == null) {
+                                    var plug = Plug(deviceId, "플러그")
+                                    plugDao.insertPlug(plug)
+
+                                    Log.d("testlog", "로컬 db에 플러그 저장 완료")
+                                    Log.d("testlog", deviceId)
+
+
+                                } else {
+                                    Log.d("testlog", "이미 등록된 플러그")
+                                    finish()
+                                }
+                                progressBar.visibility = View.INVISIBLE
+
+                            }
+
                             val intent = Intent(this, MainActivity::class.java)
                             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
                             startActivity(intent)
