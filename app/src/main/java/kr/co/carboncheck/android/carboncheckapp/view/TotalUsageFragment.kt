@@ -6,12 +6,15 @@ import android.content.Context
 import android.graphics.Color
 import android.os.Bundle
 import android.os.Handler
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.viewModels
 import androidx.interpolator.view.animation.FastOutSlowInInterpolator
 import androidx.recyclerview.widget.LinearLayoutManager
 import app.futured.donut.DonutDirection
@@ -30,20 +33,21 @@ import kr.co.carboncheck.android.carboncheckapp.data.model.WaterCategory
 import kr.co.carboncheck.android.carboncheckapp.databinding.FragmentTotalUsageBinding
 import kr.co.carboncheck.android.carboncheckapp.dataobject.MemberUsageData
 import kr.co.carboncheck.android.carboncheckapp.dataobject.RecentUsageData
+import kr.co.carboncheck.android.carboncheckapp.util.NumberFormat
+import kr.co.carboncheck.android.carboncheckapp.viewmodel.SharedViewModel
 import java.text.SimpleDateFormat
 
 class TotalUsageFragment : Fragment() {
     private var _binding: FragmentTotalUsageBinding? = null
     private val binding get() = _binding!!
-    private var electricAmount = 120.4f     // 전기 탄소 배출량
-    private var waterAmount = 56.0f        // 수도 탄소 배출량
     private val memberUsageData = mutableListOf<MemberUsageData>()
-    private lateinit var myContext :Context
+    private lateinit var myContext: Context
+    private val sharedViewModel: SharedViewModel by activityViewModels()
+    private val numberFormat = NumberFormat()
 
     companion object {
         private val ALL_CATEGORIES = listOf(
-            ElectricCategory,
-            WaterCategory
+            ElectricCategory, WaterCategory
         )
     }
 
@@ -54,14 +58,12 @@ class TotalUsageFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        arguments?.let {
-        }
+        arguments?.let {}
 
     }
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View? {
         _binding = FragmentTotalUsageBinding.inflate(inflater, container, false)
         return binding.root
@@ -74,15 +76,15 @@ class TotalUsageFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
         // Donut Chart Setting
         val donutProgressView = binding.donutView
-        // updateIndicators()
         setDonut(donutProgressView)
-        // initControls()
         Handler().postDelayed({
             fillDonutInitialData(donutProgressView)
-            runInitialDonutAnimation()
-        }, 1)
+            runInitialDonutAnimation(donutProgressView)
+        }, 1000)
+
 
         // MemberUsage Setting
         initializeMemberList()      // TODO: 실제 가족 데이터 불러올 것
@@ -110,51 +112,92 @@ class TotalUsageFragment : Fragment() {
         }
     }
 
-    private fun runInitialDonutAnimation() {
+    private fun runInitialDonutAnimation(donutProgressView: DonutProgressView) {
+
         ValueAnimator.ofFloat(0f, 1f).apply {
             duration = 10
             interpolator = FastOutSlowInInterpolator()
-//            addUpdateListener {
-//                donutProgressView.masterProgress = it.animatedValue as Float
-//                donutProgressView.alpha = it.animatedValue as Float
-//
-//                masterProgressSeekbar.progress = (donutProgressView.masterProgress * 100).toInt()
-//            }
+            addUpdateListener {
+                donutProgressView.masterProgress = it.animatedValue as Float
+                donutProgressView.alpha = it.animatedValue as Float
+            }
             start()
         }
     }
 
     private fun setDonut(donutProgressView: DonutProgressView) {
-        val donutProgressView = binding.donutView
         donutProgressView.cap = 1000f      // 목표 설정량
         donutProgressView.masterProgress = 100f     // 파악 안됨
         donutProgressView.gapAngleDegrees = 270f    // 도넛 구멍 방향
         donutProgressView.direction = DonutDirection.CLOCKWISE
-//        donutProgressView.
     }
 
     private fun fillDonutInitialData(donutProgressView: DonutProgressView) {
-        val context = myContext
-        if (context != null) {
-            val sections = listOf(
-                DonutSection(
-                    ElectricCategory.name,
-                    ContextCompat.getColor(context, R.color.electric),
-                    electricAmount
-                ),
-                DonutSection(
-                    WaterCategory.name,
-                    ContextCompat.getColor(context, R.color.water),
-                    waterAmount
-                )
-            )
+        if(!isAdded) return
 
+        val context = myContext
+        var electricAmount = 0f
+        var waterAmount = 0f
+        var electricCarbonAmount:Float
+        var waterCarbonAmount:Float
+        var totalCarbonAmount = 0f
+        
+        val sections = mutableListOf<DonutSection>()
+        
+        // Observe the user water usage and electricity usage from the sharedViewModel
+        sharedViewModel.getUserElectricityUsage()
+            .observe(viewLifecycleOwner) { userElectricityUsage ->
+                // Update your UI with the new data
+                userElectricityUsage?.let {
+                    for ((key, value) in it) {
+                        Log.d("TotalUsage elec", value.toString())
+                        electricAmount += value
+                    }
+                }
+                electricCarbonAmount = numberFormat.electricityUsageToCarbonUsage(electricAmount / 1000f)   // Kwh 단위로 변환 하고 탄소 배출량 계산
+                totalCarbonAmount += electricCarbonAmount
+                binding.totalAmountCountText.text = totalCarbonAmount.toString() + "g"
+                binding.electricSectionText.text =
+                    "전력 사용량 " + numberFormat.toKwhString(electricAmount)
+                if (context != null) {
+                    sections.add(
+                        DonutSection(
+                            ElectricCategory.name,
+                            ContextCompat.getColor(context, R.color.electric),
+                            electricCarbonAmount
+                        )
+                    )
+                    donutProgressView.submitData(sections)
+                    runInitialDonutAnimation(donutProgressView)
+                }
+            }
+        sharedViewModel.getUserWaterUsage().observe(viewLifecycleOwner) { userWaterUsage ->
+            // Update your UI with the new data
+
+            userWaterUsage?.let {
+                for ((key, value) in it) {
+                    waterAmount += value
+                }
+            }
+            waterCarbonAmount = numberFormat.waterUsageToCarbonUsage(waterAmount)   // 탄소 배출량 으로 계산
+            totalCarbonAmount += waterCarbonAmount
+            binding.totalAmountCountText.text = totalCarbonAmount.toString() + "g"
+            binding.waterSectionText.text = "수도 사용량 " + numberFormat.toLiterString(waterAmount)
+
+            if (context != null) {
+                sections.add(
+                    DonutSection(
+                        WaterCategory.name,
+                        ContextCompat.getColor(context, R.color.water),
+                        waterCarbonAmount
+                    )
+                )
+            }
+        }
+        if (context != null) {
             donutProgressView.submitData(sections)
         }
     }
-
-
-
 
     private fun setRecentUsageBarChart(barChart: BarChart) {
 
@@ -165,7 +208,7 @@ class TotalUsageFragment : Fragment() {
         val groupCount = dataList.size
         val groupSpace = 0.55f
         val barSpace = 0f
-        val barWidth = 1f-groupSpace
+        val barWidth = 1f - groupSpace
 
 
         // 막대 데이터를 저장할 리스트를 생성합니다.
@@ -185,9 +228,9 @@ class TotalUsageFragment : Fragment() {
             val data = dataList[i]
             val textView = binding.dateLayout.getChildAt(i) as TextView
             textView.text = data.date
-            barEntries1.add(BarEntry(i.toFloat() , data.electricityUsage / electricityMax * 100f))
-            barEntries2.add(BarEntry(i.toFloat(), data.waterUsage/ waterMax * 100f))
-            barEntries3.add(BarEntry(i.toFloat(), data.carbonEmission/ carbonMax * 100f))
+            barEntries1.add(BarEntry(i.toFloat(), data.electricityUsage / electricityMax * 100f))
+            barEntries2.add(BarEntry(i.toFloat(), data.waterUsage / waterMax * 100f))
+            barEntries3.add(BarEntry(i.toFloat(), data.carbonEmission / carbonMax * 100f))
         }
 
         // 각 막대 데이터에 대한 색상과 레이블을 설정합니다.
@@ -196,7 +239,7 @@ class TotalUsageFragment : Fragment() {
         val barDataSet2 = BarDataSet(barEntries2, "수도 사용량")
         barDataSet2.color = Color.rgb(100, 193, 222)
         val barDataSet3 = BarDataSet(barEntries3, "탄소 배출량")
-        barDataSet3.color = Color.rgb(80, 146,78)
+        barDataSet3.color = Color.rgb(80, 146, 78)
 
         // 막대 데이터들을 하나의 데이터 세트로 묶습니다.
         val barData = BarData(barDataSet1, barDataSet2, barDataSet3)
@@ -219,7 +262,7 @@ class TotalUsageFragment : Fragment() {
         xAxis.setDrawGridLines(false)
         xAxis.setDrawLabels(false)
         xAxis.axisMinimum = 0f
-        xAxis.axisMaximum = ( groupCount.toFloat() + groupSpace) * 3f
+        xAxis.axisMaximum = (groupCount.toFloat() + groupSpace) * 3f
         // TODO: 최근 7일간의 Date 이름 바꾸기 (Textview 이용)
 
         val leftAxis = barChart.axisLeft
@@ -263,34 +306,7 @@ class TotalUsageFragment : Fragment() {
         return recentUsageList
     }
 
-    /*
-    private fun updateIndicators() {
-        amountCapText.text = getString(R.string.amount_cap, donutProgressView.cap)
-        amountTotalText.text = getString(
-            R.string.amount_total,
-            donutProgressView.getData().sumByFloat { it.amount }
-        )
-
-        updateIndicatorAmount(ElectricCategory, binding.electricSectionText)
-        updateIndicatorAmount(WaterCategory, binding.waterSectionText)
-    }
-    private fun updateIndicatorAmount(category: DonutDataCategory, textView: TextView) {
-        // 실제 구현시에는 TextView의 값을 업데이트 해야 한다.
-
-        donutProgressView.getData()
-            .filter { it.name == category.name }
-            .sumByFloat { it.amount }
-            .also {
-                if (it > 0f) {
-                    textView.visible()
-                    textView.text = getString(R.string.float_2f, it)
-                } else {
-                    textView.gone()
-                }
-            }
+    private fun observeAndUpdateUI() {
 
     }
-*/
-
-
 }
