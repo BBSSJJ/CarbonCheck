@@ -54,8 +54,10 @@ class DetailedUsageFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initializeDetailList()
+        if (isAdded) {
+            binding.progressBar.visibility = View.VISIBLE
 
-        binding.progressBar.visibility = View.VISIBLE
+        }
         Handler().postDelayed({
 
             initDetailListRecyclerView()
@@ -64,12 +66,11 @@ class DetailedUsageFragment : Fragment() {
         }, 5000)
 
 
-
-
     }
 
     @SuppressLint("NotifyDataSetChanged")
     private fun initDetailListRecyclerView() {
+        if (!isAdded) return
         val adapter = DetailedRecyclerAdapter(requireContext(), sharedViewModel)
         adapter.datalist = detailList
 
@@ -78,6 +79,7 @@ class DetailedUsageFragment : Fragment() {
     }
 
     private fun initializeDetailList() {
+        if (!isAdded) return
         val waterUsage = sharedViewModel.getUserWaterUsage().value
         val electricityUsageName = sharedViewModel.getUserElectricityUsageName().value
 
