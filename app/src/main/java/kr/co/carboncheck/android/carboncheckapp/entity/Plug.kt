@@ -7,5 +7,5 @@ import androidx.room.PrimaryKey
 @Entity(tableName = "plug")
 data class Plug(
     @PrimaryKey @ColumnInfo(name = "plug_id") val plugId: String,
-    @ColumnInfo(name = "plug_name") var plugName: String?
+    @ColumnInfo(name = "plug_name") var plugName: String
 )

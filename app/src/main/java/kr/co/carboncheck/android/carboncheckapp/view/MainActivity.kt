@@ -13,6 +13,7 @@ import androidx.lifecycle.lifecycleScope
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import kr.co.carboncheck.android.carboncheckapp.R
 import kr.co.carboncheck.android.carboncheckapp.adapter.DetailedRecyclerAdapter
 import kr.co.carboncheck.android.carboncheckapp.database.CarbonCheckLocalDatabase
@@ -20,6 +21,7 @@ import kr.co.carboncheck.android.carboncheckapp.databinding.ActivityMainBinding
 import kr.co.carboncheck.android.carboncheckapp.dto.GetGroupTargetAmountResponse
 import kr.co.carboncheck.android.carboncheckapp.dto.GetUsageResponse
 import kr.co.carboncheck.android.carboncheckapp.dto.GetUserDataResponse
+import kr.co.carboncheck.android.carboncheckapp.entity.Plug
 import kr.co.carboncheck.android.carboncheckapp.network.RetrofitClient
 import kr.co.carboncheck.android.carboncheckapp.network.SseListener
 import kr.co.carboncheck.android.carboncheckapp.util.UserPreference
@@ -40,7 +42,6 @@ class MainActivity : AppCompatActivity() {
 
     private val sharedViewModel: SharedViewModel by viewModels()
     private lateinit var localDatabase: CarbonCheckLocalDatabase
-
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -82,19 +83,12 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-
-//        if (checkForPermission()) {
-//            // 권한이 있으면 메인 액티 비티를 시각화 합니다.
-//            setContentView(binding.root)
-//            // 설치된 어플 목록을 가져옵니다.
-//            setPackageInfoList()
-//        } else {
-//            // 권한이 존재 하지 않으면 토스트 메세지 출력후 권한 설정 화면 으로 이동 합니다.
-//            Toast.makeText(
-//                this, "Check Permission", Toast.LENGTH_LONG
-//            ).show()
-//            startActivity(Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS))
-//        }
+        val recievedPlugId = intent.getStringExtra("plugId")
+        lifecycleScope.launch(Dispatchers.IO) {
+            if (recievedPlugId != null) {
+                plugDao.insertPlug(Plug(recievedPlugId, "플러그"))
+            }
+        }
 
         //이메일로 유저 데이터들 가져와 preference에 넣는다.
         Log.d("testlog", "get email preference " + getEmailPreference(this))
@@ -107,7 +101,7 @@ class MainActivity : AppCompatActivity() {
                 var userId = userData.userId
                 var homeServerId = userData.homeServerId
 
-                lifecycleScope.launch{
+                lifecycleScope.launch {
                     if (homeServerId != "") {
                         //SSE 연결
                         sseConnection.connect(userData.homeServerId, userData.userId, sseListener)
@@ -165,83 +159,69 @@ class MainActivity : AppCompatActivity() {
 
                 }
 
-                lifecycleScope.launch{
-                    //유저 물 사용량 가져오기
-                    getUserWaterUsage(userId) { userWaterUsageList ->
-                        if (userWaterUsageList != null) {
-                            val map = userWaterUsageList.map { userWaterUsage ->
-                                userWaterUsage.str to userWaterUsage.amount
-                            }.toMap()
-                            sharedViewModel.setUserWaterUsage(map);
-                            for (userWaterUsage in userWaterUsageList) {
-                                Log.d("testlog", userWaterUsage.str + " " + userWaterUsage.amount)
-                            }
+                //유저 물 사용량 가져오기
+                getUserWaterUsage(userId) { userWaterUsageList ->
+                    if (userWaterUsageList != null) {
+                        val map = userWaterUsageList.map { userWaterUsage ->
+                            userWaterUsage.str to userWaterUsage.amount
+                        }.toMap()
+                        sharedViewModel.setUserWaterUsage(map);
+                        for (userWaterUsage in userWaterUsageList) {
+                            Log.d("testlog", userWaterUsage.str + " " + userWaterUsage.amount)
                         }
                     }
-                    //유저 전기 사용량 가져오기
-                    getUserElectricityUsage(userId) { userElectricityUsageList ->
-                        if (userElectricityUsageList != null) {
-                            val map = userElectricityUsageList.map { userElectricityUsage ->
-                                userElectricityUsage.str to userElectricityUsage.amount
-                            }.toMap()
-                            sharedViewModel.setUserElectricityUsage(map);
+                }
+                //유저 전기 사용량 가져오기
+                getUserElectricityUsage(userId) { userElectricityUsageList ->
+                    if (userElectricityUsageList != null) {
+                        val map = userElectricityUsageList.map { userElectricityUsage ->
+                            userElectricityUsage.str to userElectricityUsage.amount
+                        }.toMap()
+                        sharedViewModel.setUserElectricityUsage(map);
 
 
-                            ////////////////////////////////////////////////////////////////////////////////////
-                            lifecycleScope.launch{
+                        ////////////////////////////////////////////////////////////////////////////////////
+                        lifecycleScope.launch {
 
-                                val electricityUsage = sharedViewModel.getUserElectricityUsage().value
+                            val electricityUsage = sharedViewModel.getUserElectricityUsage().value
 
-                                if (electricityUsage != null) {
-                                    var map = mutableMapOf<String, Pair<String, Float>>()
+                            if (electricityUsage != null) {
+                                var map = mutableMapOf<String, Pair<String, Float>>()
 
-                                    for ((key, value) in electricityUsage) {
-                                        val plug = plugDao.findById(key)
-                                        var name : String
-                                        if(plug == null){
-                                            name = "잘못된 플러그"
-                                        }else {
-                                            name = plug.plugName!!
-                                        }
-                                        map[key] = Pair(name, value)
+                                for ((key, value) in electricityUsage) {
 
+
+                                    val plugArray =
+                                        runBlocking(Dispatchers.IO) { plugDao.findById(key) }
+                                    var name: String
+                                    if (plugArray.isEmpty()) {
+                                        name = "잘못된 플러그"
+                                    } else {
+                                        name = plugArray[0].plugName
                                     }
-                                    sharedViewModel.setUserElectricityUsageName(map)
+                                    Log.d("testlog", "in making map " + name)
+
+                                    map[key] = Pair(name, value)
+
                                 }
-                            }
-
-                            ////////////////////////////////////////////////////////////////////////////////////
-
-
-
-                            for (userElectricityUsage in userElectricityUsageList) {
-                                Log.d(
-                                    "testlog",
-                                    userElectricityUsage.str + " " + userElectricityUsage.amount
-                                )
+                                sharedViewModel.setUserElectricityUsageName(map)
                             }
                         }
-                    }
 
+                        ////////////////////////////////////////////////////////////////////////////////////
+
+
+                        for (userElectricityUsage in userElectricityUsageList) {
+                            Log.d(
+                                "testlog",
+                                userElectricityUsage.str + " " + userElectricityUsage.amount
+                            )
+                        }
+                    }
                 }
             }
         }
-//        getUserData(getEmailPreference(this)) { userData ->
-//            if (userData != null) {
-//                setUserDataPreference(this, userData.userId, userData.homeServerId, userData.name)
-//                getUserDataPreference(this)["userId"]?.let { Log.d("testlog", it) }
-//                getUserDataPreference(this)["homeServerId"]?.let { Log.d("testlog", it) }
-//                getUserDataPreference(this)["name"]?.let { Log.d("testlog", it) }
-//                var userId = userData.userId
-//                var homeServerId = userData.homeServerId
-//
-//                //SSE 연결
-//                sseConnection.connect(userData.homeServerId, userData.userId, sseListener)
-//
-//                //데이터 가져오기
-//                fetchData(userId, homeServerId)
-//            }
-//        }
+
     }
 
     //frame layout 부분을 fragment로 채워넣는 함수
@@ -255,32 +235,32 @@ class MainActivity : AppCompatActivity() {
         return false
     }
 
-/*
-    private fun checkForPermission(): Boolean {
-        // Application 의 패키지 명을 가져 오기 위한 권한이 있는지 확인 하는 함수 입니다.
-        val appOps = this.getSystemService(Context.APP_OPS_SERVICE) as AppOpsManager
-        val mode =
-            appOps.checkOpNoThrow(AppOpsManager.OPSTR_GET_USAGE_STATS, Process.myUid(), packageName)
-/*
-         val mode = appOps.noteOpNoThrow(AppOpsManager.OPSTR_GET_USAGE_STATS, Process.myUid(), packageName,
-                    null, null)
-         으로 사용 할수 있겠 으나 API 30 부터 지원됨
-         AttributionTag, RemoteCallback Parameter 를 null 로 설정 하는 예제 이며 이는 "우리는 필요 없어서" 다
-*/
-        return mode == AppOpsManager.MODE_ALLOWED
-    }
+    /*
+        private fun checkForPermission(): Boolean {
+            // Application 의 패키지 명을 가져 오기 위한 권한이 있는지 확인 하는 함수 입니다.
+            val appOps = this.getSystemService(Context.APP_OPS_SERVICE) as AppOpsManager
+            val mode =
+                appOps.checkOpNoThrow(AppOpsManager.OPSTR_GET_USAGE_STATS, Process.myUid(), packageName)
+    /*
+             val mode = appOps.noteOpNoThrow(AppOpsManager.OPSTR_GET_USAGE_STATS, Process.myUid(), packageName,
+                        null, null)
+             으로 사용 할수 있겠 으나 API 30 부터 지원됨
+             AttributionTag, RemoteCallback Parameter 를 null 로 설정 하는 예제 이며 이는 "우리는 필요 없어서" 다
+    */
+            return mode == AppOpsManager.MODE_ALLOWED
+        }
 
-    private fun setPackageInfoList() {
-        // 설치된 어플 목록을 listPackageInfo 에 담는 코드
-        // Overhead 를 줄이기 위해 Coroutine 을 사용 하여 쓰레드 분리
-        CoroutineScope(Dispatchers.IO).launch {
-            var list: List<PackageInfo> = packageManager.getInstalledPackages(0)
-            for (i in list) {
-                listPackageInfo.add(i)
+        private fun setPackageInfoList() {
+            // 설치된 어플 목록을 listPackageInfo 에 담는 코드
+            // Overhead 를 줄이기 위해 Coroutine 을 사용 하여 쓰레드 분리
+            CoroutineScope(Dispatchers.IO).launch {
+                var list: List<PackageInfo> = packageManager.getInstalledPackages(0)
+                for (i in list) {
+                    listPackageInfo.add(i)
+                }
             }
         }
-    }
-*/
+    */
     // 뒤로가기 두번 눌러 종료하도록 하는 코드
     private var backPressedTime: Long = 0 // 뒤로가기 버튼이 눌린 시간을 저장하는 변수
     private val backPressedInterval = 2000 // 두 번 눌렀을 때의 시간 간격 (밀리초)
