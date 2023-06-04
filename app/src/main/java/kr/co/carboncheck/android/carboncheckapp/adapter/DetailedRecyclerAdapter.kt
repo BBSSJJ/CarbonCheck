@@ -36,6 +36,14 @@ class DetailedRecyclerAdapter(var context: Context, private val sharedViewModel:
 
         fun bind(detailData: DetailData) {
             if (detailData.plus) {
+                binding.costImage.setImageDrawable(null)
+                binding.carbonUsageImage.setImageDrawable(null)
+                binding.placeImage.setImageDrawable(null)
+                binding.waterOrElectricityImage.setImageDrawable(null)
+                binding.placeText.text = null
+                binding.waterOrEletricityUsageText.text = null
+                binding.costText.text = null
+                binding.carbonUsageText.text = null
                 binding.detailedCard.setOnClickListener {
                     val intent = Intent(context, QrcodeScanActivity::class.java)
                     intent.putExtra("ACTION", "REGISTER_PLUG")
@@ -50,6 +58,8 @@ class DetailedRecyclerAdapter(var context: Context, private val sharedViewModel:
                 binding.waterOrEletricityUsageText.text = detailData.typeUsage
                 binding.costText.text = detailData.cost
                 binding.carbonUsageText.text = detailData.carbonUsage
+                binding.costImage.setImageResource(R.drawable.payments)
+                binding.carbonUsageImage.setImageResource(R.drawable.co2)
                 var place_image = detailData.placeImage
                 var type_image = detailData.typeImage
 
@@ -65,9 +75,9 @@ class DetailedRecyclerAdapter(var context: Context, private val sharedViewModel:
                     else -> binding.waterOrElectricityImage.setImageResource(R.drawable.water_drop)
                 }
 
+
                 if (detailData.typeImage == 1) {
                     binding.detailedCard.setOnClickListener {
-//                        removeView(bindingAdapterPosition)
                         cardClickMenu(bindingAdapterPosition, detailData.plugId!!)
 
                     }
@@ -140,13 +150,16 @@ class DetailedRecyclerAdapter(var context: Context, private val sharedViewModel:
                 val plug = withContext(Dispatchers.IO) {
                     plugDao.findById(plugId)
                 }
-                plug?.plugName = newName // 플러그 이름 변경 후
-                withContext(Dispatchers.IO) {
-                    plugDao.updatePlug(plug!!) // 플러그 다시 저장
+
+                if (plug != null) {
+                    plug.plugName = newName // 플러그 이름 변경 후
+                    withContext(Dispatchers.IO) {
+                        plugDao.updatePlug(plug) // 플러그 다시 저장
+                    }
                 }
             }
-            val item = datalist[position]
-            item.place = newName
+
+            datalist[position].place = newName
             notifyItemChanged(position)
 
             val currentNameMap = sharedViewModel.getUserElectricityUsageName().value?.toMutableMap()
@@ -154,9 +167,8 @@ class DetailedRecyclerAdapter(var context: Context, private val sharedViewModel:
             val newPair = pair?.copy(first = newName)
             currentNameMap?.put(plugId, newPair!!)
             sharedViewModel.setUserElectricityUsageName(currentNameMap?.toMap() ?: emptyMap())
-
-
         }
+
         builder.setNegativeButton("취소") { dialog, which ->
             dialog.dismiss() // 다이얼로그 닫기
         }
@@ -187,10 +199,8 @@ class DetailedRecyclerAdapter(var context: Context, private val sharedViewModel:
                             }
 
                             //현재 view에서 삭제
-
-
                             removeView(position)
-                            removeView(itemCount -1)
+
 
                             //view Model에서 삭제
                             val currentNameMap = sharedViewModel.getUserElectricityUsageName().value?.toMutableMap()
@@ -200,6 +210,7 @@ class DetailedRecyclerAdapter(var context: Context, private val sharedViewModel:
                             val currentMap = sharedViewModel.getUserElectricityUsage().value?.toMutableMap()
                             currentMap?.remove(plugId)
                             sharedViewModel.setUserElectricityUsage(currentMap?.toMap() ?: emptyMap())
+
 
                         }
                         if (result == false) Toast.makeText(context, "삭제 실패", Toast.LENGTH_LONG)
@@ -241,5 +252,11 @@ class DetailedRecyclerAdapter(var context: Context, private val sharedViewModel:
             }
         })
     }
+
+//    fun setData(data: List<DetailData>) {
+//        datalist.clear()
+//        datalist.addAll(data)
+//        notifyDataSetChanged()
+//    }
 
 }

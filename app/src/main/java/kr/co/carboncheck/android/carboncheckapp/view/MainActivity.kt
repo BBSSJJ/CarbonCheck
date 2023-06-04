@@ -13,6 +13,7 @@ import androidx.lifecycle.lifecycleScope
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import kotlinx.coroutines.launch
 import kr.co.carboncheck.android.carboncheckapp.R
+import kr.co.carboncheck.android.carboncheckapp.adapter.DetailedRecyclerAdapter
 import kr.co.carboncheck.android.carboncheckapp.database.CarbonCheckLocalDatabase
 import kr.co.carboncheck.android.carboncheckapp.databinding.ActivityMainBinding
 import kr.co.carboncheck.android.carboncheckapp.dto.GetGroupTargetAmountResponse
@@ -189,7 +190,8 @@ class MainActivity : AppCompatActivity() {
                                         val plug = plugDao.findById(key)
                                         var name : String
                                         if(plug == null){
-                                            name = "잘못된 플러그"
+//                                            name = "잘못된 플러그"
+                                            continue
                                         }else {
                                             name = plug.plugName!!
                                         }
@@ -199,6 +201,7 @@ class MainActivity : AppCompatActivity() {
                                     sharedViewModel.setUserElectricityUsageName(map)
                                 }
                             }
+
                             ////////////////////////////////////////////////////////////////////////////////////
 
 
