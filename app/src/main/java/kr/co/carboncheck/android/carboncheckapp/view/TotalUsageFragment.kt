@@ -14,8 +14,8 @@ import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.fragment.app.viewModels
 import androidx.interpolator.view.animation.FastOutSlowInInterpolator
+import androidx.lifecycle.MediatorLiveData
 import androidx.recyclerview.widget.LinearLayoutManager
 import app.futured.donut.DonutDirection
 import app.futured.donut.DonutProgressView
@@ -35,15 +35,17 @@ import kr.co.carboncheck.android.carboncheckapp.dataobject.MemberUsageData
 import kr.co.carboncheck.android.carboncheckapp.dataobject.RecentUsageData
 import kr.co.carboncheck.android.carboncheckapp.util.NumberFormat
 import kr.co.carboncheck.android.carboncheckapp.viewmodel.SharedViewModel
-import java.text.SimpleDateFormat
 
 class TotalUsageFragment : Fragment() {
     private var _binding: FragmentTotalUsageBinding? = null
     private val binding get() = _binding!!
     private val memberUsageData = mutableListOf<MemberUsageData>()
+    val memberUsageMap = mutableMapOf<String, Int>()
     private lateinit var myContext: Context
     private val sharedViewModel: SharedViewModel by activityViewModels()
     private val numberFormat = NumberFormat()
+    private lateinit var layoutManager: LinearLayoutManager
+    private lateinit var adapter: Any
 
     companion object {
         private val ALL_CATEGORIES = listOf(
@@ -59,6 +61,7 @@ class TotalUsageFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {}
+
 
     }
 
@@ -87,28 +90,92 @@ class TotalUsageFragment : Fragment() {
 
 
         // MemberUsage Setting
-        initializeMemberList()      // TODO: 실제 가족 데이터 불러올 것
-        initTotalUsageRecyclerView()
-
+//        initializeMemberList()      // DummyData
+        Handler().postDelayed({
+            initTotalUsageRecyclerView()
+        },1000)
         // RecentUsage Setting
         val recentUsageChartView = binding.recentUsageChart
         setRecentUsageBarChart(recentUsageChartView)
+
     }
 
     private fun initTotalUsageRecyclerView() {
-        val adapter = TotalUsageRecyclerViewAdapter()     // 어댑터 객체
-        adapter.datalist =
+
+//        var adapter = TotalUsageRecyclerViewAdapter()     // 어댑터 객체
+        sharedViewModel.getGroupTargetValue()
+            .observe(viewLifecycleOwner) {
+                if (it.isNotEmpty() && memberUsageData.size != 0) {
+                    if (memberUsageData[0].userName.equals("계산중")) {
+                        memberUsageData.clear()
+                    }
+                }
+                for ((name, target) in it)
+                    if (name != null) {
+                        memberUsageMap.put(name, memberUsageData.size)
+                        memberUsageData.add(MemberUsageData(name, target, 0f))
+                    }
+            }
+        sharedViewModel.getGroupWaterUsage().observe(viewLifecycleOwner) {
+            if (it.isNotEmpty() && memberUsageData.size != 0) {
+                if (memberUsageData[0].userName.equals("계산중")) {
+                    memberUsageData.clear()
+                }
+            }
+            for ((key, value) in it) {
+                val index = memberUsageMap[key]
+                index?.let {
+                    index
+                    memberUsageData[index] = MemberUsageData(
+                        memberUsageData[index].userName,
+                        memberUsageData[index].targetAmount,
+                        memberUsageData[index].currentAmount + value * 0.3f
+                    )
+                }
+            }
+        }
+        sharedViewModel.getGroupElectricityUsage().observe(viewLifecycleOwner) {
+            if (it.isNotEmpty() && memberUsageData.size != 0) {
+                if (memberUsageData[0].userName.equals("계산중")) {
+                    memberUsageData.clear()
+                }
+            }
+            for ((key, value) in it) {
+                val index = memberUsageMap[key]
+                index?.let {
+                    index
+                    memberUsageData[index] = MemberUsageData(
+                        memberUsageData[index].userName,
+                        memberUsageData[index].targetAmount,
+                        memberUsageData[index].currentAmount + value * 424f / 1000f
+                    )
+                }
+            }
+        }
+
+
+        adapter = TotalUsageRecyclerViewAdapter()
+        (adapter as TotalUsageRecyclerViewAdapter).datalist =
             memberUsageData             // TODO: 실제 가족 데이터 불러올 것 (optional: 코루틴 사용할 것)
-        binding.homeUsageRecyclerView.adapter = adapter   // 뷰에 어댑터 결합
-        binding.homeUsageRecyclerView.layoutManager = LinearLayoutManager(activity)   // 레이아웃 매니저 결합
+
+        binding.homeUsageRecyclerView.adapter =
+            adapter as TotalUsageRecyclerViewAdapter   // 뷰에 어댑터 결합
+
+        layoutManager = LinearLayoutManager(activity)
+        binding.homeUsageRecyclerView.layoutManager = layoutManager   // 레이아웃 매니저 결합
+        binding.homeUsageRecyclerView
+
+        var userList = MediatorLiveData<Map<String, Float>>()
+        userList.addSource(sharedViewModel.groupMember()) { member ->
+
+        }
+
     }
 
     private fun initializeMemberList() {
         with(memberUsageData) {
             // TODO: 여기에 실제 데이터 삽입 하시오 ( 가족 이름, 목표치, 사용량)
-            add(MemberUsageData("Lee", 4700f, 4600f))
-            add(MemberUsageData("GOP", 9750f, 2100f))
-            add(MemberUsageData("Sung", 6420f, 3500f))
+            add(MemberUsageData("계산중", 100f, 0f))
         }
     }
 
@@ -133,17 +200,17 @@ class TotalUsageFragment : Fragment() {
     }
 
     private fun fillDonutInitialData(donutProgressView: DonutProgressView) {
-        if(!isAdded) return
+        if (!isAdded) return
 
         val context = myContext
         var electricAmount = 0f
         var waterAmount = 0f
-        var electricCarbonAmount:Float
-        var waterCarbonAmount:Float
+        var electricCarbonAmount: Float
+        var waterCarbonAmount: Float
         var totalCarbonAmount = 0f
-        
+
         val sections = mutableListOf<DonutSection>()
-        
+
         // Observe the user water usage and electricity usage from the sharedViewModel
         sharedViewModel.getUserElectricityUsage()
             .observe(viewLifecycleOwner) { userElectricityUsage ->
@@ -154,7 +221,8 @@ class TotalUsageFragment : Fragment() {
                         electricAmount += value
                     }
                 }
-                electricCarbonAmount = numberFormat.electricityUsageToCarbonUsage(electricAmount / 1000f)   // Kwh 단위로 변환 하고 탄소 배출량 계산
+                electricCarbonAmount =
+                    numberFormat.electricityUsageToCarbonUsage(electricAmount / 1000f)   // Kwh 단위로 변환 하고 탄소 배출량 계산
                 totalCarbonAmount += electricCarbonAmount
                 binding.totalAmountCountText.text = totalCarbonAmount.toString() + "g"
                 binding.electricSectionText.text =
