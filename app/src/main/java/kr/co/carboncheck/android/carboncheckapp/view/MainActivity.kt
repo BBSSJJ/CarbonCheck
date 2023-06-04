@@ -187,6 +187,22 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         }
+//        getUserData(getEmailPreference(this)) { userData ->
+//            if (userData != null) {
+//                setUserDataPreference(this, userData.userId, userData.homeServerId, userData.name)
+//                getUserDataPreference(this)["userId"]?.let { Log.d("testlog", it) }
+//                getUserDataPreference(this)["homeServerId"]?.let { Log.d("testlog", it) }
+//                getUserDataPreference(this)["name"]?.let { Log.d("testlog", it) }
+//                var userId = userData.userId
+//                var homeServerId = userData.homeServerId
+//
+//                //SSE 연결
+//                sseConnection.connect(userData.homeServerId, userData.userId, sseListener)
+//
+//                //데이터 가져오기
+//                fetchData(userId, homeServerId)
+//            }
+//        }
     }
 
     //frame layout 부분을 fragment로 채워넣는 함수
@@ -444,4 +460,86 @@ class MainActivity : AppCompatActivity() {
         super.onDestroy()
         sseConnection.disconnect()
     }
+
+//    private fun fetchData(userId: String, homeServerId: String) {
+//        coroutineScope.launch {
+//            //그룹 물 사용량 가져오기
+//            getGroupWaterUsage(homeServerId) { groupWaterUsageList ->
+//                if (groupWaterUsageList != null) {
+//                    val map = groupWaterUsageList.map { groupWaterUsage ->
+//                        groupWaterUsage.str to groupWaterUsage.amount
+//                    }.toMap()
+//                    sharedViewModel.setGroupWaterUsage(map);
+//                    for (groupWaterUsage in groupWaterUsageList) {
+//                        Log.d(
+//                            "testlog",
+//                            groupWaterUsage.str + " " + groupWaterUsage.amount
+//                        )
+//                    }
+//                }
+//            }
+//            //그룹 전기 사용량 가져오기
+//            getGroupElectricityUsage(homeServerId) { groupElectricityUsageList ->
+//                if (groupElectricityUsageList != null) {
+//                    val map = groupElectricityUsageList.map { groupElectricityUsage ->
+//                        groupElectricityUsage.str to groupElectricityUsage.amount
+//                    }.toMap()
+//                    sharedViewModel.setGroupElectricityUsage(map);
+//                    for (groupElectricityUsage in groupElectricityUsageList) {
+//                        Log.d(
+//                            "testlog",
+//                            groupElectricityUsage.str + " " + groupElectricityUsage.amount
+//                        )
+//                    }
+//                }
+//            }
+//            //그룹원 목표치 가져오기
+//            getGroupTargetAmount(homeServerId) { groupTargetAmountList ->
+//                if (groupTargetAmountList != null) {
+//                    val map = groupTargetAmountList.map { targetAmount ->
+//                        targetAmount.name to targetAmount.targetAmount.toFloat()
+//                    }.toMap()
+//                    sharedViewModel.setGroupTargetValue(map);
+//                    val list = groupTargetAmountList.map { targetAmount ->
+//                        targetAmount.name
+//                    }
+//                    sharedViewModel.setGroupMember(list)
+//                    for (targetAmount in groupTargetAmountList) {
+//                        Log.d(
+//                            "testlog",
+//                            targetAmount.name + " " + targetAmount.targetAmount
+//                        )
+//                    }
+//                }
+//            }
+//
+//            //유저 물 사용량 가져오기
+//            getUserWaterUsage(userId) { userWaterUsageList ->
+//                if (userWaterUsageList != null) {
+//                    val map = userWaterUsageList.map { userWaterUsage ->
+//                        userWaterUsage.str to userWaterUsage.amount
+//                    }.toMap()
+//                    sharedViewModel.setUserWaterUsage(map);
+//                    for (userWaterUsage in userWaterUsageList) {
+//                        Log.d("testlog", userWaterUsage.str + " " + userWaterUsage.amount)
+//                    }
+//                }
+//            }
+//            //유저 전기 사용량 가져오기
+//            getUserElectricityUsage(userId) { userElectricityUsageList ->
+//                if (userElectricityUsageList != null) {
+//                    val map = userElectricityUsageList.map { userElectricityUsage ->
+//                        userElectricityUsage.str to userElectricityUsage.amount
+//                    }.toMap()
+//                    sharedViewModel.setUserElectricityUsage(map);
+//                    for (userElectricityUsage in userElectricityUsageList) {
+//                        Log.d(
+//                            "testlog",
+//                            userElectricityUsage.str + " " + userElectricityUsage.amount
+//                        )
+//                    }
+//                }
+//            }
+//        }
+//    }
 }
