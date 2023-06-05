@@ -14,7 +14,9 @@ import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.lifecycle.lifecycleScope
 import com.google.zxing.integration.android.IntentIntegrator
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import kr.co.carboncheck.android.carboncheckapp.database.CarbonCheckLocalDatabase
 import kr.co.carboncheck.android.carboncheckapp.databinding.ActivityQrcodeScanBinding
 import kr.co.carboncheck.android.carboncheckapp.dto.*
@@ -24,6 +26,7 @@ import kr.co.carboncheck.android.carboncheckapp.util.UserPreference
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import kotlin.reflect.typeOf
 
 class QrcodeScanActivity : AppCompatActivity() {
     private lateinit var binding: ActivityQrcodeScanBinding
@@ -121,33 +124,11 @@ class QrcodeScanActivity : AppCompatActivity() {
                 } else if (action == "REGISTER_PLUG") {
                     sendRegisterPlugRequest(deviceId, userId) { result ->
                         // 등록 성공
-
-
-
-
+                        Log.d("testlog", result.toString())
                         if (result) {
-                            lifecycleScope.launch{
-                                progressBar.visibility = View.VISIBLE
-                                val plugDao = localDatabase.plugDao()
-
-                                if (plugDao.findById(deviceId) == null) {
-                                    var plug = Plug(deviceId, "플러그")
-                                    plugDao.insertPlug(plug)
-
-                                    Log.d("testlog", "로컬 db에 플러그 저장 완료")
-                                    Log.d("testlog", deviceId)
-
-
-                                } else {
-                                    Log.d("testlog", "이미 등록된 플러그")
-                                    finish()
-                                }
-                                progressBar.visibility = View.INVISIBLE
-
-                            }
-
                             val intent = Intent(this, MainActivity::class.java)
                             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
+                            intent.putExtra("plugId", deviceId)
                             startActivity(intent)
                             finish()
                         } else {
@@ -325,5 +306,10 @@ class QrcodeScanActivity : AppCompatActivity() {
                 callback(false);
             }
         })
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        Log.d("testlog", "QR destroy")
     }
 }
