@@ -14,7 +14,7 @@ class NumberFormat {
         return (waterUsage * 0.289).toBigDecimal().setScale(2, RoundingMode.HALF_UP).toFloat()
     }
     fun electricityUsageToCarbonUsage(electricityUsage: Float): Float{  //Wh단위일 때 넣으면 된다
-        return (electricityUsage * 424).toBigDecimal().setScale(2, RoundingMode.HALF_UP).toFloat()
+        return (electricityUsage * 0.001 * 424).toBigDecimal().setScale(2, RoundingMode.HALF_UP).toFloat()
     }
     fun waterUsageToPrice(waterUsage:Float): Int{
         return (waterUsage * 0.001  * 470).roundToInt()
