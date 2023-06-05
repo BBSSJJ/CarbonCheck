@@ -38,9 +38,15 @@ import kr.co.carboncheck.android.carboncheckapp.data.model.WaterCategory
 import kr.co.carboncheck.android.carboncheckapp.databinding.FragmentTotalUsageBinding
 import kr.co.carboncheck.android.carboncheckapp.dataobject.MemberUsageData
 import kr.co.carboncheck.android.carboncheckapp.dataobject.RecentUsageData
+import kr.co.carboncheck.android.carboncheckapp.dto.GetGroupTargetAmountResponse
+import kr.co.carboncheck.android.carboncheckapp.dto.UpdateTargetAmountRequest
+import kr.co.carboncheck.android.carboncheckapp.network.RetrofitClient
 import kr.co.carboncheck.android.carboncheckapp.util.NumberFormat
 import kr.co.carboncheck.android.carboncheckapp.util.UserPreference
 import kr.co.carboncheck.android.carboncheckapp.viewmodel.SharedViewModel
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 class TotalUsageFragment : Fragment() {
     private var _binding: FragmentTotalUsageBinding? = null
@@ -58,11 +64,13 @@ class TotalUsageFragment : Fragment() {
     private lateinit var homeUsageViewPager: CustomViewPager
     private var myTargetAmount = 0f
     private lateinit var userName: String  //= UserPreference().getPreferences(context!!)?.getString("name","")
+    private lateinit var userId: String
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
         myContext = context
         userName = UserPreference().getPreferences(myContext)?.getString("name", "").toString()
+        userId = UserPreference().getPreferences(myContext)?.getString("userId", "").toString()
 
     }
 
@@ -135,19 +143,19 @@ class TotalUsageFragment : Fragment() {
 
 //        var adapter = TotalUsageRecyclerViewAdapter()     // 어댑터 객체
         sharedViewModel.getGroupTargetValue().observe(viewLifecycleOwner) {
-                if (it.isNotEmpty() && memberUsageData.size != 0) {
-                    if (memberUsageData[0].userName.equals("계산중")) {
-                        memberUsageData.clear()
-                    }
-                }
-                for ((name, target) in it) if (name != null) {
-                    if (name == userName) {
-                        myTargetAmount = target     // 유저 타겟값 가져옴  TODO:(도넛 차트에서 사용)
-                    }
-                    memberUsageMap.put(name, memberUsageData.size)
-                    memberUsageData.add(MemberUsageData(name, target, 0f))
+            if (it.isNotEmpty() && memberUsageData.size != 0) {
+                if (memberUsageData[0].userName.equals("계산중")) {
+                    memberUsageData.clear()
                 }
             }
+            for ((name, target) in it) if (name != null) {
+                if (name == userName) {
+                    myTargetAmount = target     // 유저 타겟값 가져옴  TODO:(도넛 차트에서 사용)
+                }
+                memberUsageMap.put(name, memberUsageData.size)
+                memberUsageData.add(MemberUsageData(name, target, 0f))
+            }
+        }
         sharedViewModel.getGroupWaterUsage().observe(viewLifecycleOwner) {
             if (it.isNotEmpty() && memberUsageData.size != 0) {
                 if (memberUsageData[0].userName.equals("계산중")) {
@@ -214,15 +222,15 @@ class TotalUsageFragment : Fragment() {
 
     private fun setDonut(donutProgressView: DonutProgressView) {
         val userTargetAmount = sharedViewModel.getGroupTargetValue().value?.get(userName)
-        
+
         if (myTargetAmount != 0f) {
             // 유저가 키보드로 입력 해서 값 넣어준 상황
             donutProgressView.cap = myTargetAmount      // TODO: 목표 설정량 변경 가능 하게 하기
         } else {
             // 키보드 입력 없이 프레그 먼트를 새로 열거나 sharedViewModel 사용 하는 상황
-            if(userTargetAmount != null){
+            if (userTargetAmount != null) {
                 donutProgressView.cap = userTargetAmount
-            }else{
+            } else {
                 // sharedViewModel 에도 없는 상황
                 donutProgressView.cap = 1000f // 기본값
             }
@@ -524,6 +532,9 @@ class TotalUsageFragment : Fragment() {
             builder.setPositiveButton("확인") { _, _ ->
                 val value = editText.text.toString().toFloatOrNull() // 입력된 텍스트 가져오기
                 if (value != null) {
+                    //서버에 수정 요청
+                    sendUpdateTargetAmountRequest(userId, value)
+
                     // 유저 타겟 배출량 업데이트 하기
                     val currentNameMap = sharedViewModel.getGroupTargetValue().value?.toMutableMap()
                     currentNameMap?.put(userName, value)
@@ -539,12 +550,33 @@ class TotalUsageFragment : Fragment() {
                 }
             }
 
+
             builder.setNegativeButton("취소") { dialog, _ ->
                 dialog.dismiss() // 다이얼로그 닫기
             }
             builder.create().show() // 다이얼로그 표시
 
         }
+
+    }
+
+    private fun sendUpdateTargetAmountRequest(userId: String, targetAmount: Float) {
+        Log.d("testlog", "in sendUpdateTargetAmountRequest")
+        val request = UpdateTargetAmountRequest(userId, targetAmount.toInt())
+        val call = RetrofitClient.userService.updateUserTargetAmountRequest(request)
+        call.enqueue(object : Callback<Boolean> {
+            override fun onResponse(call: Call<Boolean>, response: Response<Boolean>) {
+                if (response.isSuccessful) {
+                    if (response.body() == true) Log.d("testlog", "목표치 업데이트 성공")
+                    else Log.d("testlog", "목표치 업데이트 실패")
+                } else {
+                    Log.d("testlog", "목표치 업데이트 요청 실패")
+                }
+            }
+            override fun onFailure(call: Call<Boolean>, t: Throwable) {
+                Log.d("testlog", "목표치 업데이트 요청 전송 실패 : $t")
+            }
+        })
 
     }
 
