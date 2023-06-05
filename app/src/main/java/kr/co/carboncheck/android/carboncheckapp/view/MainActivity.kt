@@ -4,6 +4,8 @@ import kr.co.carboncheck.android.carboncheckapp.network.SseConnection
 import android.content.Context
 import android.content.pm.PackageInfo
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import android.widget.Toast
 import androidx.activity.viewModels
@@ -55,7 +57,11 @@ class MainActivity : AppCompatActivity() {
 
         //첫 화면 fragment 지정
         val startFragment = TotalUsageFragment()
-        supportFragmentManager.beginTransaction().replace(R.id.fragmentContainer, startFragment)
+//        supportFragmentManager.beginTransaction().replace(R.id.fragmentContainer, startFragment)
+//            .commit()
+
+        //replace 대신 add 사용하고 백스택에 추가하지 않음
+        supportFragmentManager.beginTransaction().add(R.id.fragmentContainer, startFragment)
             .commit()
 
         bottomNavigationView = binding.bottomNavigationView
@@ -71,10 +77,16 @@ class MainActivity : AppCompatActivity() {
                 R.id.user_info_menu -> fragment = UserInfoFragment()
 
             }
+
             loadFragment(fragment)
+
+//            Handler(Looper.getMainLooper()).postDelayed({
+//                //replace 대신 add 사용하고 백스택에 추가함
+//                supportFragmentManager.beginTransaction().addToBackStack(null).add(R.id.fragmentContainer, fragment).commit()
+//            },500)
         }
         bottomNavigationView.setOnItemReselectedListener { item ->
-            when(item.itemId){
+            when (item.itemId) {
                 R.id.total_usage_menu -> {}
                 R.id.detailed_usage_menu -> {}
                 R.id.solution_menu -> {}
@@ -159,6 +171,7 @@ class MainActivity : AppCompatActivity() {
 
                 }
 
+
                 //유저 물 사용량 가져오기
                 getUserWaterUsage(userId) { userWaterUsageList ->
                     if (userWaterUsageList != null) {
@@ -183,12 +196,14 @@ class MainActivity : AppCompatActivity() {
                         ////////////////////////////////////////////////////////////////////////////////////
                         lifecycleScope.launch {
 
+
                             val electricityUsage = sharedViewModel.getUserElectricityUsage().value
 
                             if (electricityUsage != null) {
                                 var map = mutableMapOf<String, Pair<String, Float>>()
 
                                 for ((key, value) in electricityUsage) {
+
 
 
                                     val plugArray =
@@ -211,11 +226,13 @@ class MainActivity : AppCompatActivity() {
                         ////////////////////////////////////////////////////////////////////////////////////
 
 
+
                         for (userElectricityUsage in userElectricityUsageList) {
                             Log.d(
                                 "testlog",
                                 userElectricityUsage.str + " " + userElectricityUsage.amount
                             )
+
                         }
                     }
                 }
