@@ -1,13 +1,16 @@
 <resources>
     <string name="app_name">CarbonCheck</string>
-    <string name="total_usage">전체 사용량</string>
+    <string name="total_usage">우리집 탄소 배출량</string>
     <string name="device_info">기기 정보</string>
     <string name="solution">미션</string>
     <string name="user_info">정보 관리</string>
-    <string name="my_usage">내 사용량</string>
-    <string name="home_usage">우리집 사용량</string>
+    <string name="my_usage">나의 오늘 배출량</string>
+    <string name="my_weekly_usage">나의 주간 배출량</string>
+    <string name="home_usage">우리집 오늘 배출량</string>
+    <string name="home_weekly_usage">우리집 주간 배출량</string>
     <string name="recent_usage">최근 사용량</string>
     <string name="total_emissions">총 배출량</string>
     <string name="ranking">랭킹</string>
+    <string name="loading">계산중...</string>
 
 </resources>

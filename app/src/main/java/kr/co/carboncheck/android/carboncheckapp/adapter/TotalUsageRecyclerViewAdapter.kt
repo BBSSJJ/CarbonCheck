@@ -1,7 +1,6 @@
 package kr.co.carboncheck.android.carboncheckapp.adapter
 
 import android.graphics.Color
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
@@ -25,7 +24,7 @@ class TotalUsageRecyclerViewAdapter :
         fun bind(memberUsageData: MemberUsageData) {
             binding.userName.text = memberUsageData.userName
             binding.targetUsage.text = "/" + memberUsageData.targetAmount.toString() + " g"
-            binding.currentUsage.text = memberUsageData.currentAmount.toString()
+            binding.currentUsage.text = "%.2f".format(memberUsageData.currentAmount) + " g"
 
         }
     }
@@ -55,7 +54,7 @@ class TotalUsageRecyclerViewAdapter :
         xAxis.granularity = 1f
         xAxis.textSize = 15f
         xAxis.gridLineWidth = 25f
-        xAxis.gridColor = Color.WHITE
+        xAxis.gridColor = Color.parseColor("#F4FBF4")
 
         holder.chart.axisLeft.axisMaximum = 100f        // Y축 최대값은 100으로 설정 (퍼센트 단위이므로)
         holder.chart.axisLeft.axisMinimum = 0f          // Y축 최소값은 0으로 설정
@@ -68,7 +67,7 @@ class TotalUsageRecyclerViewAdapter :
 //        // holder.chart.animateXY(2000, 2000) // 애니메이션 효과 적용
 
 
-        holder.chart.setExtraOffsets(0f, 0f, 0f, 0f)
+//        holder.chart.setExtraOffsets(0f, 0f, 0f, 0f)
 
 
         // YAxis(Left) (수평 막대 기준 아래쪽) - 선 유무, 데이터 최솟값/최댓값, label 유무
@@ -113,7 +112,7 @@ class TotalUsageRecyclerViewAdapter :
         // BarData 객체에 BarDataSet 객체 추가
         val data = BarData(dataSet)
 
-        data.barWidth = 0.4f // 막대의 너비 설정 (0~1 사이의 값)
+        data.barWidth = 0.8f // 막대의 너비 설정 (0~1 사이의 값)
 
         return data // BarData 객체 반환
     }
