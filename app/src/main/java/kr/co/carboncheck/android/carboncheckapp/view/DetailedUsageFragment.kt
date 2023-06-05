@@ -62,6 +62,7 @@ class DetailedUsageFragment : Fragment() {
 
             initDetailListRecyclerView()
             binding.progressBar.visibility = View.INVISIBLE
+            binding.totalDetailedUsageCard.visibility = View.VISIBLE
 
         }, 5000)
 
@@ -82,6 +83,8 @@ class DetailedUsageFragment : Fragment() {
         if (!isAdded) return
         val waterUsage = sharedViewModel.getUserWaterUsage().value
         val electricityUsageName = sharedViewModel.getUserElectricityUsageName().value
+        var waterUsageSum = 0f
+        var electricityUsageSum = 0f
 
         detailList.clear()
 
@@ -104,8 +107,8 @@ class DetailedUsageFragment : Fragment() {
                                 null
                             )
                         )
-
                     }
+                    waterUsageSum += value
                 }
             } else {
                 with(detailList) {
@@ -132,6 +135,7 @@ class DetailedUsageFragment : Fragment() {
                         plugId
                     )
                 )
+                electricityUsageSum += value.second
             }
         }
 
@@ -143,6 +147,15 @@ class DetailedUsageFragment : Fragment() {
         )
 
         binding.detailListRecyclerview.adapter?.notifyDataSetChanged()
+
+        changeTotalCardView(waterUsageSum, electricityUsageSum)
+    }
+
+    private fun changeTotalCardView(waterUsageSum: Float, electricityUsageSum: Float){
+        binding.totalDetailedWaterUsageText.text = NumberFormat().toLiterString(waterUsageSum)
+        binding.totalDetailedElectricityUsageText.text = NumberFormat().toKwhString(electricityUsageSum)
+        binding.totalDetailedCarbonUsageText.text = NumberFormat().totalCarbonUsageString(waterUsageSum,electricityUsageSum)
+        binding.totalDetailedCostText.text = NumberFormat().totalPriceString(waterUsageSum, electricityUsageSum)
     }
 
     override fun onDestroyView() {

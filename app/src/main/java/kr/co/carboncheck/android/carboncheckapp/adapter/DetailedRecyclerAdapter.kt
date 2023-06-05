@@ -3,6 +3,7 @@ package kr.co.carboncheck.android.carboncheckapp.adapter
 import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
+import android.graphics.Color
 import android.os.Handler
 import android.util.Log
 import android.view.LayoutInflater
@@ -11,6 +12,7 @@ import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.RecyclerView
 import kotlinx.coroutines.*
@@ -32,7 +34,10 @@ class DetailedRecyclerAdapter(var context: Context, private val sharedViewModel:
 
     var datalist = mutableListOf<DetailData>()
 
-    inner class MyViewHolder(private val binding: DetailedListBinding, private val sharedViewModel: SharedViewModel) :
+    inner class MyViewHolder(
+        private val binding: DetailedListBinding,
+        private val sharedViewModel: SharedViewModel
+    ) :
         RecyclerView.ViewHolder(binding.root) {
 
         fun bind(detailData: DetailData) {
@@ -80,8 +85,10 @@ class DetailedRecyclerAdapter(var context: Context, private val sharedViewModel:
                 if (detailData.typeImage == 1) {
                     binding.detailedCard.setOnClickListener {
                         cardClickMenu(bindingAdapterPosition, detailData.plugId!!)
-
                     }
+                    val color = ContextCompat.getColor(context, R.color.electric)
+                    binding.waterOrEletricityUsageText.setTextColor(color)
+                    binding.waterOrElectricityImage.setColorFilter(color)
                 }
 
             }
@@ -192,7 +199,7 @@ class DetailedRecyclerAdapter(var context: Context, private val sharedViewModel:
                             //로컬 db에서 삭제
                             localDatabase = CarbonCheckLocalDatabase.getInstance(context)
                             val plugDao = localDatabase.plugDao()
-                            CoroutineScope(Dispatchers.IO).launch{
+                            CoroutineScope(Dispatchers.IO).launch {
                                 val plugArray = plugDao.findById(plugId)
                                 if (plugArray.isNotEmpty()) {
                                     plugDao.deletePlug(plugArray[0])
@@ -205,13 +212,19 @@ class DetailedRecyclerAdapter(var context: Context, private val sharedViewModel:
 
 
                             //view Model에서 삭제
-                            val currentNameMap = sharedViewModel.getUserElectricityUsageName().value?.toMutableMap()
+                            val currentNameMap =
+                                sharedViewModel.getUserElectricityUsageName().value?.toMutableMap()
                             currentNameMap?.remove(plugId)
-                            sharedViewModel.setUserElectricityUsageName(currentNameMap?.toMap() ?: emptyMap())
+                            sharedViewModel.setUserElectricityUsageName(
+                                currentNameMap?.toMap() ?: emptyMap()
+                            )
 
-                            val currentMap = sharedViewModel.getUserElectricityUsage().value?.toMutableMap()
+                            val currentMap =
+                                sharedViewModel.getUserElectricityUsage().value?.toMutableMap()
                             currentMap?.remove(plugId)
-                            sharedViewModel.setUserElectricityUsage(currentMap?.toMap() ?: emptyMap())
+                            sharedViewModel.setUserElectricityUsage(
+                                currentMap?.toMap() ?: emptyMap()
+                            )
 
 
                         }
@@ -221,7 +234,6 @@ class DetailedRecyclerAdapter(var context: Context, private val sharedViewModel:
                 }
                 1 -> {
                     dialog.dismiss()
-
 
 
                 }
@@ -254,11 +266,5 @@ class DetailedRecyclerAdapter(var context: Context, private val sharedViewModel:
             }
         })
     }
-
-//    fun setData(data: List<DetailData>) {
-//        datalist.clear()
-//        datalist.addAll(data)
-//        notifyDataSetChanged()
-//    }
 
 }
