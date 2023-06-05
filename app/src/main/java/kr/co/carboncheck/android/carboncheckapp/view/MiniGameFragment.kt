@@ -50,7 +50,7 @@ class MiniGameFragment : Fragment() {
     }
     private fun initializeRankList() {
         with(rankUserData) {
-            // TODO: 여기에 실제 데이터 삽입 하시오 ( 가족 이름, 목표치, 사용량)
+            // TODO: 여기에 실제 데이터 삽입 하시오 ( 이름, 목표치, 사용량)
             add(RankData(1, "카본체크", 900f))
             add(RankData(2, "체크카본", 870f))
             add(RankData(5, "카봇체크", 850f))

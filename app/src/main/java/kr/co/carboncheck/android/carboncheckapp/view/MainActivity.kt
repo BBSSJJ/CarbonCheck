@@ -4,6 +4,8 @@ import kr.co.carboncheck.android.carboncheckapp.network.SseConnection
 import android.content.Context
 import android.content.pm.PackageInfo
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import android.widget.Toast
 import androidx.activity.viewModels
@@ -42,7 +44,6 @@ class MainActivity : AppCompatActivity() {
     private lateinit var localDatabase: CarbonCheckLocalDatabase
 
 
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
@@ -54,7 +55,11 @@ class MainActivity : AppCompatActivity() {
 
         //첫 화면 fragment 지정
         val startFragment = TotalUsageFragment()
-        supportFragmentManager.beginTransaction().replace(R.id.fragmentContainer, startFragment)
+//        supportFragmentManager.beginTransaction().replace(R.id.fragmentContainer, startFragment)
+//            .commit()
+
+        //replace 대신 add 사용하고 백스택에 추가하지 않음
+        supportFragmentManager.beginTransaction().add(R.id.fragmentContainer, startFragment)
             .commit()
 
         bottomNavigationView = binding.bottomNavigationView
@@ -70,10 +75,16 @@ class MainActivity : AppCompatActivity() {
                 R.id.user_info_menu -> fragment = UserInfoFragment()
 
             }
+
             loadFragment(fragment)
+
+//            Handler(Looper.getMainLooper()).postDelayed({
+//                //replace 대신 add 사용하고 백스택에 추가함
+//                supportFragmentManager.beginTransaction().addToBackStack(null).add(R.id.fragmentContainer, fragment).commit()
+//            },500)
         }
         bottomNavigationView.setOnItemReselectedListener { item ->
-            when(item.itemId){
+            when (item.itemId) {
                 R.id.total_usage_menu -> {}
                 R.id.detailed_usage_menu -> {}
                 R.id.solution_menu -> {}
@@ -107,7 +118,7 @@ class MainActivity : AppCompatActivity() {
                 var userId = userData.userId
                 var homeServerId = userData.homeServerId
 
-                lifecycleScope.launch{
+                lifecycleScope.launch {
                     if (homeServerId != "") {
                         //SSE 연결
                         sseConnection.connect(userData.homeServerId, userData.userId, sseListener)
@@ -165,7 +176,7 @@ class MainActivity : AppCompatActivity() {
 
                 }
 
-                lifecycleScope.launch{
+                lifecycleScope.launch {
                     //유저 물 사용량 가져오기
                     getUserWaterUsage(userId) { userWaterUsageList ->
                         if (userWaterUsageList != null) {
@@ -188,19 +199,20 @@ class MainActivity : AppCompatActivity() {
 
 
                             ////////////////////////////////////////////////////////////////////////////////////
-                            lifecycleScope.launch{
+                            lifecycleScope.launch {
 
-                                val electricityUsage = sharedViewModel.getUserElectricityUsage().value
+                                val electricityUsage =
+                                    sharedViewModel.getUserElectricityUsage().value
 
                                 if (electricityUsage != null) {
                                     var map = mutableMapOf<String, Pair<String, Float>>()
 
                                     for ((key, value) in electricityUsage) {
                                         val plug = plugDao.findById(key)
-                                        var name : String
-                                        if(plug == null){
+                                        var name: String
+                                        if (plug == null) {
                                             name = "잘못된 플러그"
-                                        }else {
+                                        } else {
                                             name = plug.plugName!!
                                         }
                                         map[key] = Pair(name, value)
@@ -211,7 +223,6 @@ class MainActivity : AppCompatActivity() {
                             }
 
                             ////////////////////////////////////////////////////////////////////////////////////
-
 
 
                             for (userElectricityUsage in userElectricityUsageList) {
@@ -255,32 +266,32 @@ class MainActivity : AppCompatActivity() {
         return false
     }
 
-/*
-    private fun checkForPermission(): Boolean {
-        // Application 의 패키지 명을 가져 오기 위한 권한이 있는지 확인 하는 함수 입니다.
-        val appOps = this.getSystemService(Context.APP_OPS_SERVICE) as AppOpsManager
-        val mode =
-            appOps.checkOpNoThrow(AppOpsManager.OPSTR_GET_USAGE_STATS, Process.myUid(), packageName)
-/*
-         val mode = appOps.noteOpNoThrow(AppOpsManager.OPSTR_GET_USAGE_STATS, Process.myUid(), packageName,
-                    null, null)
-         으로 사용 할수 있겠 으나 API 30 부터 지원됨
-         AttributionTag, RemoteCallback Parameter 를 null 로 설정 하는 예제 이며 이는 "우리는 필요 없어서" 다
-*/
-        return mode == AppOpsManager.MODE_ALLOWED
-    }
+    /*
+        private fun checkForPermission(): Boolean {
+            // Application 의 패키지 명을 가져 오기 위한 권한이 있는지 확인 하는 함수 입니다.
+            val appOps = this.getSystemService(Context.APP_OPS_SERVICE) as AppOpsManager
+            val mode =
+                appOps.checkOpNoThrow(AppOpsManager.OPSTR_GET_USAGE_STATS, Process.myUid(), packageName)
+    /*
+             val mode = appOps.noteOpNoThrow(AppOpsManager.OPSTR_GET_USAGE_STATS, Process.myUid(), packageName,
+                        null, null)
+             으로 사용 할수 있겠 으나 API 30 부터 지원됨
+             AttributionTag, RemoteCallback Parameter 를 null 로 설정 하는 예제 이며 이는 "우리는 필요 없어서" 다
+    */
+            return mode == AppOpsManager.MODE_ALLOWED
+        }
 
-    private fun setPackageInfoList() {
-        // 설치된 어플 목록을 listPackageInfo 에 담는 코드
-        // Overhead 를 줄이기 위해 Coroutine 을 사용 하여 쓰레드 분리
-        CoroutineScope(Dispatchers.IO).launch {
-            var list: List<PackageInfo> = packageManager.getInstalledPackages(0)
-            for (i in list) {
-                listPackageInfo.add(i)
+        private fun setPackageInfoList() {
+            // 설치된 어플 목록을 listPackageInfo 에 담는 코드
+            // Overhead 를 줄이기 위해 Coroutine 을 사용 하여 쓰레드 분리
+            CoroutineScope(Dispatchers.IO).launch {
+                var list: List<PackageInfo> = packageManager.getInstalledPackages(0)
+                for (i in list) {
+                    listPackageInfo.add(i)
+                }
             }
         }
-    }
-*/
+    */
     // 뒤로가기 두번 눌러 종료하도록 하는 코드
     private var backPressedTime: Long = 0 // 뒤로가기 버튼이 눌린 시간을 저장하는 변수
     private val backPressedInterval = 2000 // 두 번 눌렀을 때의 시간 간격 (밀리초)
