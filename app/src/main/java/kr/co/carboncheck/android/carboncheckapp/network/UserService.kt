@@ -1,5 +1,6 @@
 package kr.co.carboncheck.android.carboncheckapp.network
 
+import androidx.room.Update
 import kr.co.carboncheck.android.carboncheckapp.dto.*
 import retrofit2.Call
 import retrofit2.http.*
@@ -22,4 +23,7 @@ interface UserService {
 
     @GET("/target_amount/group")
     fun getGroupTargetAmountRequest(@Query("homeServerId") homeServerId: String): Call<List<GetGroupTargetAmountResponse>>
+
+    @POST("/target_amount/update")
+    fun updateUserTargetAmountRequest(@Body updateTargetAmountRequest: UpdateTargetAmountRequest) : Call<Boolean>
 }
