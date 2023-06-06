@@ -1,5 +1,7 @@
 package kr.co.carboncheck.android.carboncheckapp.view
 
+import android.app.AlertDialog
+import android.app.ProgressDialog
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
@@ -8,6 +10,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ProgressBar
 import android.widget.Toast
 import androidx.core.app.ActivityCompat.finishAffinity
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -20,6 +23,7 @@ import kr.co.carboncheck.android.carboncheckapp.dataobject.MemberUsageData
 import kr.co.carboncheck.android.carboncheckapp.dto.RegisterFaceRequest
 import kr.co.carboncheck.android.carboncheckapp.dto.RegisterFaceResponse
 import kr.co.carboncheck.android.carboncheckapp.network.RetrofitClient
+import kr.co.carboncheck.android.carboncheckapp.network.SseListener
 import kr.co.carboncheck.android.carboncheckapp.util.UserPreference
 import retrofit2.Call
 import retrofit2.Callback
@@ -29,6 +33,7 @@ class UserInfoFragment : Fragment() {
     private var _binding: FragmentUserInfoBinding? = null
     private val binding get() = _binding!!
     private val memberDatas = mutableListOf<MemberData>()
+    private lateinit var progressDialog: ProgressDialog
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
@@ -63,6 +68,11 @@ class UserInfoFragment : Fragment() {
             if (preference["homeServerId"] == "") {
                 Toast.makeText(requireActivity(), "홈서버에 가입되지 않았습니다", Toast.LENGTH_SHORT).show()
             } else {
+                progressDialog = ProgressDialog(context)
+                progressDialog.setMessage("카메라 앞에 서주세요.\n등록이 완료되면 자동으로 닫힙니다.")
+                progressDialog.setCancelable(true)
+                progressDialog.show()
+                SseListener()
                 sendRegisterFaceRequest(preference["userId"]!!, preference["homeServerId"]!!) {
                     //콜백
                 }
