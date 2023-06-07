@@ -1,5 +1,7 @@
 package kr.co.carboncheck.android.carboncheckapp.view
 
+import android.app.AlertDialog
+import android.app.ProgressDialog
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
@@ -8,8 +10,10 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ProgressBar
 import android.widget.Toast
 import androidx.core.app.ActivityCompat.finishAffinity
+import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import kr.co.carboncheck.android.carboncheckapp.R
 import kr.co.carboncheck.android.carboncheckapp.adapter.UserInfoMemberRecyclerViewAdapter
@@ -20,7 +24,9 @@ import kr.co.carboncheck.android.carboncheckapp.dataobject.MemberUsageData
 import kr.co.carboncheck.android.carboncheckapp.dto.RegisterFaceRequest
 import kr.co.carboncheck.android.carboncheckapp.dto.RegisterFaceResponse
 import kr.co.carboncheck.android.carboncheckapp.network.RetrofitClient
+import kr.co.carboncheck.android.carboncheckapp.network.SseListener
 import kr.co.carboncheck.android.carboncheckapp.util.UserPreference
+import kr.co.carboncheck.android.carboncheckapp.viewmodel.SharedViewModel
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -29,6 +35,10 @@ class UserInfoFragment : Fragment() {
     private var _binding: FragmentUserInfoBinding? = null
     private val binding get() = _binding!!
     private val memberDatas = mutableListOf<MemberData>()
+    private lateinit var progressDialog: ProgressDialog
+    private val sharedViewModel: SharedViewModel by activityViewModels()
+    private lateinit var myName: String
+//    val sseListener = SseListener()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
@@ -63,6 +73,11 @@ class UserInfoFragment : Fragment() {
             if (preference["homeServerId"] == "") {
                 Toast.makeText(requireActivity(), "홈서버에 가입되지 않았습니다", Toast.LENGTH_SHORT).show()
             } else {
+                progressDialog = ProgressDialog(context)
+                progressDialog.setMessage("카메라 앞에 서주세요.\n등록이 완료되면 자동으로 닫힙니다.")
+                progressDialog.setCancelable(true)
+                progressDialog.show()
+
                 sendRegisterFaceRequest(preference["userId"]!!, preference["homeServerId"]!!) {
                     //콜백
                 }
@@ -73,6 +88,10 @@ class UserInfoFragment : Fragment() {
             deletePreferences(requireActivity())
 
         }
+
+        myName = getUserDataPreference(requireContext())["name"]!!
+        binding.userInfoUserName.text = myName
+
 
         return binding.root
 
@@ -171,10 +190,19 @@ class UserInfoFragment : Fragment() {
     }
 
     private fun initializeMemberList() {
-        with(memberDatas) {
-            // TODO: 여기에 실제 데이터 삽입 하시오 ( 가족 이름, 유저 번호)
-            add(MemberData(1, "GOP"))
-            add(MemberData(2, "Sung"))
+        val map = sharedViewModel.getGroupTargetValue().value
+        if (map != null) {
+            var i = 1
+            for((key, value) in map){
+                if(key == myName) continue
+                with(memberDatas) {
+                    // TODO: 여기에 실제 데이터 삽입 하시오 ( 가족 이름, 유저 번호)
+                    add(MemberData(i, key))
+                }
+                i += 1
+            }
         }
+
+
     }
 }
