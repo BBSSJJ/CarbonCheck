@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".view.MiniGameFragment">
@@ -43,19 +43,257 @@
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/rank_recycler_view"
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/total_rank_card"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:paddingHorizontal="16dp"
-                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                    android:layout_marginLeft="16dp"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginRight="16dp"
+                    android:background="@color/secondary"
+                    app:cardCornerRadius="12dp"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/rank_title_bar"
-                    tools:itemCount="6"
-                    tools:listitem="@layout/rank_list" />
+                    app:layout_constraintTop_toBottomOf="@id/rank_title_bar">
 
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@color/secondary"
+                        android:padding="16dp">
+                        <!-- 버튼과 힌트 -->
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/total_rank_card_before_button"
+                            android:layout_width="48dp"
+                            android:layout_height="48dp"
+                            android:backgroundTint="@color/secondary"
+                            android:outlineProvider="none"
+                            app:icon="@drawable/navigate_before_48px"
+                            app:iconGravity="textStart"
+                            app:iconSize="36dp"
+                            app:iconTint="@color/accent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent"
+                            tools:ignore="SpeakableTextPresentCheck" />
 
+                        <LinearLayout
+                            android:id="@+id/total_rank_card_hint"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            app:layout_constraintBottom_toBottomOf="@id/total_rank_card_before_button"
+                            app:layout_constraintEnd_toStartOf="@id/total_rank_card_next_button"
+                            app:layout_constraintStart_toEndOf="@id/total_rank_card_before_button"
+                            app:layout_constraintTop_toTopOf="@id/total_rank_card_before_button">
+
+                            <ImageView
+                                android:id="@+id/total_rank_card_icon"
+                                android:layout_width="20dp"
+                                android:layout_height="20dp"
+                                android:width="20dp"
+                                android:height="20dp"
+                                android:src="@drawable/leaderboard_48px"
+                                app:tint="@color/third" />
+
+                            <TextView
+                                android:id="@+id/total_rank_card_text"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="3dp"
+                                android:fontFamily="@font/pretendard_medium"
+                                android:text="@string/total_rank_week"
+                                android:textColor="@color/third" />
+                        </LinearLayout>
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/total_rank_card_next_button"
+                            android:layout_width="48dp"
+                            android:layout_height="48dp"
+                            android:backgroundTint="@color/secondary"
+                            android:outlineProvider="none"
+                            app:icon="@drawable/navigate_next_48px"
+                            app:iconGravity="textEnd"
+                            app:iconSize="36dp"
+                            app:iconTint="@color/accent"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintTop_toTopOf="parent"
+                            tools:ignore="SpeakableTextPresentCheck" />
+                        <!-- 버튼과 힌트 끝 -->
+                        <kr.co.carboncheck.android.carboncheckapp.custom.CustomViewPager
+                            android:id="@+id/total_rank_custom_view_pager"
+                            android:layout_width="match_parent"
+                            android:layout_height="200dp"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toBottomOf="@id/total_rank_card_before_button"
+                            tools:ignore="SpeakableTextPresentCheck">
+
+                            <androidx.constraintlayout.widget.ConstraintLayout
+                                android:id="@+id/constraint_total_rank_week"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content">
+
+                                <ImageView
+                                    android:id="@+id/total_rank_chart_week"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:src="@drawable/total_rank_week"
+                                    android:adjustViewBounds="true"
+                                    app:layout_constraintBottom_toBottomOf="parent"
+                                    app:layout_constraintEnd_toEndOf="parent"
+                                    app:layout_constraintStart_toStartOf="parent" />
+                            </androidx.constraintlayout.widget.ConstraintLayout>
+
+                            <androidx.constraintlayout.widget.ConstraintLayout
+                                android:id="@+id/constraint_total_rank_month"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content">
+
+                                <ImageView
+                                    android:id="@+id/total_rank_chart_month"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:adjustViewBounds="true"
+                                    android:src="@drawable/total_rank_month"
+                                    app:layout_constraintBottom_toBottomOf="parent"
+                                    app:layout_constraintEnd_toEndOf="parent"
+                                    app:layout_constraintStart_toStartOf="parent" />
+
+                            </androidx.constraintlayout.widget.ConstraintLayout>
+                        </kr.co.carboncheck.android.carboncheckapp.custom.CustomViewPager>
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/mission_rank_card"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="16dp"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginRight="16dp"
+                    android:background="@color/secondary"
+                    app:cardCornerRadius="12dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/total_rank_card">
+
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@color/secondary"
+                        android:padding="16dp">
+                        <!-- 버튼과 힌트 -->
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/mission_rank_card_before_button"
+                            android:layout_width="48dp"
+                            android:layout_height="48dp"
+                            android:backgroundTint="@color/secondary"
+                            android:outlineProvider="none"
+                            app:icon="@drawable/navigate_before_48px"
+                            app:iconGravity="textStart"
+                            app:iconSize="36dp"
+                            app:iconTint="@color/accent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent"
+                            tools:ignore="SpeakableTextPresentCheck" />
+
+                        <LinearLayout
+                            android:id="@+id/mission_rank_card_hint"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            app:layout_constraintBottom_toBottomOf="@id/mission_rank_card_before_button"
+                            app:layout_constraintEnd_toStartOf="@id/mission_rank_card_next_button"
+                            app:layout_constraintStart_toEndOf="@id/mission_rank_card_before_button"
+                            app:layout_constraintTop_toTopOf="@id/mission_rank_card_before_button">
+
+                            <ImageView
+                                android:id="@+id/mission_rank_card_icon"
+                                android:layout_width="20dp"
+                                android:layout_height="20dp"
+                                android:width="20dp"
+                                android:height="20dp"
+                                android:src="@drawable/leaderboard_48px"
+                                app:tint="@color/third" />
+
+                            <TextView
+                                android:id="@+id/mission_rank_card_text"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="3dp"
+                                android:fontFamily="@font/pretendard_medium"
+                                android:text="@string/mission_rank_week"
+                                android:textColor="@color/third" />
+                        </LinearLayout>
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/mission_rank_card_next_button"
+                            android:layout_width="48dp"
+                            android:layout_height="48dp"
+                            android:backgroundTint="@color/secondary"
+                            android:outlineProvider="none"
+                            app:icon="@drawable/navigate_next_48px"
+                            app:iconGravity="textEnd"
+                            app:iconSize="36dp"
+                            app:iconTint="@color/accent"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintTop_toTopOf="parent"
+                            tools:ignore="SpeakableTextPresentCheck" />
+                        <!-- 버튼과 힌트 끝 -->
+                        <kr.co.carboncheck.android.carboncheckapp.custom.CustomViewPager
+                            android:id="@+id/mission_rank_custom_view_pager"
+                            android:layout_width="match_parent"
+                            android:layout_height="200dp"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toBottomOf="@id/mission_rank_card_before_button"
+                            tools:ignore="SpeakableTextPresentCheck">
+
+                            <androidx.constraintlayout.widget.ConstraintLayout
+                                android:id="@+id/constraint_mission_rank_week"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content">
+
+                                <ImageView
+                                    android:id="@+id/mission_rank_chart_week"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:adjustViewBounds="true"
+                                    android:src="@drawable/mission_rank_week"
+                                    app:layout_constraintBottom_toBottomOf="parent"
+                                    app:layout_constraintEnd_toEndOf="parent"
+                                    app:layout_constraintStart_toStartOf="parent" />
+
+                            </androidx.constraintlayout.widget.ConstraintLayout>
+
+                            <androidx.constraintlayout.widget.ConstraintLayout
+                                android:id="@+id/constraint_mission_rank_month"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content">
+
+                                <ImageView
+                                    android:id="@+id/mission_rank_chart_month"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:adjustViewBounds="true"
+                                    android:src="@drawable/mission_rank_month"
+                                    app:layout_constraintBottom_toBottomOf="parent"
+                                    app:layout_constraintEnd_toEndOf="parent"
+                                    app:layout_constraintStart_toStartOf="parent" />
+
+                            </androidx.constraintlayout.widget.ConstraintLayout>
+                        </kr.co.carboncheck.android.carboncheckapp.custom.CustomViewPager>
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+                </com.google.android.material.card.MaterialCardView>
+                <!--                <androidx.recyclerview.widget.RecyclerView-->
+                <!--                    android:id="@+id/rank_recycler_view"-->
+                <!--                    android:layout_width="match_parent"-->
+                <!--                    android:layout_height="wrap_content"-->
+                <!--                    android:paddingHorizontal="16dp"-->
+                <!--                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"-->
+                <!--                    app:layout_constraintEnd_toEndOf="parent"-->
+                <!--                    app:layout_constraintStart_toStartOf="parent"-->
+                <!--                    app:layout_constraintTop_toBottomOf="@id/rank_title_bar"-->
+                <!--                    tools:itemCount="6"-->
+                <!--                    tools:listitem="@layout/rank_list" />-->
             </androidx.constraintlayout.widget.ConstraintLayout>
         </androidx.appcompat.widget.LinearLayoutCompat>
     </ScrollView>
