@@ -264,9 +264,9 @@ class TotalUsageFragment : Fragment() {
                     }
                 }
                 electricCarbonAmount =
-                    numberFormat.electricityUsageToCarbonUsage(electricAmount / 1000f)   // Kwh 단위로 변환 하고 탄소 배출량 계산
+                    numberFormat.electricityUsageToCarbonUsage(electricAmount)   // Kwh 단위로 변환 하고 탄소 배출량 계산
                 totalCarbonAmount += electricCarbonAmount
-                binding.totalAmountCountText.text = totalCarbonAmount.toString() + "g"
+                binding.totalAmountCountText.text = "%.2f".format(totalCarbonAmount) +" g"
                 binding.electricSectionText.text =
                     "전력 사용량 " + numberFormat.toKwhString(electricAmount)
                 if (context != null) {
@@ -291,7 +291,7 @@ class TotalUsageFragment : Fragment() {
             }
             waterCarbonAmount = numberFormat.waterUsageToCarbonUsage(waterAmount)   // 탄소 배출량 으로 계산
             totalCarbonAmount += waterCarbonAmount
-            binding.totalAmountCountText.text = totalCarbonAmount.toString() + "g"
+            binding.totalAmountCountText.text = "%.2f".format(totalCarbonAmount) +" g"
             binding.waterSectionText.text = "수도 사용량 " + numberFormat.toLiterString(waterAmount)
 
             if (context != null) {
