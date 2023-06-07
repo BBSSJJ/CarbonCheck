@@ -9,7 +9,7 @@ import okhttp3.sse.EventSourceListener
 
 class SseListener : EventSourceListener() {
     private val gson = Gson()
-    private var progressDialog: ProgressDialog? = null
+//    private var progressDialog: ProgressDialog = null
     override fun onOpen(eventSource: EventSource, response: Response) {
         super.onOpen(eventSource, response)
         Log.d("testlog", "SSE연결이 열렸습니다")
@@ -26,7 +26,7 @@ class SseListener : EventSourceListener() {
         Log.d("testlog", data)
         val jsonData = gson.fromJson(data, SseDto::class.java)
         if(jsonData.msg == "register_finish"){
-            progressDialog?.dismiss()
+//            progressDialog?.dismiss()
         }
     }
 

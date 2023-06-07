@@ -13,6 +13,7 @@ import android.view.ViewGroup
 import android.widget.ProgressBar
 import android.widget.Toast
 import androidx.core.app.ActivityCompat.finishAffinity
+import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import kr.co.carboncheck.android.carboncheckapp.R
 import kr.co.carboncheck.android.carboncheckapp.adapter.UserInfoMemberRecyclerViewAdapter
@@ -25,6 +26,7 @@ import kr.co.carboncheck.android.carboncheckapp.dto.RegisterFaceResponse
 import kr.co.carboncheck.android.carboncheckapp.network.RetrofitClient
 import kr.co.carboncheck.android.carboncheckapp.network.SseListener
 import kr.co.carboncheck.android.carboncheckapp.util.UserPreference
+import kr.co.carboncheck.android.carboncheckapp.viewmodel.SharedViewModel
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -34,6 +36,9 @@ class UserInfoFragment : Fragment() {
     private val binding get() = _binding!!
     private val memberDatas = mutableListOf<MemberData>()
     private lateinit var progressDialog: ProgressDialog
+    private val sharedViewModel: SharedViewModel by activityViewModels()
+    private lateinit var myName: String
+//    val sseListener = SseListener()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
@@ -72,7 +77,7 @@ class UserInfoFragment : Fragment() {
                 progressDialog.setMessage("카메라 앞에 서주세요.\n등록이 완료되면 자동으로 닫힙니다.")
                 progressDialog.setCancelable(true)
                 progressDialog.show()
-                SseListener()
+
                 sendRegisterFaceRequest(preference["userId"]!!, preference["homeServerId"]!!) {
                     //콜백
                 }
@@ -83,6 +88,10 @@ class UserInfoFragment : Fragment() {
             deletePreferences(requireActivity())
 
         }
+
+        myName = getUserDataPreference(requireContext())["name"]!!
+        binding.userInfoUserName.text = myName
+
 
         return binding.root
 
@@ -181,10 +190,19 @@ class UserInfoFragment : Fragment() {
     }
 
     private fun initializeMemberList() {
-        with(memberDatas) {
-            // TODO: 여기에 실제 데이터 삽입 하시오 ( 가족 이름, 유저 번호)
-            add(MemberData(1, "GOP"))
-            add(MemberData(2, "Sung"))
+        val map = sharedViewModel.getGroupTargetValue().value
+        if (map != null) {
+            var i = 1
+            for((key, value) in map){
+                if(key == myName) continue
+                with(memberDatas) {
+                    // TODO: 여기에 실제 데이터 삽입 하시오 ( 가족 이름, 유저 번호)
+                    add(MemberData(i, key))
+                }
+                i += 1
+            }
         }
+
+
     }
 }
