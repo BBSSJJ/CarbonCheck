@@ -133,7 +133,7 @@
                                     android:layout_width="24dp"
                                     android:layout_height="24dp"
                                     android:src="@drawable/humidity_low_48px"
-                                    app:tint="@color/third" />
+                                    app:tint="@color/water" />
 
                                 <TextView
                                     android:id="@+id/achieved_water_amount"
@@ -141,7 +141,7 @@
                                     android:layout_height="wrap_content"
                                     android:layout_marginLeft="3dp"
                                     android:fontFamily="@font/pretendard_medium"
-                                    android:textColor="@color/third"
+                                    android:textColor="@color/water"
                                     android:textSize="12sp"
                                     app:layout_constraintStart_toEndOf="@id/achieved_water_icon"
                                     app:layout_constraintTop_toTopOf="parent"
@@ -152,7 +152,7 @@
                                     android:layout_height="wrap_content"
                                     android:fontFamily="@font/pretendard_medium"
                                     android:text=" L"
-                                    android:textColor="@color/third"
+                                    android:textColor="@color/water"
                                     android:textSize="12sp" />
                             </LinearLayout>
 
@@ -170,7 +170,7 @@
                                     android:layout_width="24dp"
                                     android:layout_height="24dp"
                                     android:src="@drawable/bolt_48px"
-                                    app:tint="@color/third" />
+                                    app:tint="@color/electric" />
 
                                 <TextView
                                     android:id="@+id/achieved_electricity_amount"
@@ -178,7 +178,7 @@
                                     android:layout_height="wrap_content"
                                     android:layout_marginLeft="3dp"
                                     android:fontFamily="@font/pretendard_medium"
-                                    android:textColor="@color/third"
+                                    android:textColor="@color/electric"
                                     android:textSize="12sp"
                                     tools:text="0.315" />
 
@@ -187,7 +187,7 @@
                                     android:layout_height="wrap_content"
                                     android:fontFamily="@font/pretendard_medium"
                                     android:text=" Kwh"
-                                    android:textColor="@color/third"
+                                    android:textColor="@color/electric"
                                     android:textSize="12sp" />
                             </LinearLayout>
 
@@ -205,7 +205,7 @@
                                     android:layout_width="24dp"
                                     android:layout_height="24dp"
                                     android:src="@drawable/payments_48px"
-                                    app:tint="@color/third" />
+                                    app:tint="@color/accent" />
 
                                 <TextView
                                     android:id="@+id/achieved_expense_amount"
@@ -213,7 +213,7 @@
                                     android:layout_height="wrap_content"
                                     android:layout_marginLeft="3dp"
                                     android:fontFamily="@font/pretendard_medium"
-                                    android:textColor="@color/third"
+                                    android:textColor="@color/accent"
                                     android:textSize="12sp"
                                     tools:text="340" />
 
@@ -222,7 +222,7 @@
                                     android:layout_height="wrap_content"
                                     android:fontFamily="@font/pretendard_medium"
                                     android:text=" ₩"
-                                    android:textColor="@color/third"
+                                    android:textColor="@color/accent"
                                     android:textSize="12sp" />
                             </LinearLayout>
 
@@ -240,7 +240,7 @@
                                     android:layout_width="24dp"
                                     android:layout_height="24dp"
                                     android:src="@drawable/baseline_co2_24"
-                                    app:tint="@color/third" />
+                                    app:tint="@color/danger" />
 
                                 <TextView
                                     android:id="@+id/achieved_carbon_amount"
@@ -248,7 +248,7 @@
                                     android:layout_height="wrap_content"
                                     android:layout_marginLeft="3dp"
                                     android:fontFamily="@font/pretendard_medium"
-                                    android:textColor="@color/third"
+                                    android:textColor="@color/danger"
                                     android:textSize="12sp"
                                     tools:text="0.13" />
 
@@ -257,7 +257,7 @@
                                     android:layout_height="wrap_content"
                                     android:fontFamily="@font/pretendard_medium"
                                     android:text=" Kg"
-                                    android:textColor="@color/third"
+                                    android:textColor="@color/danger"
                                     android:textSize="12sp" />
 
                             </LinearLayout>

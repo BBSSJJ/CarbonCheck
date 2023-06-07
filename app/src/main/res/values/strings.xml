@@ -2,7 +2,7 @@
     <string name="app_name">CarbonCheck</string>
     <string name="total_usage">우리집 탄소 배출량</string>
     <string name="device_info">기기 정보</string>
-    <string name="solution">미션</string>
+    <string name="solution">일일 미션</string>
     <string name="user_info">정보 관리</string>
     <string name="my_usage">나의 오늘 배출량</string>
     <string name="my_weekly_usage">나의 주간 배출량</string>
