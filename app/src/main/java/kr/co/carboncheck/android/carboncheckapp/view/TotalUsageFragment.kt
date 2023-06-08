@@ -18,6 +18,8 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.interpolator.view.animation.FastOutSlowInInterpolator
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.Observer
 import androidx.lifecycle.viewModelScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import app.futured.donut.DonutDirection
@@ -84,12 +86,17 @@ class TotalUsageFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View? {
         _binding = FragmentTotalUsageBinding.inflate(inflater, container, false)
+        val viewLifecycleObserver = Observer<LifecycleOwner> {
+            initTotalUsageRecyclerView()
+        }
+        viewLifecycleOwnerLiveData.observe(viewLifecycleOwner, viewLifecycleObserver)
         return binding.root
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+        viewLifecycleOwnerLiveData.removeObservers(viewLifecycleOwner)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -99,9 +106,9 @@ class TotalUsageFragment : Fragment() {
         setOnclickListenerOnTotalAmountText()
 
         // initTotalUsageRecyclerView() 에서 myTargetAmount(탄소) 설정하기에 제일 먼저 실행
-        Handler().postDelayed({
-            initTotalUsageRecyclerView()
-        }, 1000)
+//        Handler().postDelayed({
+//            initTotalUsageRecyclerView()
+//        }, 1000)
 
         // Donut Chart Setting
         val donutProgressView = binding.donutView
