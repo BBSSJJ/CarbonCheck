@@ -6,8 +6,9 @@ import androidx.recyclerview.widget.RecyclerView
 import kr.co.carboncheck.android.carboncheckapp.R
 import kr.co.carboncheck.android.carboncheckapp.databinding.SolutionListBinding
 import kr.co.carboncheck.android.carboncheckapp.dataobject.SolutionData
+import kr.co.carboncheck.android.carboncheckapp.view.SolutionFragment
 
-class SolutionRecyclerViewAdapter :
+class SolutionRecyclerViewAdapter(val fragment: SolutionFragment) :
     RecyclerView.Adapter<SolutionRecyclerViewAdapter.MyViewHolder>() {
 
     var datalist = mutableListOf<SolutionData>()
@@ -15,14 +16,29 @@ class SolutionRecyclerViewAdapter :
     inner class MyViewHolder(private val binding: SolutionListBinding) :
         RecyclerView.ViewHolder(binding.root) {
         fun bind(solutionData: SolutionData) {
-            if (solutionData.result) {
-                binding.solutionResult.setImageResource(R.drawable.check_box_48px)
-                binding.solutionMission.text = "달성 하셨습니다!"
 
-            } else {
-                binding.solutionResult.setImageResource(R.drawable.check_box_outline_blank_48px)
-                binding.solutionMission.text = solutionData.SolutionMission
+            binding.solutionResult.setOnCheckedChangeListener { _, isChecked ->
+                //가져오기
+
+                if (isChecked) {
+                    fragment.addAchieveAmount(
+                        solutionData.ExpectedWaterAmount,
+                        solutionData.ExpectedElectricityAmount,
+                        solutionData.ExpectedExpenseAmount,
+                        solutionData.ExpectedCarbonAmount
+                    )
+                } else {
+                    fragment.subAchieveAmount(
+                        solutionData.ExpectedWaterAmount,
+                        solutionData.ExpectedElectricityAmount,
+                        solutionData.ExpectedExpenseAmount,
+                        solutionData.ExpectedCarbonAmount
+                    )
+
+                }
+
             }
+
             binding.solutionTitle.text = solutionData.SolutionTitle
             binding.expectedWaterAmount.text = solutionData.ExpectedWaterAmount.toString()
             binding.expectedElectricityAmount.text =
@@ -34,20 +50,25 @@ class SolutionRecyclerViewAdapter :
 
     override fun getItemCount(): Int = datalist.size
 
-   fun getAchievedXP():ArrayList<Float>{
+    fun getAchievedXP(): ArrayList<Float> {
         var achievedWater = 0f
         var achievedElectricity = 0f
         var achievedExpense = 0f
         var achievedCarbonAmount = 0f
-        for(data in datalist){
-            if(data.result){
+        for (data in datalist) {
+            if (data.result) {
                 achievedWater += data.ExpectedWaterAmount
                 achievedElectricity += data.ExpectedElectricityAmount
                 achievedExpense += data.ExpectedExpenseAmount
                 achievedCarbonAmount += data.ExpectedCarbonAmount
             }
         }
-        return arrayListOf(achievedWater,achievedElectricity,achievedExpense,achievedCarbonAmount)
+        return arrayListOf(
+            achievedWater,
+            achievedElectricity,
+            achievedExpense,
+            achievedCarbonAmount
+        )
     }
 
     override fun onBindViewHolder(

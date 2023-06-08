@@ -86,9 +86,9 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:fontFamily="@font/pretendard_regular"
+                                android:text="오늘 미션 "
                                 android:textColor="@color/third"
-                                android:textSize="16sp"
-                                android:text="오늘 미션 " />
+                                android:textSize="16sp" />
 
                             <TextView
                                 android:id="@+id/solution_achieve_number"
@@ -105,9 +105,9 @@
                                 android:layout_height="wrap_content"
 
                                 android:fontFamily="@font/pretendard_regular"
+                                android:text="개 달성 하셨습니다"
                                 android:textColor="@color/third"
-                                android:textSize="16sp"
-                                android:text="개 달성 하셨습니다" />
+                                android:textSize="16sp" />
                         </LinearLayout>
 
                         <androidx.constraintlayout.widget.ConstraintLayout
@@ -145,7 +145,7 @@
                                     android:textSize="12sp"
                                     app:layout_constraintStart_toEndOf="@id/achieved_water_icon"
                                     app:layout_constraintTop_toTopOf="parent"
-                                    tools:text="30.0" />
+                                    tools:text="0.0" />
 
                                 <TextView
                                     android:layout_width="wrap_content"
@@ -180,7 +180,7 @@
                                     android:fontFamily="@font/pretendard_medium"
                                     android:textColor="@color/electric"
                                     android:textSize="12sp"
-                                    tools:text="0.315" />
+                                    tools:text="0.0" />
 
                                 <TextView
                                     android:layout_width="wrap_content"
@@ -215,7 +215,7 @@
                                     android:fontFamily="@font/pretendard_medium"
                                     android:textColor="@color/accent"
                                     android:textSize="12sp"
-                                    tools:text="340" />
+                                    tools:text="0" />
 
                                 <TextView
                                     android:layout_width="wrap_content"
@@ -250,13 +250,13 @@
                                     android:fontFamily="@font/pretendard_medium"
                                     android:textColor="@color/danger"
                                     android:textSize="12sp"
-                                    tools:text="0.13" />
+                                    tools:text="0.0" />
 
                                 <TextView
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:fontFamily="@font/pretendard_medium"
-                                    android:text=" Kg"
+                                    android:text=" g"
                                     android:textColor="@color/danger"
                                     android:textSize="12sp" />
 
