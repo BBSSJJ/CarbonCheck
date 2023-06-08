@@ -25,14 +25,15 @@
             app:layout_constraintTop_toTopOf="parent"
             tools:text="미션 타이틀" />
 
-        <ImageView
+        <CheckBox
             android:id="@+id/solution_result"
             android:layout_width="24dp"
             android:layout_height="24dp"
-            android:src="@drawable/check_box_outline_blank_48px"
+            android:background="?attr/selectableItemBackground"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:tint="@color/third" />
+            app:tint="@color/third"
+            android:theme="@style/Widget.Material3.CompoundButton.CheckBox"/>
 
         <TextView
             android:id="@+id/solution_mission"
