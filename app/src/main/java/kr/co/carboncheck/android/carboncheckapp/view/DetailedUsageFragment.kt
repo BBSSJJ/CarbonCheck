@@ -55,15 +55,17 @@ class DetailedUsageFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         initializeDetailList()
         if (isAdded) {
-            binding.progressBar.visibility = View.VISIBLE
+            if(binding != null){
 
+                binding.progressBar.visibility = View.VISIBLE
+            }
         }
         Handler().postDelayed({
-
             initDetailListRecyclerView()
-            binding.progressBar.visibility = View.INVISIBLE
-            binding.totalDetailedUsageCard.visibility = View.VISIBLE
-
+            if (binding != null) {
+                binding.progressBar.visibility = View.INVISIBLE
+                binding.totalDetailedUsageCard.visibility = View.VISIBLE
+            }
         }, 5000)
 
 
@@ -151,11 +153,14 @@ class DetailedUsageFragment : Fragment() {
         changeTotalCardView(waterUsageSum, electricityUsageSum)
     }
 
-    private fun changeTotalCardView(waterUsageSum: Float, electricityUsageSum: Float){
+    private fun changeTotalCardView(waterUsageSum: Float, electricityUsageSum: Float) {
         binding.totalDetailedWaterUsageText.text = NumberFormat().toLiterString(waterUsageSum)
-        binding.totalDetailedElectricityUsageText.text = NumberFormat().toKwhString(electricityUsageSum)
-        binding.totalDetailedCarbonUsageText.text = NumberFormat().totalCarbonUsageString(waterUsageSum,electricityUsageSum)
-        binding.totalDetailedCostText.text = NumberFormat().totalPriceString(waterUsageSum, electricityUsageSum)
+        binding.totalDetailedElectricityUsageText.text =
+            NumberFormat().toKwhString(electricityUsageSum)
+        binding.totalDetailedCarbonUsageText.text =
+            NumberFormat().totalCarbonUsageString(waterUsageSum, electricityUsageSum)
+        binding.totalDetailedCostText.text =
+            NumberFormat().totalPriceString(waterUsageSum, electricityUsageSum)
     }
 
     override fun onDestroyView() {
