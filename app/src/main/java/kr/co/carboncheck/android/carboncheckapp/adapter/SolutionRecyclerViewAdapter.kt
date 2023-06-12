@@ -27,6 +27,8 @@ class SolutionRecyclerViewAdapter(val fragment: SolutionFragment) :
                         solutionData.ExpectedExpenseAmount,
                         solutionData.ExpectedCarbonAmount
                     )
+                    binding.solutionResult.setButtonDrawable(R.drawable.check_box_24px)
+
                 } else {
                     fragment.subAchieveAmount(
                         solutionData.ExpectedWaterAmount,
@@ -34,9 +36,8 @@ class SolutionRecyclerViewAdapter(val fragment: SolutionFragment) :
                         solutionData.ExpectedExpenseAmount,
                         solutionData.ExpectedCarbonAmount
                     )
-
+                    binding.solutionResult.setButtonDrawable(R.drawable.check_box_outline_blank_24px)
                 }
-
             }
 
             binding.solutionTitle.text = solutionData.SolutionTitle

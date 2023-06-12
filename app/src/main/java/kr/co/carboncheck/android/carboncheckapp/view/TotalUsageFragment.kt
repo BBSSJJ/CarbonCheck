@@ -266,7 +266,7 @@ class TotalUsageFragment : Fragment() {
                 // Update your UI with the new data
                 userElectricityUsage?.let {
                     for ((key, value) in it) {
-                        Log.d("TotalUsage elec", value.toString())
+//                        Log.d("TotalUsage elec", value.toString())
                         electricAmount += value
                     }
                 }
@@ -276,7 +276,7 @@ class TotalUsageFragment : Fragment() {
                 binding.totalAmountCountText.text = "%.2f".format(totalCarbonAmount) +" g"
                 binding.electricSectionText.text =
                     "전력 사용량 " + numberFormat.toKwhString(electricAmount)
-                if (context != null) {
+                if (context != null && electricCarbonAmount > 0f) {
                     sections.add(
                         DonutSection(
                             ElectricCategory.name,
@@ -301,7 +301,7 @@ class TotalUsageFragment : Fragment() {
             binding.totalAmountCountText.text = "%.2f".format(totalCarbonAmount) +" g"
             binding.waterSectionText.text = "수도 사용량 " + numberFormat.toLiterString(waterAmount)
 
-            if (context != null) {
+            if (context != null && waterCarbonAmount > 0f) {
                 sections.add(
                     DonutSection(
                         WaterCategory.name,
@@ -434,7 +434,7 @@ class TotalUsageFragment : Fragment() {
         // 데이터 리스트에서 각 막대의 값을 가져와서 리스트에 추가합니다.
         for (i in dataList.indices) {
             val data = dataList[i]
-            val textView = binding.dateLayout.getChildAt(i) as TextView
+            val textView = binding.homeDateLayout.getChildAt(i) as TextView
             textView.text = data.date
             barEntries1.add(BarEntry(i.toFloat(), data.electricityUsage / electricityMax * 100f))
             barEntries2.add(BarEntry(i.toFloat(), data.waterUsage / waterMax * 100f))
@@ -503,13 +503,13 @@ class TotalUsageFragment : Fragment() {
         val recentUsageList = ArrayList<RecentUsageData>()
         // TODO: (Database의 최근 6일 사용량 Query 결과 + 오늘 사용량) 넣을 것.
         // Label, Bar 1, 2, 3 가 된다.
-        recentUsageList.add(RecentUsageData("05/29", 1003f, 270f, 591f))
-        recentUsageList.add(RecentUsageData("05/30", 2106f, 184f, 1244f))
-        recentUsageList.add(RecentUsageData("05/31", 2842f, 278f, 1140f))
-        recentUsageList.add(RecentUsageData("06/01", 8772f, 210f, 500f))
-        recentUsageList.add(RecentUsageData("06/02", 357f, 232f, 220f))
-        recentUsageList.add(RecentUsageData("06/03", 1800f, 467f, 898f))
-        recentUsageList.add(RecentUsageData("06/04", 187f, 100f, 109f))
+        recentUsageList.add(RecentUsageData("06/06", 1003f, 270f, 591f))
+        recentUsageList.add(RecentUsageData("06/07", 2106f, 184f, 1244f))
+        recentUsageList.add(RecentUsageData("06/08", 2842f, 278f, 1140f))
+        recentUsageList.add(RecentUsageData("06/09", 8772f, 210f, 500f))
+        recentUsageList.add(RecentUsageData("06/10", 357f, 232f, 220f))
+        recentUsageList.add(RecentUsageData("06/11", 1800f, 467f, 898f))
+        recentUsageList.add(RecentUsageData("06/12", 187f, 100f, 109f))
 
         return recentUsageList
     }
@@ -518,13 +518,13 @@ class TotalUsageFragment : Fragment() {
         val recentUsageList = ArrayList<RecentUsageData>()
         // TODO: (Database의 최근 6일 사용량 Query 결과 + 오늘 사용량) 넣을 것.
         // Label, Bar 1, 2, 3 가 된다.
-        recentUsageList.add(RecentUsageData("05/29", 14203f, 670f, 2600.87f))
-        recentUsageList.add(RecentUsageData("05/30", 11806f, 484f, 2400.14f))
-        recentUsageList.add(RecentUsageData("05/31", 8000f, 978f, 1800.68f))
-        recentUsageList.add(RecentUsageData("06/01", 12772f, 710f, 2500.96f))
-        recentUsageList.add(RecentUsageData("06/02", 9257f, 832f, 1900.248f))
-        recentUsageList.add(RecentUsageData("06/03", 15040f, 600f, 2700.4f))
-        recentUsageList.add(RecentUsageData("06/04", 1187f, 700f, 713.048f))
+        recentUsageList.add(RecentUsageData("06/06", 14203f, 670f, 2600.87f))
+        recentUsageList.add(RecentUsageData("06/07", 11806f, 484f, 2400.14f))
+        recentUsageList.add(RecentUsageData("06/08", 8000f, 978f, 1800.68f))
+        recentUsageList.add(RecentUsageData("06/09", 12772f, 710f, 2500.96f))
+        recentUsageList.add(RecentUsageData("06/10", 9257f, 832f, 1900.248f))
+        recentUsageList.add(RecentUsageData("06/11", 15040f, 600f, 2700.4f))
+        recentUsageList.add(RecentUsageData("06/12", 1187f, 700f, 713.048f))
 
         return recentUsageList
     }

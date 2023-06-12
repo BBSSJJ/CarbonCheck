@@ -95,6 +95,8 @@ class SolutionFragment : Fragment() {
                 .toString()
         binding.achievedCarbonAmount.text =
             "%.1f".format(binding.achievedCarbonAmount.text.toString().toFloat() + carbonAmount)
+        val achieveNumber = binding.solutionAchieveNumber.text.toString().toInt()
+        binding.solutionAchieveNumber.text = (achieveNumber + 1).toString()
     }
 
     fun subAchieveAmount(
@@ -103,17 +105,24 @@ class SolutionFragment : Fragment() {
         expenseAmount: Int,
         carbonAmount: Float
     ) {
-        binding.achievedWaterAmount.text =
-            "%.1f".format(binding.achievedWaterAmount.text.toString().toFloat() - waterUsage)
-        binding.achievedElectricityAmount.text = "%.1f".format(
-            binding.achievedElectricityAmount.text.toString()
-                .toFloat() - electricityUsage
-        )
+        var achieveWater = binding.achievedWaterAmount.text.toString().toFloat() - waterUsage
+        if (achieveWater < 0) {
+            achieveWater = 0.0f
+        }
+        var achieveElectricity =
+            binding.achievedElectricityAmount.text.toString().toFloat() - electricityUsage
+        if (achieveElectricity < 0) {
+            achieveElectricity = 0.0f
+        }
+        binding.achievedWaterAmount.text = "%.1f".format(achieveWater)
+        binding.achievedElectricityAmount.text = "%.1f".format(achieveElectricity)
         binding.achievedExpenseAmount.text =
             (binding.achievedExpenseAmount.text.toString().toFloat() - expenseAmount).toInt()
                 .toString()
         binding.achievedCarbonAmount.text =
             "%.1f".format(binding.achievedCarbonAmount.text.toString().toFloat() - carbonAmount)
+        val achieveNumber = binding.solutionAchieveNumber.text.toString().toInt()
+        binding.solutionAchieveNumber.text = (achieveNumber - 1).toString()
     }
 
 }

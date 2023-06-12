@@ -11,6 +11,7 @@ import android.view.ViewGroup
 import android.widget.*
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
@@ -48,6 +49,14 @@ class DetailedUsageFragment : Fragment() {
     ): View? {
         _binding = FragmentDetailedUsageBinding.inflate(inflater, container, false)
         localDatabase = CarbonCheckLocalDatabase.getInstance(requireContext())
+        val viewLifecycleObserver = Observer<LifecycleOwner> {
+            initDetailListRecyclerView()
+            if (binding != null) {
+                binding.progressBar.visibility = View.INVISIBLE
+                binding.totalDetailedUsageCard.visibility = View.VISIBLE
+            }
+        }
+        viewLifecycleOwnerLiveData.observe(viewLifecycleOwner, viewLifecycleObserver)
         return binding.root
     }
 
@@ -60,14 +69,13 @@ class DetailedUsageFragment : Fragment() {
                 binding.progressBar.visibility = View.VISIBLE
             }
         }
-        Handler().postDelayed({
-            initDetailListRecyclerView()
-            if (binding != null) {
-                binding.progressBar.visibility = View.INVISIBLE
-                binding.totalDetailedUsageCard.visibility = View.VISIBLE
-            }
-        }, 5000)
-
+//        Handler().postDelayed({
+//            initDetailListRecyclerView()
+//            if (binding != null) {
+//                binding.progressBar.visibility = View.INVISIBLE
+//                binding.totalDetailedUsageCard.visibility = View.VISIBLE
+//            }
+//        }, 5000)
 
     }
 
