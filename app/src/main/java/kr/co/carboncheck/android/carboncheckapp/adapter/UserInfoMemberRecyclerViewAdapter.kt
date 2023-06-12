@@ -18,10 +18,10 @@ class UserInfoMemberRecyclerViewAdapter :
         fun bind(memberData: MemberData) {
             binding.memberName.text = memberData.memberName
             val pictureId = when (memberData.profilePic % 3) {
-                0 -> R.drawable.profile0
-                1 -> R.drawable.profile1
-                2 -> R.drawable.profile2
-                else -> R.drawable.profile0
+                0 -> R.drawable.emblem_t01
+                1 -> R.drawable.emblem_t01
+                2 -> R.drawable.emblem_t01
+                else -> R.drawable.emblem_t01
             }
             binding.profilePic.setImageResource(pictureId)
         }

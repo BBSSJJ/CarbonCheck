@@ -29,11 +29,13 @@
             android:id="@+id/solution_result"
             android:layout_width="24dp"
             android:layout_height="24dp"
-            android:background="?attr/selectableItemBackground"
+            android:scaleType="centerCrop"
+            android:buttonTint="@color/accent"
+            android:button="@drawable/check_box_outline_blank_24px"
+            android:gravity="center"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:tint="@color/third"
-            android:theme="@style/Widget.Material3.CompoundButton.CheckBox"/>
+            app:tint="@color/third" />
 
         <TextView
             android:id="@+id/solution_mission"
