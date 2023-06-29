@@ -9,10 +9,10 @@ object RetrofitClient {
     // 10.0.2.2 는 host PC를 가리킨다고 합니다. 에휴
 
     //goorm server와 통신
-    private const val BASE_URL = "https://carboncheckserver-glzul.run.goorm.site/"
+//    private const val BASE_URL = "https://carboncheckserver-glzul.run.goorm.site/"
 
     //local에서 통신
-//    private const val BASE_URL = "http://10.0.2.2:8080"
+    private const val BASE_URL = "http://10.0.2.2:8080"
 
     private val retrofit =
         Retrofit.Builder().baseUrl(BASE_URL).addConverterFactory(GsonConverterFactory.create())

@@ -37,12 +37,13 @@ class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
     private val listPackageInfo: MutableList<PackageInfo> = mutableListOf()
     private lateinit var bottomNavigationView: BottomNavigationView
+    private val sharedViewModel: SharedViewModel by viewModels()
+
 
     // sseConnection 객체 생성
     private val sseConnection = SseConnection()
-    private val sseListener = SseListener()
+    private val sseListener = SseListener(sharedViewModel)
 
-    private val sharedViewModel: SharedViewModel by viewModels()
     private lateinit var localDatabase: CarbonCheckLocalDatabase
 
 
