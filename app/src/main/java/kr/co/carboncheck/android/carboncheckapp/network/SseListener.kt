@@ -2,14 +2,17 @@ package kr.co.carboncheck.android.carboncheckapp.network
 
 import android.app.ProgressDialog
 import android.util.Log
+import androidx.activity.viewModels
 import androidx.room.Update
 import com.google.gson.Gson
+import kr.co.carboncheck.android.carboncheckapp.viewmodel.SharedViewModel
 import okhttp3.Response
 import okhttp3.sse.EventSource
 import okhttp3.sse.EventSourceListener
 
-class SseListener : EventSourceListener() {
+class SseListener(private val sharedViewModel: SharedViewModel) : EventSourceListener() {
     private val gson = Gson()
+
 
     //    private var progressDialog: ProgressDialog = null
     override fun onOpen(eventSource: EventSource, response: Response) {
@@ -27,13 +30,25 @@ class SseListener : EventSourceListener() {
         super.onEvent(eventSource, id, type, data)
         Log.d("testlog", data)
 
+
         if (id == "update_usage") {
             if(type == "electricity_usage") {
                 val receivedData = gson.fromJson(data, UpdateElectricityUsageDto::class.java)
+                val map = sharedViewModel.getUserElectricityUsage().value?.toMutableMap()
+
+                map?.set(receivedData.plugId, receivedData.amount)
+                if (map != null) {
+                    sharedViewModel.setUserElectricityUsage(map)
+                }
 
             }
             else if(type == "water_usage"){
                 val receivedData = gson.fromJson(data, UpdateWaterUsageDto::class.java)
+                val map = sharedViewModel.getUserWaterUsage().value?.toMutableMap()
+                map?.set(receivedData.place, receivedData.amount)
+                if (map != null) {
+                    sharedViewModel.setUserWaterUsage(map)
+                }
             }
 
         } else {
