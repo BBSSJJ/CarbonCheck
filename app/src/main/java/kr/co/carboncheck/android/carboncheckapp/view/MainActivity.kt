@@ -42,7 +42,7 @@ class MainActivity : AppCompatActivity() {
 
     // sseConnection 객체 생성
     private val sseConnection = SseConnection()
-    private val sseListener = SseListener(sharedViewModel)
+//    private val sseListener = SseListener(sharedViewModel)
 
     private lateinit var localDatabase: CarbonCheckLocalDatabase
 
@@ -55,6 +55,7 @@ class MainActivity : AppCompatActivity() {
         localDatabase = CarbonCheckLocalDatabase.getInstance(this)
         val plugDao = localDatabase.plugDao()
 
+        val sseListener = SseListener(sharedViewModel)
 
         //첫 화면 fragment 지정
         val startFragment = TotalUsageFragment()

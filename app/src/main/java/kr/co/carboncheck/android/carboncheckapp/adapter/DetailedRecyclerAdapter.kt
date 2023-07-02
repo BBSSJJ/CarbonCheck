@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.Color
 import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -13,8 +14,11 @@ import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.findViewTreeLifecycleOwner
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.RecyclerView
+import com.github.mikephil.charting.utils.Utils.init
 import kotlinx.coroutines.*
 import kr.co.carboncheck.android.carboncheckapp.R
 import kr.co.carboncheck.android.carboncheckapp.database.CarbonCheckLocalDatabase
@@ -26,6 +30,7 @@ import kr.co.carboncheck.android.carboncheckapp.viewmodel.SharedViewModel
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.text.NumberFormat
 
 
 class DetailedRecyclerAdapter(var context: Context, private val sharedViewModel: SharedViewModel) :
@@ -33,14 +38,24 @@ class DetailedRecyclerAdapter(var context: Context, private val sharedViewModel:
     private lateinit var localDatabase: CarbonCheckLocalDatabase
 
     var datalist = mutableListOf<DetailData>()
+    val numberFormat = kr.co.carboncheck.android.carboncheckapp.util.NumberFormat()
 
     inner class MyViewHolder(
         private val binding: DetailedListBinding,
-        private val sharedViewModel: SharedViewModel
     ) :
         RecyclerView.ViewHolder(binding.root) {
+        /////////////
+        private lateinit var currentData: DetailData // 현재 ViewHolder에 바인딩된 데이터
+        private var currentPosition: Int = -1 // 현재 ViewHolder의 위치
 
+
+        ////////////
         fun bind(detailData: DetailData) {
+            /////////////
+            currentData = detailData // 현재 데이터 설정
+            currentPosition = bindingAdapterPosition
+
+            /////////////
             if (detailData.plus) {
                 binding.costImage.setImageDrawable(null)
                 binding.carbonUsageImage.setImageDrawable(null)
@@ -89,9 +104,38 @@ class DetailedRecyclerAdapter(var context: Context, private val sharedViewModel:
                     val color = ContextCompat.getColor(context, R.color.electric)
                     binding.waterOrEletricityUsageText.setTextColor(color)
                     binding.waterOrElectricityImage.setColorFilter(color)
+
+
+
+                    //            val handler = Handler(Looper.getMainLooper())
+
+                    sharedViewModel.getUserElectricityUsage()
+                        .observe(context as LifecycleOwner) { updatedData ->
+                            Log.d("testlog", "sharedViewModel electricityUsage updated")
+                            Log.d("testlog", "currentData = ${currentData.typeUsage}")
+                            val updateAmountTmp = updatedData[detailData.plugId]
+                            Log.d("testlog", "updateAmountTmp is $updateAmountTmp")
+                            val updateAmount = updateAmountTmp?.let { numberFormat.toKwhString(it) }
+//                    if (updateAmount != null) {
+//                        detailData.typeUsage = updateAmount
+//                        Log.d("testlog", "current position is : $currentPosition")
+//                        handler.post {
+//
+//                            datalist[currentPosition] = detailData
+//                            notifyItemChanged(currentPosition)
+//                        }
+//                    }
+
+                            if (updateAmount != null) {
+//                                currentData.typeUsage = updateAmount
+                                binding.waterOrEletricityUsageText.text = updateAmount
+                            }
+                            Log.d("testlog", "updatedData = ${currentData.typeUsage}")
+                        }
                 }
 
             }
+
         }
     }
 
@@ -109,7 +153,7 @@ class DetailedRecyclerAdapter(var context: Context, private val sharedViewModel:
     ): DetailedRecyclerAdapter.MyViewHolder {
         val binding =
             DetailedListBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-        return MyViewHolder(binding, sharedViewModel)
+        return MyViewHolder(binding)
     }
 
     override fun getItemCount(): Int = datalist.size
