@@ -30,17 +30,14 @@ class SseListener(private val sharedViewModel: SharedViewModel) : EventSourceLis
         super.onEvent(eventSource, id, type, data)
         Log.d("testlog", data)
 
-
         if (id == "update_usage") {
             if(type == "electricity_usage") {
                 val receivedData = gson.fromJson(data, UpdateElectricityUsageDto::class.java)
                 val map = sharedViewModel.getUserElectricityUsage().value?.toMutableMap()
-
                 map?.set(receivedData.plugId, receivedData.amount)
                 if (map != null) {
-                    sharedViewModel.setUserElectricityUsage(map)
+                    sharedViewModel.postUserElectricityUsage(map)
                 }
-
             }
             else if(type == "water_usage"){
                 val receivedData = gson.fromJson(data, UpdateWaterUsageDto::class.java)

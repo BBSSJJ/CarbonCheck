@@ -20,6 +20,10 @@ class SharedViewModel : ViewModel() {
         userElectricityUsage.value = data
     }
 
+    fun postUserElectricityUsage(data: Map<String, Float>) {
+        userElectricityUsage.postValue(data)
+    }
+
     fun setGroupWaterUsage(data: Map<String, Float>) {
         groupWaterUsage.value = data
     }
