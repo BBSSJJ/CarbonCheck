@@ -111,26 +111,13 @@ class DetailedRecyclerAdapter(var context: Context, private val sharedViewModel:
 
                     sharedViewModel.getUserElectricityUsage()
                         .observe(context as LifecycleOwner) { updatedData ->
-                            Log.d("testlog", "sharedViewModel electricityUsage updated")
-                            Log.d("testlog", "currentData = ${currentData.typeUsage}")
-                            val updateAmountTmp = updatedData[detailData.plugId]
-                            Log.d("testlog", "updateAmountTmp is $updateAmountTmp")
-                            val updateAmount = updateAmountTmp?.let { numberFormat.toKwhString(it) }
-//                    if (updateAmount != null) {
-//                        detailData.typeUsage = updateAmount
-//                        Log.d("testlog", "current position is : $currentPosition")
-//                        handler.post {
-//
-//                            datalist[currentPosition] = detailData
-//                            notifyItemChanged(currentPosition)
-//                        }
-//                    }
-
+                            val updateAmount = updatedData[detailData.plugId]
                             if (updateAmount != null) {
 //                                currentData.typeUsage = updateAmount
-                                binding.waterOrEletricityUsageText.text = updateAmount
+                                binding.waterOrEletricityUsageText.text = numberFormat.toKwhString(updateAmount)
+                                binding.carbonUsageText.text = numberFormat.electricityUsageToCarbonUsageString(updateAmount)
+                                binding.costText.text = numberFormat.electricityToPriceString(updateAmount)
                             }
-                            Log.d("testlog", "updatedData = ${currentData.typeUsage}")
                         }
                 }
 
