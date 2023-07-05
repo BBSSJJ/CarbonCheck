@@ -76,27 +76,11 @@ class DetailedRecyclerAdapter(var context: Context, private val sharedViewModel:
 
             } else {
                 binding.placeText.text = detailData.place
-                binding.waterOrEletricityUsageText.text = detailData.typeUsage
-                binding.costText.text = detailData.cost
-                binding.carbonUsageText.text = detailData.carbonUsage
                 binding.costImage.setImageResource(R.drawable.payments)
                 binding.carbonUsageImage.setImageResource(R.drawable.co2)
-                var place_image = detailData.placeImage
-                var type_image = detailData.typeImage
 
 
-                when (place_image) {
-                    0 -> binding.placeImage.setImageResource(R.drawable.faucet)
-                    1 -> binding.placeImage.setImageResource(R.drawable.power)
-                    else -> binding.placeImage.setImageResource(R.drawable.faucet)
-                }
-                when (type_image) {
-                    0 -> binding.waterOrElectricityImage.setImageResource(R.drawable.water_drop)
-                    1 -> binding.waterOrElectricityImage.setImageResource(R.drawable.bolt)
-                    else -> binding.waterOrElectricityImage.setImageResource(R.drawable.water_drop)
-                }
-
-
+                //전기 사용량 업데이트 시
                 if (detailData.typeImage == 1) {
                     binding.detailedCard.setOnClickListener {
                         cardClickMenu(bindingAdapterPosition, detailData.plugId!!)
@@ -104,33 +88,49 @@ class DetailedRecyclerAdapter(var context: Context, private val sharedViewModel:
                     val color = ContextCompat.getColor(context, R.color.electric)
                     binding.waterOrEletricityUsageText.setTextColor(color)
                     binding.waterOrElectricityImage.setColorFilter(color)
+                    binding.placeImage.setImageResource(R.drawable.power)
+                    binding.waterOrElectricityImage.setImageResource(R.drawable.bolt)
 
-
-
-                    //            val handler = Handler(Looper.getMainLooper())
+                    binding.waterOrEletricityUsageText.text = numberFormat.toKwhString(detailData.typeUsage)
+                    binding.costText.text = numberFormat.electricityToPriceString(detailData.typeUsage)
+                    binding.carbonUsageText.text = numberFormat.electricityUsageToCarbonUsageString(detailData.typeUsage)
 
                     sharedViewModel.getUserElectricityUsage()
                         .observe(context as LifecycleOwner) { updatedData ->
-                            Log.d("testlog", "sharedViewModel electricityUsage updated")
-                            Log.d("testlog", "currentData = ${currentData.typeUsage}")
-                            val updateAmountTmp = updatedData[detailData.plugId]
-                            Log.d("testlog", "updateAmountTmp is $updateAmountTmp")
-                            val updateAmount = updateAmountTmp?.let { numberFormat.toKwhString(it) }
-//                    if (updateAmount != null) {
-//                        detailData.typeUsage = updateAmount
-//                        Log.d("testlog", "current position is : $currentPosition")
-//                        handler.post {
-//
-//                            datalist[currentPosition] = detailData
-//                            notifyItemChanged(currentPosition)
-//                        }
-//                    }
-
+                            val updateAmount = updatedData[detailData.plugId]
                             if (updateAmount != null) {
 //                                currentData.typeUsage = updateAmount
-                                binding.waterOrEletricityUsageText.text = updateAmount
+                                binding.waterOrEletricityUsageText.text =
+                                    numberFormat.toKwhString(updateAmount)
+                                binding.carbonUsageText.text =
+                                    numberFormat.electricityUsageToCarbonUsageString(updateAmount)
+                                binding.costText.text =
+                                    numberFormat.electricityToPriceString(updateAmount)
                             }
-                            Log.d("testlog", "updatedData = ${currentData.typeUsage}")
+                        }
+                }
+
+                //물 사용량 업데이트 시
+                else if (detailData.typeImage == 0) {
+                    binding.placeImage.setImageResource(R.drawable.faucet)
+                    binding.waterOrElectricityImage.setImageResource(R.drawable.water_drop)
+
+                    binding.waterOrEletricityUsageText.text = numberFormat.toLiterString(detailData.typeUsage)
+                    binding.costText.text = numberFormat.waterUsageToPriceString(detailData.typeUsage)
+                    binding.carbonUsageText.text = numberFormat.waterUsageToCarbonUsageString(detailData.typeUsage)
+
+                    sharedViewModel.getUserWaterUsage()
+                        .observe(context as LifecycleOwner) { updatedData ->
+                            val updateAmount = updatedData[detailData.place]
+
+                            if (updateAmount != null) {
+                                binding.waterOrEletricityUsageText.text =
+                                    numberFormat.toLiterString(updateAmount)
+                                binding.carbonUsageText.text =
+                                    numberFormat.waterUsageToCarbonUsageString(updateAmount)
+                                binding.costText.text =
+                                    numberFormat.waterUsageToPriceString(updateAmount)
+                            }
                         }
                 }
 

@@ -64,7 +64,7 @@ class DetailedUsageFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         initializeDetailList()
         if (isAdded) {
-            if(binding != null){
+            if (binding != null) {
 
                 binding.progressBar.visibility = View.VISIBLE
             }
@@ -106,24 +106,15 @@ class DetailedUsageFragment : Fragment() {
                     else if (key == "FLOW2") place = "샤워기"
                     with(detailList) {
                         add(
-                            DetailData(
-                                place,
-                                0,
-                                0,
-                                numberFormat.toLiterString(value),
-                                numberFormat.waterUsageToCarbonUsageString(value),
-                                numberFormat.waterUsageToPriceString(value),
-                                false,
-                                null
-                            )
+                            DetailData(place, 0, 0, value, false, null)
                         )
                     }
                     waterUsageSum += value
                 }
             } else {
                 with(detailList) {
-                    add(DetailData("세면대", 0, 0, "0.0 L", "0.0 g", "0 ₩", false, null))
-                    add(DetailData("샤워기", 0, 0, "0.0 L", "0.0 g", "0 ₩", false, null))
+                    add(DetailData("세면대", 0, 0, 0f, false, null))
+                    add(DetailData("샤워기", 0, 0, 0f, false, null))
                 }
             }
         }
@@ -134,16 +125,7 @@ class DetailedUsageFragment : Fragment() {
                 val plugName = value.first
                 val amount = value.second
                 detailList.add(
-                    DetailData(
-                        plugName,
-                        1,
-                        1,
-                        numberFormat.toKwhString(amount),
-                        numberFormat.electricityUsageToCarbonUsageString(amount),
-                        numberFormat.electricityToPriceString(amount),
-                        false,
-                        plugId
-                    )
+                    DetailData(plugName, 1, 1, amount, false, plugId)
                 )
                 electricityUsageSum += value.second
             }
@@ -151,14 +133,38 @@ class DetailedUsageFragment : Fragment() {
 
         // Add an empty item for spacing
         detailList.add(
-            DetailData(
-                "", 0, 0, "", "", "", true, null
-            )
+            DetailData("", 0, 0, 0f, true, null)
         )
 
         binding.detailListRecyclerview.adapter?.notifyDataSetChanged()
 
         changeTotalCardView(waterUsageSum, electricityUsageSum)
+        sharedViewModel.getUserElectricityUsage()
+            .observe(context as LifecycleOwner) { updatedData ->
+                electricityUsageSum = 0f
+                waterUsageSum = 0f
+                for ((key, value) in updatedData) {
+                    electricityUsageSum += value
+                }
+                val waterUsageMap = sharedViewModel.getUserWaterUsage().value
+                for ((key, value) in waterUsageMap!!) {
+                    waterUsageSum += value
+                }
+                changeTotalCardView(waterUsageSum, electricityUsageSum)
+            }
+        sharedViewModel.getUserWaterUsage()
+            .observe(context as LifecycleOwner) { updatedData ->
+                electricityUsageSum = 0f
+                waterUsageSum = 0f
+                val electricityUsageMap = sharedViewModel.getUserElectricityUsage().value
+                for ((key, value) in electricityUsageMap!!) {
+                    electricityUsageSum += value
+                }
+                for ((key, value) in updatedData) {
+                    waterUsageSum += value
+                }
+                changeTotalCardView(waterUsageSum, electricityUsageSum)
+            }
     }
 
     private fun changeTotalCardView(waterUsageSum: Float, electricityUsageSum: Float) {

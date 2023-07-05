@@ -176,14 +176,19 @@ class MainActivity : AppCompatActivity() {
 
                 //유저 물 사용량 가져오기
                 getUserWaterUsage(userId) { userWaterUsageList ->
+                    lateinit var map : Map<String, Float>
                     if (userWaterUsageList != null) {
-                        val map = userWaterUsageList.map { userWaterUsage ->
+                        map = userWaterUsageList.map { userWaterUsage ->
                             userWaterUsage.str to userWaterUsage.amount
                         }.toMap()
-                        sharedViewModel.setUserWaterUsage(map);
-                        for (userWaterUsage in userWaterUsageList) {
-                            Log.d("testlog", userWaterUsage.str + " " + userWaterUsage.amount)
-                        }
+                    }
+                    else{
+                        map = mapOf("FLOW1" to 0f, "FLOW2" to 0f)
+                    }
+                    sharedViewModel.setUserWaterUsage(map);
+                    val mutableMap = sharedViewModel.getUserWaterUsage().value
+                    for((key, value) in mutableMap!!){
+                        Log.d("testlog", "in main activity getting data, $key $value")
                     }
                 }
                 //유저 전기 사용량 가져오기
