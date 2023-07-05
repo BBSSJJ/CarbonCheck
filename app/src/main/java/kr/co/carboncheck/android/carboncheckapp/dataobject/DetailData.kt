@@ -4,9 +4,7 @@ data class DetailData(
     var place: String,
     val placeImage: Int,
     val typeImage: Int,
-    var typeUsage: String,
-    val carbonUsage: String,
-    val cost: String,
+    var typeUsage: Float,
     val plus: Boolean,
     val plugId: String?
 )
