@@ -43,10 +43,10 @@ class SseListener(private val sharedViewModel: SharedViewModel) : EventSourceLis
             } else if (type == "water_usage") {
                 val receivedData = gson.fromJson(data, UpdateWaterUsageDto::class.java)
                 val map = sharedViewModel.getUserWaterUsage().value?.toMutableMap()
-                var place = "세면대"
-                if (receivedData.place == "FLOW1") place = "세면대"
-                else if (receivedData.place == "FLOW2") place = "샤워기"
-                map?.set(place, receivedData.amount)
+//                var place = "세면대"
+//                if (receivedData.place == "FLOW1") place = "세면대"
+//                else if (receivedData.place == "FLOW2") place = "샤워기"
+                map?.set(receivedData.place, receivedData.amount)
                 if (map != null) {
                     sharedViewModel.postUserWaterUsage(map)
                 }

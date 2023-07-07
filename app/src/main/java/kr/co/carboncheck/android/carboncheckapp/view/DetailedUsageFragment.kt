@@ -101,22 +101,20 @@ class DetailedUsageFragment : Fragment() {
         if (waterUsage != null) {
             if (waterUsage.isNotEmpty()) {
                 for ((key, value) in waterUsage) {
-                    var place = "세면대"
-                    if (key == "FLOW1") place = "세면대"
-                    else if (key == "FLOW2") place = "샤워기"
                     with(detailList) {
                         add(
-                            DetailData(place, 0, 0, value, false, null)
+                            DetailData(key, 0, 0, value, false, null)
                         )
                     }
                     waterUsageSum += value
                 }
-            } else {
-                with(detailList) {
-                    add(DetailData("세면대", 0, 0, 0f, false, null))
-                    add(DetailData("샤워기", 0, 0, 0f, false, null))
-                }
             }
+//            else {
+//                with(detailList) {
+//                    add(DetailData("세면대", 0, 0, 0f, false, null))
+//                    add(DetailData("샤워기", 0, 0, 0f, false, null))
+//                }
+//            }
         }
 
         electricityUsageName?.let { map ->
@@ -140,30 +138,37 @@ class DetailedUsageFragment : Fragment() {
 
         changeTotalCardView(waterUsageSum, electricityUsageSum)
         sharedViewModel.getUserElectricityUsage()
-            .observe(context as LifecycleOwner) { updatedData ->
+            .observe(viewLifecycleOwner) { updatedData ->
+
+
                 electricityUsageSum = 0f
                 waterUsageSum = 0f
-                for ((key, value) in updatedData) {
-                    electricityUsageSum += value
+                if (updatedData != null) {
+                    for ((key, value) in updatedData) {
+                        electricityUsageSum += value
+                    }
+                    val waterUsageMap = sharedViewModel.getUserWaterUsage().value
+                    for ((key, value) in waterUsageMap!!) {
+                        waterUsageSum += value
+                    }
+                    changeTotalCardView(waterUsageSum, electricityUsageSum)
                 }
-                val waterUsageMap = sharedViewModel.getUserWaterUsage().value
-                for ((key, value) in waterUsageMap!!) {
-                    waterUsageSum += value
-                }
-                changeTotalCardView(waterUsageSum, electricityUsageSum)
             }
+
         sharedViewModel.getUserWaterUsage()
-            .observe(context as LifecycleOwner) { updatedData ->
+            .observe(viewLifecycleOwner) { updatedData ->
                 electricityUsageSum = 0f
                 waterUsageSum = 0f
-                val electricityUsageMap = sharedViewModel.getUserElectricityUsage().value
-                for ((key, value) in electricityUsageMap!!) {
-                    electricityUsageSum += value
+                if (updatedData != null) {
+                    val electricityUsageMap = sharedViewModel.getUserElectricityUsage().value
+                    for ((key, value) in electricityUsageMap!!) {
+                        electricityUsageSum += value
+                    }
+                    for ((key, value) in updatedData) {
+                        waterUsageSum += value
+                    }
+                    changeTotalCardView(waterUsageSum, electricityUsageSum)
                 }
-                for ((key, value) in updatedData) {
-                    waterUsageSum += value
-                }
-                changeTotalCardView(waterUsageSum, electricityUsageSum)
             }
     }
 
@@ -179,8 +184,10 @@ class DetailedUsageFragment : Fragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
+
+        sharedViewModel.getUserElectricityUsage().removeObservers(viewLifecycleOwner)
+        sharedViewModel.getUserWaterUsage().removeObservers(viewLifecycleOwner)
+
         _binding = null
     }
-
-
 }
