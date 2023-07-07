@@ -176,16 +176,21 @@ class MainActivity : AppCompatActivity() {
 
                 //유저 물 사용량 가져오기
                 getUserWaterUsage(userId) { userWaterUsageList ->
-                    lateinit var map : Map<String, Float>
-                    if (userWaterUsageList != null) {
-                        map = userWaterUsageList.map { userWaterUsage ->
+                    val map = if (userWaterUsageList != null && userWaterUsageList.isNotEmpty()) {
+                        Log.d("testlog", "in userWaterUsageList not null")
+                        for(a in userWaterUsageList){
+                            Log.d("testlog", "userWaterUsageList $a")
+                        }
+
+                        userWaterUsageList.map { userWaterUsage ->
                             userWaterUsage.str to userWaterUsage.amount
                         }.toMap()
+                    } else {
+                        Log.d("testlog", "in userWaterUsageList null")
+
+                        mapOf("FLOW1" to 0f, "FLOW2" to 0f)
                     }
-                    else{
-                        map = mapOf("FLOW1" to 0f, "FLOW2" to 0f)
-                    }
-                    sharedViewModel.setUserWaterUsage(map);
+                    sharedViewModel.setUserWaterUsage(map)
                     val mutableMap = sharedViewModel.getUserWaterUsage().value
                     for((key, value) in mutableMap!!){
                         Log.d("testlog", "in main activity getting data, $key $value")

@@ -91,9 +91,12 @@ class DetailedRecyclerAdapter(var context: Context, private val sharedViewModel:
                     binding.placeImage.setImageResource(R.drawable.power)
                     binding.waterOrElectricityImage.setImageResource(R.drawable.bolt)
 
-                    binding.waterOrEletricityUsageText.text = numberFormat.toKwhString(detailData.typeUsage)
-                    binding.costText.text = numberFormat.electricityToPriceString(detailData.typeUsage)
-                    binding.carbonUsageText.text = numberFormat.electricityUsageToCarbonUsageString(detailData.typeUsage)
+                    binding.waterOrEletricityUsageText.text =
+                        numberFormat.toKwhString(detailData.typeUsage)
+                    binding.costText.text =
+                        numberFormat.electricityToPriceString(detailData.typeUsage)
+                    binding.carbonUsageText.text =
+                        numberFormat.electricityUsageToCarbonUsageString(detailData.typeUsage)
 
                     sharedViewModel.getUserElectricityUsage()
                         .observe(context as LifecycleOwner) { updatedData ->
@@ -115,13 +118,27 @@ class DetailedRecyclerAdapter(var context: Context, private val sharedViewModel:
                     binding.placeImage.setImageResource(R.drawable.faucet)
                     binding.waterOrElectricityImage.setImageResource(R.drawable.water_drop)
 
-                    binding.waterOrEletricityUsageText.text = numberFormat.toLiterString(detailData.typeUsage)
-                    binding.costText.text = numberFormat.waterUsageToPriceString(detailData.typeUsage)
-                    binding.carbonUsageText.text = numberFormat.waterUsageToCarbonUsageString(detailData.typeUsage)
+                    binding.waterOrEletricityUsageText.text =
+                        numberFormat.toLiterString(detailData.typeUsage)
+                    binding.costText.text =
+                        numberFormat.waterUsageToPriceString(detailData.typeUsage)
+                    binding.carbonUsageText.text =
+                        numberFormat.waterUsageToCarbonUsageString(detailData.typeUsage)
+
+                    lateinit var place : String
+                    if(detailData.place == "FLOW1") place = "세면대"
+                    else if(detailData.place == "FLOW2") place = "샤워기"
+                    else place = "null"
+                    binding.placeText.text = place
+
 
                     sharedViewModel.getUserWaterUsage()
                         .observe(context as LifecycleOwner) { updatedData ->
+                            for (a in updatedData) {
+                                Log.d("testlog", "in updatedData $a")
+                            }
                             val updateAmount = updatedData[detailData.place]
+                            Log.d("testlog", "update amount is $updateAmount")
 
                             if (updateAmount != null) {
                                 binding.waterOrEletricityUsageText.text =
@@ -130,6 +147,7 @@ class DetailedRecyclerAdapter(var context: Context, private val sharedViewModel:
                                     numberFormat.waterUsageToCarbonUsageString(updateAmount)
                                 binding.costText.text =
                                     numberFormat.waterUsageToPriceString(updateAmount)
+
                             }
                         }
                 }
