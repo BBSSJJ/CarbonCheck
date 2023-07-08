@@ -233,7 +233,7 @@ class TotalUsageFragment : Fragment() {
 
         if (myTargetAmount != 0f) {
             // 유저가 키보드로 입력 해서 값 넣어준 상황
-            donutProgressView.cap = myTargetAmount      // TODO: 목표 설정량 변경 가능 하게 하기
+            donutProgressView.cap = myTargetAmount
         } else {
             // 키보드 입력 없이 프레그 먼트를 새로 열거나 sharedViewModel 사용 하는 상황
             if (userTargetAmount != null) {
@@ -243,7 +243,7 @@ class TotalUsageFragment : Fragment() {
                 donutProgressView.cap = 1000f // 기본값
             }
         }
-        donutProgressView.masterProgress = 100f     // 파악 안됨
+        donutProgressView.masterProgress = 100f
         donutProgressView.gapAngleDegrees = 270f    // 도넛 구멍 방향
         donutProgressView.direction = DonutDirection.CLOCKWISE
     }
@@ -252,67 +252,100 @@ class TotalUsageFragment : Fragment() {
         if (!isAdded) return
 
         val context = myContext
-        var electricAmount = 0f
-        var waterAmount = 0f
+        var electricAmount: Float
+        var waterAmount: Float
         var electricCarbonAmount: Float
         var waterCarbonAmount: Float
-        var totalCarbonAmount = 0f
+        var totalCarbonAmount: Float
 
         val sections = mutableListOf<DonutSection>()
 
         // Observe the user water usage and electricity usage from the sharedViewModel
         sharedViewModel.getUserElectricityUsage()
             .observe(viewLifecycleOwner) { userElectricityUsage ->
+                val waterUsageMap = sharedViewModel.getUserWaterUsage().value
+                waterAmount = 0f
+                electricAmount = 0f
+                totalCarbonAmount = 0f
                 // Update your UI with the new data
+                for ((_, value) in waterUsageMap!!) {
+                    waterAmount += value
+                }
                 userElectricityUsage?.let {
                     for ((key, value) in it) {
-//                        Log.d("TotalUsage elec", value.toString())
+                        Log.d("TotalUsage elec", value.toString())
                         electricAmount += value
                     }
                 }
                 electricCarbonAmount =
                     numberFormat.electricityUsageToCarbonUsage(electricAmount)   // Kwh 단위로 변환 하고 탄소 배출량 계산
-                totalCarbonAmount += electricCarbonAmount
-                binding.totalAmountCountText.text = "%.2f".format(totalCarbonAmount) +" g"
+                waterCarbonAmount = numberFormat.waterUsageToCarbonUsage(waterAmount)
+                totalCarbonAmount += electricCarbonAmount + waterCarbonAmount
+                binding.totalAmountCountText.text = "%.2f".format(totalCarbonAmount) + " g"
                 binding.electricSectionText.text =
                     "전력 사용량 " + numberFormat.toKwhString(electricAmount)
                 if (context != null && electricCarbonAmount > 0f) {
-                    sections.add(
-                        DonutSection(
-                            ElectricCategory.name,
-                            ContextCompat.getColor(context, R.color.electric),
-                            electricCarbonAmount
-                        )
+
+                    val indexToReplace = sections.indexOfFirst { it.name == "electric" }
+                    val newSection = DonutSection(
+                        ElectricCategory.name,
+                        ContextCompat.getColor(context, R.color.electric),
+                        electricCarbonAmount
                     )
+                    if (indexToReplace != -1){
+                        sections[indexToReplace] = newSection
+                    }else{
+                        sections.add(
+                            newSection
+                        )
+                    }
+
                     donutProgressView.submitData(sections)
                     runInitialDonutAnimation(donutProgressView)
                 }
             }
         sharedViewModel.getUserWaterUsage().observe(viewLifecycleOwner) { userWaterUsage ->
+            electricAmount = 0f
+            val electricUsageMap = sharedViewModel.getUserElectricityUsage().value
+            for ((_, value) in electricUsageMap!!) {
+                electricAmount += value
+            }
+            waterAmount = 0f
+            totalCarbonAmount = 0f
             // Update your UI with the new data
-
             userWaterUsage?.let {
                 for ((key, value) in it) {
                     waterAmount += value
                 }
             }
             waterCarbonAmount = numberFormat.waterUsageToCarbonUsage(waterAmount)   // 탄소 배출량 으로 계산
-            totalCarbonAmount += waterCarbonAmount
-            binding.totalAmountCountText.text = "%.2f".format(totalCarbonAmount) +" g"
+            electricCarbonAmount =
+                numberFormat.electricityUsageToCarbonUsage(electricAmount)
+            totalCarbonAmount += electricCarbonAmount + waterCarbonAmount
+            binding.totalAmountCountText.text = "%.2f".format(totalCarbonAmount) + " g"
             binding.waterSectionText.text = "수도 사용량 " + numberFormat.toLiterString(waterAmount)
 
             if (context != null && waterCarbonAmount > 0f) {
-                sections.add(
-                    DonutSection(
-                        WaterCategory.name,
-                        ContextCompat.getColor(context, R.color.water),
-                        waterCarbonAmount
-                    )
+                val indexToReplace = sections.indexOfFirst { it.name == "water" }
+                val newSection = DonutSection(
+                    WaterCategory.name,
+                    ContextCompat.getColor(context, R.color.water),
+                    waterCarbonAmount
                 )
+                if (indexToReplace != -1){
+                    sections[indexToReplace] = newSection
+                } else {
+                    sections.add(
+                        newSection
+                    )
+                }
+
+                donutProgressView.submitData(sections)
+                runInitialDonutAnimation(donutProgressView)
             }
         }
         if (context != null) {
-            donutProgressView.submitData(sections)
+            // donutProgressView.submitData(sections)
         }
     }
 
@@ -581,6 +614,7 @@ class TotalUsageFragment : Fragment() {
                     Log.d("testlog", "목표치 업데이트 요청 실패")
                 }
             }
+
             override fun onFailure(call: Call<Boolean>, t: Throwable) {
                 Log.d("testlog", "목표치 업데이트 요청 전송 실패 : $t")
             }

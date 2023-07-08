@@ -12,9 +12,9 @@ import java.util.concurrent.TimeUnit
 
 class SseConnection {
     private var eventSource: EventSource? = null
-    private val BASE_URL = "http://10.0.2.2:8080"
+//    private val BASE_URL = "http://10.0.2.2:8080"
 //    private val BASE_URL = "https://carboncheckserver-glzul.run.goorm.site/"
-//    private val BASE_URL = "http://52.79.136.190:50976/"
+    private val BASE_URL = "http://43.200.137.155:50988"
 
 
     private var homeServerId: String? = null
